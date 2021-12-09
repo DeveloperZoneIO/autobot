@@ -8,6 +8,7 @@ part 'input.dart';
 part 'input_reader.dart';
 part 'output_reader.dart';
 part 'render_mixin.dart';
+part 'string_to_bool.dart';
 part 'template_reader.dart';
 part 'template_input_definition.dart';
 part 'template_output_definition.dart';
