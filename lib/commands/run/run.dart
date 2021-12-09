@@ -6,6 +6,7 @@ part 'config.dart';
 part 'input.dart';
 part 'input_parser.dart';
 part 'template_reader.dart';
+part 'template_input_definition.dart';
 
 class RunCommand extends Command {
   static const kOptionTemplate = 'template';
@@ -42,7 +43,7 @@ class RunCommand extends Command {
 
 extension FunctionalRunCommand on RunCommand {
   YamlMap readTemplate() => RunTemplateReader(this).readTemplate();
-  List<RunInput> readInputs(YamlMap template) => RunInputParser(this) //
+  List<Input> readInputs(YamlMap template) => InputParser(this) //
       .collectInputDefinitionsFrom(template)
       .askForInputvalues()
       .getUserInputs();
