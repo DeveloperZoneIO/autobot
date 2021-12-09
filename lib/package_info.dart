@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dcli/dcli.dart';
 import 'package:yaml/yaml.dart';
 
+import 'common/exceptions.dart';
+
 class PackageInfo {
   static YamlMap? _pubspec;
   static const kPubspecFileName = 'pubspec.yaml';
@@ -18,39 +20,18 @@ class PackageInfo {
   static String get name {
     _ensureInitialized();
     final String? value = _pubspec!['name'];
-    if (value == null) throw MissingPackageField(name: 'name');
+    if (value == null) throw MissingYamlField(field: 'name', file: 'pubspec');
     return value;
   }
 
   static String get description {
     _ensureInitialized();
     final String? value = _pubspec!['description'];
-    if (value == null) throw MissingPackageField(name: 'description');
+    if (value == null) throw MissingYamlField(field: 'description', file: 'pubspec');
     return value;
   }
 
   static void _ensureInitialized() {
     if (_pubspec == null) throw MissingPubspec();
   }
-}
-
-class PubspecEcxeption implements Exception {}
-
-class MissingPubspec implements PubspecEcxeption {
-  @override
-  String toString() => 'Autobot is missing a pubspec.yaml file.';
-}
-
-class MissingPackageField implements PubspecEcxeption {
-  final String name;
-  MissingPackageField({
-    required this.name,
-  });
-  @override
-  String toString() => 'Autobot pubspec.yaml file is missing the "$name" property.';
-}
-
-class MissingPackageVersion implements PubspecEcxeption {
-  @override
-  String toString() => 'Autobot pubspec.yaml file is missing the "version" property.';
 }
