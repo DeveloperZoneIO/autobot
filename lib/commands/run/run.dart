@@ -36,6 +36,7 @@ class RunCommand extends Command {
     final template = readTemplate();
     final inputs = readInputs(template);
     final outputs = readOutputs(template);
+    writeOutputs(outputs, inputs: inputs);
   }
 
   void _readConfig() {
@@ -51,11 +52,18 @@ class RunCommand extends Command {
 
 extension FunctionalRunCommand on RunCommand {
   YamlMap readTemplate() => RunTemplateReader(this).readTemplate();
-  List<Input> readInputs(YamlMap template) => InputParser(this) //
+
+  List<Input> readInputs(YamlMap template) => InputReader(this) //
       .collectInputDefinitionsFrom(template)
       .askForInputvalues()
       .getUserInputs();
-  List<TemplateOutputDefinition> readOutputs(YamlMap template) => OutputParser(this) //
+
+  List<TemplateOutputDefinition> readOutputs(YamlMap template) => OutputReader(this) //
       .collectOutputsFrom(template)
       .getOutputs();
+
+  void writeOutputs(List<TemplateOutputDefinition> outputs, {required List<Input> inputs}) => OutputWriter(this) //
+      .collectVariables(inputs)
+      .createWriteTasks(outputs)
+      .writeOutputs();
 }
