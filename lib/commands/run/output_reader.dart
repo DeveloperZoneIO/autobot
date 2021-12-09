@@ -1,12 +1,12 @@
 part of 'run.dart';
 
-class OutputParser {
-  OutputParser(this.owner);
+class OutputReader {
+  OutputReader(this.owner);
 
   final RunCommand owner;
   final _foundOutputs = <TemplateOutputDefinition>[];
 
-  OutputParser collectOutputsFrom(YamlMap template) {
+  OutputReader collectOutputsFrom(YamlMap template) {
     final outputList = template['outputs'];
     if (outputList is! YamlList) return this;
 

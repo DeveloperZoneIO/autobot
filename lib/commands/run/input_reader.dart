@@ -4,8 +4,8 @@ typedef Key = String;
 typedef Value = String;
 typedef Prompt = String;
 
-class InputParser {
-  InputParser(this.owner);
+class InputReader {
+  InputReader(this.owner);
 
   final RunCommand owner;
   final _evaluatedInputs = <Input>[];
@@ -13,7 +13,7 @@ class InputParser {
   /// Map<Key, Prompt>
   final _inputDefinitionsFromYaml = <Key, Prompt>{};
 
-  InputParser collectInputDefinitionsFrom(YamlMap template) {
+  InputReader collectInputDefinitionsFrom(YamlMap template) {
     final inputList = template['inputs'];
     if (inputList is! YamlList) {
       return this;
@@ -28,7 +28,7 @@ class InputParser {
     return this;
   }
 
-  InputParser askForInputvalues() {
+  InputReader askForInputvalues() {
     for (final inputDefinition in _inputDefinitionsFromYaml.entries) {
       final key = inputDefinition.key;
       final prompt = inputDefinition.value;
