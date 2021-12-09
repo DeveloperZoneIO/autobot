@@ -1,14 +1,17 @@
 name: autobot
-description: A sample command-line application.
-version: 1.0.0
+description: A command line tool for automating common developer tasks like generate files, manage environment, configure projects and setup CI.
+version: 0.0.0
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.14.4 <3.0.0'
+  sdk: ">=2.14.4 <3.0.0"
 
-
-# dependencies:
-#   path: ^1.8.0
+dependencies:
+  args: ^2.3.0
+  dcli: ^1.14.1
+  mustache_template: ^2.0.0
+  path: ^1.8.0
+  yaml: ^3.1.0
 
 dev_dependencies:
   lints: ^1.0.0
