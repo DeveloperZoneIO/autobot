@@ -1,7 +1,9 @@
 import 'package:args/command_runner.dart';
 import 'package:dcli/dcli.dart';
+import 'package:yaml/yaml.dart';
 
 part 'config.dart';
+part 'template_reader.dart';
 
 class RunCommand extends Command {
   static const kOptionTemplate = 'template';
@@ -20,7 +22,9 @@ class RunCommand extends Command {
   String get name => 'run';
 
   @override
-  void run() {}
+  void run() {
+    final template = readTemplate();
+  }
 
   void _readConfig() {
     config = RunConfig(
@@ -31,4 +35,8 @@ class RunCommand extends Command {
   void _addOptions() {
     argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
   }
+}
+
+extension FunctionalRunCommand on RunCommand {
+  YamlMap readTemplate() => RunTemplateReader(this).readTemplate();
 }
