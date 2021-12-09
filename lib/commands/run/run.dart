@@ -7,6 +7,7 @@ part 'config.dart';
 part 'input.dart';
 part 'input_reader.dart';
 part 'output_reader.dart';
+part 'output_writer.dart';
 part 'render_mixin.dart';
 part 'string_to_bool.dart';
 part 'template_reader.dart';
