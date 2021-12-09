@@ -1,5 +1,3 @@
 import 'package:autobot/autobot.dart' as autobot;
 
-void main(List<String> arguments) {
-  print('Hello world: ${autobot.calculate()}!');
-}
+void main(List<String> arguments) => autobot.main(arguments);
