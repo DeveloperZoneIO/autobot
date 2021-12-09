@@ -3,6 +3,8 @@ import 'package:dcli/dcli.dart';
 import 'package:yaml/yaml.dart';
 
 part 'config.dart';
+part 'input.dart';
+part 'input_parser.dart';
 part 'template_reader.dart';
 
 class RunCommand extends Command {
@@ -24,6 +26,7 @@ class RunCommand extends Command {
   @override
   void run() {
     final template = readTemplate();
+    final inputs = readInputs(template);
   }
 
   void _readConfig() {
@@ -39,4 +42,8 @@ class RunCommand extends Command {
 
 extension FunctionalRunCommand on RunCommand {
   YamlMap readTemplate() => RunTemplateReader(this).readTemplate();
+  List<RunInput> readInputs(YamlMap template) => RunInputParser(this) //
+      .collectInputDefinitionsFrom(template)
+      .askForInputvalues()
+      .getUserInputs();
 }
