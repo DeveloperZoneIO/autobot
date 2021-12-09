@@ -1,11 +1,13 @@
 import 'package:args/command_runner.dart';
 import 'package:dcli/dcli.dart';
+import 'package:mustache_template/mustache.dart';
 import 'package:yaml/yaml.dart';
 
 part 'config.dart';
 part 'input.dart';
-part 'input_parser.dart';
-part 'output_parser.dart';
+part 'input_reader.dart';
+part 'output_reader.dart';
+part 'render_mixin.dart';
 part 'template_reader.dart';
 part 'template_input_definition.dart';
 part 'template_output_definition.dart';
