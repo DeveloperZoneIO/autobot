@@ -4,10 +4,12 @@ import 'package:dcli/dcli.dart';
 part 'config.dart';
 
 class RunCommand extends Command {
+  static const kOptionTemplate = 'template';
+  static const kOptionTemplateAbbr = 't';
+
   RunCommand() {
-    config = RunConfig(
-      templateDirectory: '$pwd/templates/',
-    );
+    _readConfig();
+    _addOptions();
   }
 
   late final RunConfig config;
@@ -19,4 +21,14 @@ class RunCommand extends Command {
 
   @override
   void run() {}
+
+  void _readConfig() {
+    config = RunConfig(
+      templateDirectory: '$pwd/templates/',
+    );
+  }
+
+  void _addOptions() {
+    argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
+  }
 }
