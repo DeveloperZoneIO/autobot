@@ -5,8 +5,10 @@ import 'package:yaml/yaml.dart';
 part 'config.dart';
 part 'input.dart';
 part 'input_parser.dart';
+part 'output_parser.dart';
 part 'template_reader.dart';
 part 'template_input_definition.dart';
+part 'template_output_definition.dart';
 
 class RunCommand extends Command {
   static const kOptionTemplate = 'template';
@@ -28,6 +30,7 @@ class RunCommand extends Command {
   void run() {
     final template = readTemplate();
     final inputs = readInputs(template);
+    final outputs = readOutputs(template);
   }
 
   void _readConfig() {
@@ -47,4 +50,7 @@ extension FunctionalRunCommand on RunCommand {
       .collectInputDefinitionsFrom(template)
       .askForInputvalues()
       .getUserInputs();
+  List<TemplateOutputDefinition> readOutputs(YamlMap template) => OutputParser(this) //
+      .collectOutputsFrom(template)
+      .getOutputs();
 }
