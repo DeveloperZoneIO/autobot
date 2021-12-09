@@ -12,6 +12,7 @@ part 'string_to_bool.dart';
 part 'template_reader.dart';
 part 'template_input_definition.dart';
 part 'template_output_definition.dart';
+part 'write_task.dart';
 
 class RunCommand extends Command {
   static const kOptionTemplate = 'template';
