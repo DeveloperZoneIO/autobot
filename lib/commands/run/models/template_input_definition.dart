@@ -1,4 +1,4 @@
-part of 'run.dart';
+part of '../run.dart';
 
 /// represents a input definition from the template yaml file.
 class TemplateInputDefinition {

@@ -1,4 +1,4 @@
-part of 'run.dart';
+part of '../run.dart';
 
 /// Represents a final key value pair after resolving prompt.
 class Input {

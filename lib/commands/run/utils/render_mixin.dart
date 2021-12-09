@@ -1,4 +1,4 @@
-part of 'run.dart';
+part of '../run.dart';
 
 mixin TextRenderable {
   final renderVariables = <String, String>{};

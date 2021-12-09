@@ -3,17 +3,18 @@ import 'package:dcli/dcli.dart';
 import 'package:mustache_template/mustache.dart';
 import 'package:yaml/yaml.dart';
 
-part 'config.dart';
-part 'input.dart';
 part 'input_reader.dart';
 part 'output_reader.dart';
 part 'output_writer.dart';
-part 'render_mixin.dart';
-part 'string_to_bool.dart';
+part 'utils/render_mixin.dart';
+part 'utils/string_to_bool.dart';
 part 'template_reader.dart';
-part 'template_input_definition.dart';
-part 'template_output_definition.dart';
-part 'write_task.dart';
+
+part 'models/config.dart';
+part 'models/input.dart';
+part 'models/template_input_definition.dart';
+part 'models/template_output_definition.dart';
+part 'models/write_task.dart';
 
 class RunCommand extends Command {
   static const kOptionTemplate = 'template';
