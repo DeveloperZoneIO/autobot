@@ -1,4 +1,7 @@
 import 'package:args/command_runner.dart';
+import 'package:autobot/autobot.dart';
+import 'package:autobot/common/exceptions.dart';
+import 'package:autobot/common/null_utils.dart';
 import 'package:dcli/dcli.dart';
 import 'package:mustache_template/mustache.dart';
 import 'package:yaml/yaml.dart';
@@ -20,8 +23,8 @@ class RunCommand extends Command {
   static const kOptionTemplate = 'template';
   static const kOptionTemplateAbbr = 't';
 
-  RunCommand() {
-    _readConfig();
+  RunCommand({required YamlMap configYaml}) {
+    config = _readConfig(configYaml);
     _addOptions();
   }
 
@@ -40,9 +43,14 @@ class RunCommand extends Command {
     writeOutputs(outputs, inputs: inputs);
   }
 
-  void _readConfig() {
-    config = RunConfig(
-      templateDirectory: '$pwd/templates/',
+  RunConfig _readConfig(YamlMap configYaml) {
+    final String? templateDirectory = configYaml['templateDirectory'];
+
+    return RunConfig(
+      templateDirectory: templateDirectory.orThrow(MissingYamlField(
+        field: 'templateDirectory',
+        file: kConfigFileName,
+      )),
     );
   }
 
