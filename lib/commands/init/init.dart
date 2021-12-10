@@ -1,9 +1,14 @@
 import 'package:args/command_runner.dart';
 import 'package:autobot/autobot.dart';
+import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/string_util.dart';
 import 'package:dcli/dcli.dart';
 
 class InitCommand extends Command {
+  InitCommand() {
+    argParser.addFlag('global', abbr: 'g', defaultsTo: true);
+  }
+
   @override
   String get description => 'Adds a config file to the current working directory.';
 
@@ -18,6 +23,10 @@ class InitCommand extends Command {
 
   @override
   void run() {
-    '$pwd/$kConfigFileName.yaml'.write(kDefaultConfigFile);
+    if (argResults!['global'] == true) {
+      '$homeDir/.$kConfigFileName.yaml'.write(kDefaultConfigFile);
+    } else {
+      '$pwd/$kConfigFileName.yaml'.write(kDefaultConfigFile);
+    }
   }
 }
