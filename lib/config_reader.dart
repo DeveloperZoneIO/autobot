@@ -7,8 +7,10 @@ import 'package:yaml/yaml.dart';
 
 class ConfigReader {
   static YamlMap readConfig() {
-    final filePath = '$pwd/$kConfigFileName.yaml';
-    final templateContent = tryRead(filePath).orThrow(MissingConfigFile()).toParagraph();
+    final specificFilePath = '$pwd/$kConfigFileName.yaml';
+    final globalFilePath = '$homeDir/.$kConfigFileName.yaml';
+    final readProgress = tryRead(specificFilePath) ?? tryRead(globalFilePath);
+    final templateContent = readProgress.unpackOrThrow(MissingConfigFile()).toParagraph();
     return loadYaml(templateContent)['config'];
   }
 }

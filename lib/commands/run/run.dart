@@ -49,7 +49,7 @@ class RunCommand extends Command {
     final String? templateDirectory = configYaml['templateDirectory'];
 
     return RunConfig(
-      templateDirectory: templateDirectory.orThrow(MissingYamlField(
+      templateDirectory: templateDirectory.unpackOrThrow(MissingYamlField(
         field: 'templateDirectory',
         file: kConfigFileName,
       )),
