@@ -11,9 +11,8 @@ void main(List<String> args) async {
   await PackageInfo.load();
 
   try {
-    final configYaml = ConfigReader.readConfig();
     final runner = CommandRunner(PackageInfo.name, PackageInfo.description);
-    runner.addCommand(RunCommand(configYaml: configYaml));
+    runner.addCommand(RunCommand());
     runner.addCommand(InitCommand());
     runner.run(args);
   } catch (e) {
