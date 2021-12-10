@@ -10,6 +10,10 @@ class PackageInfo {
   static const kPubspecFileName = 'pubspec.yaml';
 
   static Future<void> load() async {
+    if (_pubspec != null) {
+      return;
+    }
+
     var directory = Directory.current;
     if (!directory.isAbsolute) directory = directory.absolute;
     if (!await directory.exists()) throw MissingPubspec();
@@ -28,6 +32,13 @@ class PackageInfo {
     _ensureInitialized();
     final String? value = _pubspec!['description'];
     if (value == null) throw MissingYamlField(field: 'description', file: 'pubspec');
+    return value;
+  }
+
+  static String get version {
+    _ensureInitialized();
+    final String? value = _pubspec!['version'];
+    if (value == null) throw MissingYamlField(field: 'version', file: 'pubspec');
     return value;
   }
 
