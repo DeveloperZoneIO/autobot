@@ -1,5 +1,5 @@
 extension NullUtil<T> on T? {
-  T orThrow(Exception throwable) {
+  T unpackOrThrow(Exception throwable) {
     if (this == null) throw throwable;
     return this!;
   }
