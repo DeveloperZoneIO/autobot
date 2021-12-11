@@ -1,2 +1,2 @@
-# autobot
-A command line tool for automating common developer task like generate files, manage environment, configure projects and CI.
+A sample command-line application with an entrypoint in `bin/`, library code
+in `lib/`, and example unit test in `test/`.
