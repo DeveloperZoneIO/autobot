@@ -7,7 +7,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the develop branch
   push:
     tags:
-    - 'Production-*'
+      - "Production-*"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -24,15 +24,19 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       # Uploads the autobot package to pub.dev
-      - name: Publish Dart/Flutter package
+      - name: Check autobot befor publishing
         uses: sakebook/actions-flutter-pub-publisher@v1.3.1
         with:
           credential: ${{ secrets.PUB_DEV_UPLOAD_CREDENTIALS_JSON }}
           flutter_package: false
           skip_test: true
           dry_run: true
+
+      - name: Publish autobot to pub.dev
+        uses: sakebook/actions-flutter-pub-publisher@v1.3.1
+        with:
+          credential: ${{ secrets.PUB_DEV_UPLOAD_CREDENTIALS_JSON }}
+          flutter_package: false
+          skip_test: true
+          dry_run: false
