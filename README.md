@@ -25,26 +25,39 @@
 $ dart pub global activate autobot  
 ```
 
-## Usage
+## Commands
 
-### Build in commands
+### **version**
 
-#### `version`
 Prints the autobot version.
+```bash
+$ autobot version
+```
+---
 
-#### `init`
-Initializes a `autobot_config.yaml` in the working directory.
+### **init**
+Initializes a `autobot_config.yaml` in the working directory. 
+```bash
+$ autobot init
+```
 Use `init -g` to initialize a global config file in your home directory.
+```bash
+$ autobot init -g
+```
+---
 
-#### `run`
-The run command has the `-t`(`template`) option.
-Use `run -t <template_file_name_without_yaml_extension>` to run a template.
+#### **run**
+The run command has the `-t`(`template`) option. Use `run -t <template_file_name_without_yaml_extension>` to run a template. 
+```bash
+$ autobot run -t myTemplateName
+```
+
 Make sure that you have either initialized a directory specific `autobot_config.yaml` or a global `.autobot_config.yaml` using the `init` command. The template file must be places inside the `templateDirectory` which can be definid in the `autobot_config.yaml` file.
 
-### Templates
+## Templates
 A autobot template is a [yaml file](https://yaml.org). It describes what autobot has to do.
 
-#### inputs
+### **inputs**
 Add a list of inputs to tell autobot that you need some information from the user.
 
 ```yaml
@@ -58,7 +71,7 @@ inputs:
 Running this template, autobot will print the two prompts to the user and assign the
 input values to the keys.
 
-#### outputs
+### **outputs**
 Add a list of outputs to tell autobot that you what to write some files.
 
 ```yaml
@@ -81,6 +94,6 @@ outputs:
 
 Autobot uses [mustache](http://mustache.github.io) to redner the output fields. This means that you can use the input keys to render dynamic values in `path`, `write` or `content` field of a output definiton.
 
-### autobot_config
+## autobot_config
 The `autobot_config.yaml` is necessary for some commands like `run`.
 Currently it support only the `templateDirectory` field. This allows for defining in which directory autobot should search for templates.
