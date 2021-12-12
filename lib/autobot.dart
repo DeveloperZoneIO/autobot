@@ -5,7 +5,7 @@ import 'package:autobot/commands/init/init.dart';
 import 'package:autobot/commands/run/run.dart';
 import 'package:autobot/commands/version/version.dart';
 import 'package:autobot/common/exceptions.dart';
-import 'package:autobot/package_info.dart';
+import 'package:autobot/pubspec.dart';
 import 'package:dcli/dcli.dart';
 
 const kConfigFileName = 'autobot_config';
@@ -21,8 +21,7 @@ void main(List<String> args) async {
 }
 
 void _runAutobot(List<String> args) async {
-  await PackageInfo.load();
-  final runner = CommandRunner(PackageInfo.name, PackageInfo.description);
+  final runner = CommandRunner(Pubspec.name, Pubspec.description);
   runner.addCommand(RunCommand());
   runner.addCommand(InitCommand());
   runner.addCommand(VersionCommand());

@@ -6,7 +6,7 @@ import 'package:dcli/dcli.dart';
 
 class InitCommand extends Command {
   InitCommand() {
-    argParser.addFlag('global', abbr: 'g', defaultsTo: true);
+    argParser.addFlag('global', abbr: 'g', defaultsTo: false);
   }
 
   @override
@@ -23,10 +23,10 @@ class InitCommand extends Command {
 
   @override
   void run() {
-    if (argResults!['global'] == true) {
-      '$homeDir/.$kConfigFileName.yaml'.write(kDefaultConfigFile);
-    } else {
-      '$pwd/$kConfigFileName.yaml'.write(kDefaultConfigFile);
-    }
+    final initGlobal = argResults!['global'] == true;
+    final configFilePath = initGlobal //
+        ? '$homeDir/.$kConfigFileName.yaml'
+        : '$pwd/$kConfigFileName.yaml';
+    configFilePath.write(kDefaultConfigFile);
   }
 }
