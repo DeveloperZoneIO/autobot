@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:autobot/package_info.dart';
+import 'package:autobot/pubspec.dart';
 import 'package:dcli/dcli.dart';
 
 class VersionCommand extends Command {
@@ -11,8 +11,7 @@ class VersionCommand extends Command {
 
   @override
   void run() async {
-    await PackageInfo.load();
-    final message = '${PackageInfo.name} ${PackageInfo.version}';
+    final message = '${Pubspec.name} ${Pubspec.version}';
     print(orange(message));
   }
 }
