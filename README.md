@@ -3,7 +3,7 @@
 </p> -->
 
 <p align="center">
-  <img  height="240" src="assets/aoutobot_logo_large.png">
+  <img  height="240" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large.png">
 </p>
 
 
