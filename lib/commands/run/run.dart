@@ -5,6 +5,7 @@ import 'package:autobot/autobot.dart';
 import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/common/null_utils.dart';
+import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/config_reader.dart';
 import 'package:dcli/dcli.dart';
 import 'package:mustache_template/mustache.dart';
@@ -78,7 +79,7 @@ extension FunctionalRunCommand on RunCommand {
       .writeOutputs();
 
   List<Input> readEnvironment() => EnvironmentReader(this).readEnvironment();
-  List<Input> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFile();
+  List<Input> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
 
   RunConfig readConfig() => RunConfigReader(this).readConfig();
 }

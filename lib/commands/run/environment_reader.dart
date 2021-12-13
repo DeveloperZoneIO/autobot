@@ -14,11 +14,22 @@ class EnvironmentReader {
     }).toList();
   }
 
-  List<Input> readEnvironmentFile() {
-    final dotEnvPath = 'autobot_env.yaml';
-    if (!exists(dotEnvPath)) return [];
+  List<Input> readEnvironmentFiles() {
+    final inputs = <Input>[];
 
-    final dotEnvContent = tryRead(dotEnvPath)?.toParagraph();
+    for (final filePath in owner.config.environmentFilePaths) {
+      inputs.addAll(
+        _readSingleEnvironmentFile(filePath),
+      );
+    }
+
+    return inputs;
+  }
+
+  List<Input> _readSingleEnvironmentFile(String path) {
+    if (!exists(path)) return [];
+
+    final dotEnvContent = tryRead(path)?.toParagraph();
     if (dotEnvContent == null || dotEnvContent.isEmpty) return [];
 
     final YamlMap envYaml = loadYaml(dotEnvContent);
