@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:autobot/autobot.dart';
+import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/config_reader.dart';
@@ -7,12 +10,14 @@ import 'package:dcli/dcli.dart';
 import 'package:mustache_template/mustache.dart';
 import 'package:yaml/yaml.dart';
 
+part 'run_config_reader.dart';
+part 'environment_reader.dart';
 part 'input_reader.dart';
 part 'output_reader.dart';
 part 'output_writer.dart';
+part 'template_reader.dart';
 part 'utils/render_mixin.dart';
 part 'utils/string_to_bool.dart';
-part 'template_reader.dart';
 
 part 'models/config.dart';
 part 'models/input.dart';
@@ -35,29 +40,23 @@ class RunCommand extends Command {
   @override
   String get name => 'run';
 
-  @override
-  void run() {
-    config = _readConfig();
-    final template = readTemplate();
-    final inputs = readInputs(template);
-    final outputs = readOutputs(template);
-    writeOutputs(outputs, inputs: inputs);
-  }
-
-  RunConfig _readConfig() {
-    final YamlMap configYaml = ConfigReader.readConfig();
-    final String? templateDirectory = configYaml['templateDirectory'];
-
-    return RunConfig(
-      templateDirectory: templateDirectory.unpackOrThrow(MissingYamlField(
-        field: 'templateDirectory',
-        file: kConfigFileName,
-      )),
-    );
-  }
-
   void _addOptions() {
     argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
+  }
+
+  @override
+  void run() {
+    config = readConfig();
+    final template = readTemplate();
+    final userInputs = readInputs(template);
+    final envFileInputs = readEnvironmentFile();
+    final environmentInputs = readEnvironment();
+    final outputs = readOutputs(template);
+
+    writeOutputs(
+      outputs,
+      inputs: environmentInputs + envFileInputs + userInputs,
+    );
   }
 }
 
@@ -77,4 +76,9 @@ extension FunctionalRunCommand on RunCommand {
       .collectVariables(inputs)
       .createWriteTasks(outputs)
       .writeOutputs();
+
+  List<Input> readEnvironment() => EnvironmentReader(this).readEnvironment();
+  List<Input> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFile();
+
+  RunConfig readConfig() => RunConfigReader(this).readConfig();
 }
