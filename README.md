@@ -1,9 +1,5 @@
-<!-- <p align="center">
-  <img width="240" height="240" src="assets/aoutobot_logo.png">
-</p> -->
-
 <p align="center">
-  <img  height="240" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large.png">
+  <img  width="460" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large.png">
 </p>
 
 
@@ -18,7 +14,7 @@
 
 ## Installation
 
-1. Install Dart following [this](https://dart.dev/tutorials/server/get-started#2-install-dart) instructions.
+1. Install Dart following [these](https://dart.dev/tutorials/server/get-started#2-install-dart) instructions.
 
 2. Activate autobot running the following command:
 ```bash
@@ -33,7 +29,6 @@ Prints the autobot version.
 ```bash
 $ autobot version
 ```
----
 
 ### **init**
 Initializes a `autobot_config.yaml` in the working directory. 
@@ -44,7 +39,6 @@ Use `init -g` to initialize a global config file in your home directory.
 ```bash
 $ autobot init -g
 ```
----
 
 #### **run**
 The run command has the `-t`(`template`) option. Use `run -t <template_file_name_without_yaml_extension>` to run a template. 
@@ -96,4 +90,32 @@ Autobot uses [mustache](http://mustache.github.io) to redner the output fields. 
 
 ## autobot_config
 The `autobot_config.yaml` is necessary for some commands like `run`.
-Currently it support only the `templateDirectory` field. This allows for defining in which directory autobot should search for templates.
+
+The following fields are supported:
+
+- `templateDirectory`: **String**
+  Allows to define a directory path where autobot should search for templates.
+- `environmentFilePaths`: **String array**
+  Allows to define yaml files from which autobot should read the key-value pairs and insert them into its environment.
+
+## Environment
+Autobot automatically reads the environment vraibales and uses them for rendering outputs. So you can expose any variables to the environment in order to give autobot access to them. Alternatively you can define some yaml files containing key-value pairs and set its path to `environmentFilePaths` of `autobot_config.yaml`. THen autobot will automatically read all those key-value pairs and insert the into its environment.
+
+**Example for a environment yaml file**
+```yaml
+apiKey: faij0394jfh3q490herfae
+secret: fj390;rea009hjhj09dj
+baseUrl: https://www.some_random_url.io
+```
+
+**Example for using values from environment yaml file**
+```yaml
+outputs:
+  - path: some/relative_path/build_config.dart
+    content: |
+      class BuildConfig {
+        static const String someApiKey = "{{apiKey}}";
+        static const String someSecret = "{{secret}}";
+        static const String someBaseUrl = "{{baseUrl}}";
+      }
+```
