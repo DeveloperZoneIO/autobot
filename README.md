@@ -1,5 +1,9 @@
 <p align="center">
-  <img  width="460" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large.png">
+  <img  width="460" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large.png#gh-light-mode-only">
+</p>
+
+<p align="center">
+  <img  width="460" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large_dark_mode.png#gh-dark-mode-only">
 </p>
 
 
@@ -47,6 +51,13 @@ $ autobot run -t myTemplateName
 ```
 
 Make sure that you have either initialized a directory specific `autobot_config.yaml` or a global `.autobot_config.yaml` using the `init` command. The template file must be places inside the `templateDirectory` which can be definid in the `autobot_config.yaml` file.
+
+#### Input values in CI
+Since a CI doesn't support interactive script execution, `autobot` offers the possibility to set input values via arguments using the `-i` or `--input` option:
+```bash
+$ autobot run -t myTemplateName -i userName=somename,userAge=23
+```
+This will skip the interactive command line prompt for all given values.
 
 ## Templates
 A autobot template is a [yaml file](https://yaml.org). It describes what autobot has to do.
