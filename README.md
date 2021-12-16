@@ -1,13 +1,8 @@
+<p align="center"><img  width="460" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large_dark_mode.png#gh-dark-mode-only"></p>
+
 <p align="center">
   <img  width="460" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large.png#gh-light-mode-only">
 </p>
-
-<!--AUTO_REMOVE-->
-<p align="center">
-  <img  width="460" src="https://github.com/DeveloperZoneIO/autobot/raw/develop/assets/aoutobot_logo_large_dark_mode.png#gh-dark-mode-only">
-</p>
-
-<!--AUTO_REMOVE-->
 
 <p align="center">
   <h1 align="center" >autobot</h1>
