@@ -21,9 +21,9 @@ void main(List<String> args) async {
 }
 
 void _runAutobot(List<String> args) async {
-  final runner = CommandRunner(Pubspec.name, Pubspec.description);
-  runner.addCommand(RunCommand());
-  runner.addCommand(InitCommand());
-  runner.addCommand(VersionCommand());
-  runner.run(args);
+  CommandRunner(Pubspec.name, Pubspec.description)
+    ..addCommand(RunCommand())
+    ..addCommand(InitCommand())
+    ..addCommand(VersionCommand())
+    ..run(args);
 }
