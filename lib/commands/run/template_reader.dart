@@ -4,7 +4,7 @@ class RunTemplateReader {
   RunTemplateReader(this.owner);
 
   final RunCommand owner;
-  String get _templateFileName => owner.argResults![RunCommand.kOptionTemplate];
+  String get _templateFileName => owner.argResults![owner.kOptionTemplate];
 
   TemplateDef readTemplate() {
     final filePath = '${owner.config.templateDirectory}$_templateFileName.yaml';

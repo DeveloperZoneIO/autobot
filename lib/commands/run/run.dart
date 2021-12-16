@@ -7,6 +7,7 @@ import 'package:autobot/commands/run/models/template.dart';
 import 'package:autobot/commands/run/models/template.mapper.g.dart';
 import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
+import 'package:autobot/common/map_util.dart';
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/config_reader.dart';
@@ -29,8 +30,10 @@ part 'models/input.dart';
 part 'models/output_task.dart';
 
 class RunCommand extends Command {
-  static const kOptionTemplate = 'template';
-  static const kOptionTemplateAbbr = 't';
+  final kOptionTemplate = 'template';
+  final kOptionTemplateAbbr = 't';
+  final kOptionInput = 'input';
+  final kOptionInputAbbr = 'i';
 
   RunCommand() {
     _addOptions();
@@ -45,12 +48,19 @@ class RunCommand extends Command {
 
   void _addOptions() {
     argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
+    argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
+  }
+
+  void _addInputOptions(List<InputDef> inputDefs) {
+    final inputKeys = inputDefs.map((inputDef) => inputDef.key);
+    inputKeys.forEach((key) => argParser.addOption(key));
   }
 
   @override
   void run() {
     config = readConfig();
     final template = readTemplate();
+    _addInputOptions(template.inputs);
     final userInputs = readInputs(template);
     final envFileInputs = readEnvironmentFile();
     final environmentInputs = readEnvironment();
@@ -62,7 +72,7 @@ class RunCommand extends Command {
 
 extension FunctionalRunCommand on RunCommand {
   TemplateDef readTemplate() => RunTemplateReader(this).readTemplate();
-  List<Input> readInputs(TemplateDef template) => InputReader(this).askForInputvalues(template);
+  List<Input> readInputs(TemplateDef template) => InputReader(this).collectInputsFromArgs().askForInputvalues(template);
   List<Input> readEnvironment() => EnvironmentReader(this).readEnvironment();
   List<Input> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
   RunConfig readConfig() => RunConfigReader(this).readConfig();

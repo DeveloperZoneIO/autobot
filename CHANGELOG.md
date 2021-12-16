@@ -1,3 +1,6 @@
+## 0.3.0
+- Allow to set input value via arguments
+
 ## 0.2.0
 - Allow `writeMethod` field for template outputs
 
