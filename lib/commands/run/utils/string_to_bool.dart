@@ -1,6 +1,6 @@
 part of '../run.dart';
 
 extension StringBoolean on String {
-  bool isTrue() => toLowerCase() == 'true' || toLowerCase() == 'yes' || toLowerCase() == 'y';
-  bool isFalse() => !isTrue();
+  bool get meansYes => toLowerCase().trim() == 'true' || toLowerCase().trim() == 'yes' || toLowerCase().trim() == 'y';
+  bool get meansNo => !meansYes;
 }
