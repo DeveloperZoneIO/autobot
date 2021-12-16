@@ -23,13 +23,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
-      - name: Print dir
-        run: ls -a
-      
-      - name: Remove dark-mode image
+
+      - name: Try remove dark-mode image NO1
         run: |
           sed -i '/<!--AUTO_REMOVE-->*.<!--AUTO_REMOVE-->/d' README.md
+
+      - name: Try remove dark-mode image NO2
+        run: |
+          sed -i '/<!--AUTO_REMOVE-->(.*?)<!--AUTO_REMOVE-->/d' README.md
 
       # Uploads the autobot package to pub.dev
       - name: Check autobot befor publishing
