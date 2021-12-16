@@ -40,7 +40,7 @@ Use `init -g` to initialize a global config file in your home directory.
 $ autobot init -g
 ```
 
-#### **run**
+### **run**
 The run command has the `-t`(`template`) option. Use `run -t <template_file_name_without_yaml_extension>` to run a template. 
 ```bash
 $ autobot run -t myTemplateName
@@ -86,7 +86,15 @@ outputs:
       is it true that you are {{ userAge }} years old?
 ```
 
-Autobot uses [mustache](http://mustache.github.io) to redner the output fields. This means that you can use the input keys to render dynamic values in `path`, `write` or `content` field of a output definiton.
+Autobot uses [mustache](http://mustache.github.io) to redner the output fields. This means that you can use the input keys to render dynamic values in `path`, `write` or `content`, `writeMethod` field of a output definiton.
+
+#### Fields
+| Name          | Description                                                                                         | Value                                                   | Example                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `path`        | The output path of the file which will contain the `content`                                        | any valid path                                          | `path: some/path/relative_to/working_directory/filename.txt`                               |
+| `write`       | Whether to write the output or not                                                                  | `true`, `yes`, `y` or `false`, `no`, `n`                | `write: yes`                                                                               |
+| `writeMethod` | The method which should be used for creating the file                                               | `keepExistingFile`, `replaceExistingFile`, `extendFile` | `writeMethod: extendFile`                                                                  |
+| `extendAt`    | The position where the file should be extended. This field works only for `writeMethod: extendFile` | `top`, `bottom` or any reqular expression.              | `extendAt: top` or `extendAt: top` or `extendAt: some text that matches a part of content` |
 
 ## autobot_config
 The `autobot_config.yaml` is necessary for some commands like `run`.
@@ -99,17 +107,28 @@ The following fields are supported:
   Allows to define yaml files from which autobot should read the key-value pairs and insert them into its environment.
 
 ## Environment
-Autobot automatically reads the environment vraibales and uses them for rendering outputs. So you can expose any variables to the environment in order to give autobot access to them. Alternatively you can define some yaml files containing key-value pairs and set its path to `environmentFilePaths` of `autobot_config.yaml`. THen autobot will automatically read all those key-value pairs and insert the into its environment.
+Autobot automatically reads all variables from the environment and uses them for rendering outputs. So you can expose any variables to the environment in order to give autobot access to them. Alternatively you can define some yaml files containing key-value pairs and set the path to `environmentFilePaths` of `autobot_config.yaml`. Autobot will automatically read all the key-value pairs of the file and insert them into its environment.
 
-**Example for a environment yaml file**
+**environment.yaml**
 ```yaml
 apiKey: faij0394jfh3q490herfae
 secret: fj390;rea009hjhj09dj
 baseUrl: https://www.some_random_url.io
 ```
 
-**Example for using values from environment yaml file**
+**autobot_config.yaml**
 ```yaml
+config:
+  templateDirectory: some/path/to/template_directory/
+  environmentFilePaths: 
+    - /some/path/to/environment.yaml
+```
+
+**Use values from environment inside template**
+```yaml
+inputs:
+  ...
+
 outputs:
   - path: some/relative_path/build_config.dart
     content: |
