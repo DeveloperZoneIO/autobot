@@ -109,15 +109,15 @@ class OutputDefMapper extends BaseMapper<OutputDef> {
 
   @override Function get decoder => decode;
   OutputDef decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  OutputDef fromMap(Map<String, dynamic> map) => OutputDef(content: map.get('content'), path: map.get('path'), write: map.getOpt('write') ?? 'yes', writeMethod: map.getOpt('writeMethod'));
+  OutputDef fromMap(Map<String, dynamic> map) => OutputDef(content: map.get('content'), path: map.get('path'), write: map.getOpt('write') ?? 'yes', writeMethod: map.getOpt('writeMethod'), extendAt: map.getOpt('extendAt') ?? 'bottom');
 
   @override Function get encoder => (OutputDef v) => encode(v);
   dynamic encode(OutputDef v) => toMap(v);
-  Map<String, dynamic> toMap(OutputDef o) => {'content': Mapper.toValue(o.content), 'path': Mapper.toValue(o.path), 'write': Mapper.toValue(o.write), if (Mapper.toValue(o.writeMethod) != null) 'writeMethod': Mapper.toValue(o.writeMethod)};
+  Map<String, dynamic> toMap(OutputDef o) => {'content': Mapper.toValue(o.content), 'path': Mapper.toValue(o.path), 'write': Mapper.toValue(o.write), if (Mapper.toValue(o.writeMethod) != null) 'writeMethod': Mapper.toValue(o.writeMethod), 'extendAt': Mapper.toValue(o.extendAt)};
 
-  @override String? stringify(OutputDef self) => 'OutputDef(content: ${Mapper.asString(self.content)}, path: ${Mapper.asString(self.path)}, write: ${Mapper.asString(self.write)}, writeMethod: ${Mapper.asString(self.writeMethod)})';
-  @override int? hash(OutputDef self) => Mapper.hash(self.content) ^ Mapper.hash(self.path) ^ Mapper.hash(self.write) ^ Mapper.hash(self.writeMethod);
-  @override bool? equals(OutputDef self, OutputDef other) => Mapper.isEqual(self.content, other.content) && Mapper.isEqual(self.path, other.path) && Mapper.isEqual(self.write, other.write) && Mapper.isEqual(self.writeMethod, other.writeMethod);
+  @override String? stringify(OutputDef self) => 'OutputDef(content: ${Mapper.asString(self.content)}, path: ${Mapper.asString(self.path)}, write: ${Mapper.asString(self.write)}, writeMethod: ${Mapper.asString(self.writeMethod)}, extendAt: ${Mapper.asString(self.extendAt)})';
+  @override int? hash(OutputDef self) => Mapper.hash(self.content) ^ Mapper.hash(self.path) ^ Mapper.hash(self.write) ^ Mapper.hash(self.writeMethod) ^ Mapper.hash(self.extendAt);
+  @override bool? equals(OutputDef self, OutputDef other) => Mapper.isEqual(self.content, other.content) && Mapper.isEqual(self.path, other.path) && Mapper.isEqual(self.write, other.write) && Mapper.isEqual(self.writeMethod, other.writeMethod) && Mapper.isEqual(self.extendAt, other.extendAt);
 
   @override Function get typeFactory => (f) => f<OutputDef>();
 }
@@ -130,13 +130,13 @@ extension OutputDefMapperExtension on OutputDef {
 
 abstract class OutputDefCopyWith<$R> {
   factory OutputDefCopyWith(OutputDef value, Then<OutputDef, $R> then) = _OutputDefCopyWithImpl<$R>;
-  $R call({String? content, String? path, String? write, String? writeMethod});
+  $R call({String? content, String? path, String? write, String? writeMethod, String? extendAt});
 }
 
 class _OutputDefCopyWithImpl<$R> extends BaseCopyWith<OutputDef, $R> implements OutputDefCopyWith<$R> {
   _OutputDefCopyWithImpl(OutputDef value, Then<OutputDef, $R> then) : super(value, then);
 
-  @override $R call({String? content, String? path, String? write, Object? writeMethod = _none}) => _then(OutputDef(content: content ?? _value.content, path: path ?? _value.path, write: write ?? _value.write, writeMethod: or(writeMethod, _value.writeMethod)));
+  @override $R call({String? content, String? path, String? write, Object? writeMethod = _none, String? extendAt}) => _then(OutputDef(content: content ?? _value.content, path: path ?? _value.path, write: write ?? _value.write, writeMethod: or(writeMethod, _value.writeMethod), extendAt: extendAt ?? _value.extendAt));
 }
 
 

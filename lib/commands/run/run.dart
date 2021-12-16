@@ -26,7 +26,6 @@ part 'output_task_builder.dart';
 
 part 'models/config.dart';
 part 'models/input.dart';
-part 'models/template_input_definition.dart';
 part 'models/output_task.dart';
 
 class RunCommand extends Command {

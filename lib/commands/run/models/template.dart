@@ -20,10 +20,12 @@ class OutputDef with Mappable {
     required this.path,
     this.write = 'yes',
     this.writeMethod,
+    this.extendAt = 'bottom',
   });
 
   final String content;
   final String path;
   final String write;
   final String? writeMethod;
+  final String extendAt;
 }

@@ -12,6 +12,9 @@ class KeepExistingFile extends WriteMethod {
 
 class ExtendFile extends WriteMethod {
   static const String key = 'extendFile';
+
+  ExtendFile({required this.extendAt});
+  String extendAt;
 }
 
 class OutputTask {

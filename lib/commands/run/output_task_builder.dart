@@ -20,17 +20,19 @@ class OutputTaskBuilder with TextRenderable {
           return OutputTask(
             fileContent: render(outputDef.content),
             outputPath: render(outputDef.path),
-            writeMethod: _getWriteMethod(outputDef.writeMethod),
+            writeMethod: _getWriteMethod(outputDef),
           );
         })
         .whereType<OutputTask>()
         .toList();
   }
 
-  WriteMethod _getWriteMethod(String? writeMethodKey) {
-    switch (writeMethodKey) {
+  WriteMethod _getWriteMethod(OutputDef outputDef) {
+    final writeMethod = outputDef.writeMethod;
+
+    switch (writeMethod) {
       case ExtendFile.key:
-        return ExtendFile();
+        return ExtendFile(extendAt: render(outputDef.extendAt));
 
       case KeepExistingFile.key:
         return KeepExistingFile();

@@ -12,20 +12,22 @@ class OutputWriter with TextRenderable {
         createDir(outputDir, recursive: true);
       }
 
+      final writeMethod = task.writeMethod;
+
       // Keep existing file
-      if (task.writeMethod is KeepExistingFile) {
+      if (writeMethod is KeepExistingFile) {
         if (!exists(task.outputPath)) task.outputPath.write(task.fileContent);
       }
 
       // Replace existing file
-      else if (task.writeMethod is ReplaceExistingFile) {
+      else if (writeMethod is ReplaceExistingFile) {
         task.outputPath.write(task.fileContent);
       }
 
       // Replace file
-      else if (task.writeMethod is ExtendFile) {
+      else if (writeMethod is ExtendFile) {
         if (exists(task.outputPath)) {
-          task.outputPath.append(task.fileContent);
+          _extendFile(task, writeMethod.extendAt);
         } else {
           task.outputPath.write(task.fileContent);
         }
@@ -33,6 +35,34 @@ class OutputWriter with TextRenderable {
     }
 
     return this;
+  }
+
+  void _extendFile(OutputTask task, String extendAt) {
+    // Bottom
+    if (extendAt == 'bottom') {
+      task.outputPath.append(task.fileContent);
+    }
+
+    // Top
+    else if (extendAt == 'top') {
+      final existingContent = read(task.outputPath).toParagraph();
+      task.outputPath.write(task.fileContent);
+      task.outputPath.append(existingContent);
+    }
+
+    // Regex
+    else {
+      final existingContent = read(task.outputPath).toParagraph();
+      final matches = extendAt.allMatches(existingContent);
+      if (matches.isEmpty) {
+        return;
+      }
+
+      final newContentChars = task.fileContent.split('');
+      final extendedChars = existingContent.split('');
+      extendedChars.insertAll(matches.first.end, newContentChars);
+      task.outputPath.write(extendedChars.join(''));
+    }
   }
 
   String _getDirectory(String path) {
