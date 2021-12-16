@@ -6,9 +6,11 @@ class RunTemplateReader {
   final RunCommand owner;
   String get _templateFileName => owner.argResults![RunCommand.kOptionTemplate];
 
-  YamlMap readTemplate() {
+  TemplateDef readTemplate() {
     final filePath = '${owner.config.templateDirectory}$_templateFileName.yaml';
     final templateContent = read(filePath).toParagraph();
-    return loadYaml(templateContent);
+    final templateYaml = loadYaml(templateContent);
+    final templateJson = jsonEncode(templateYaml);
+    return Mapper.fromJson(templateJson);
   }
 }

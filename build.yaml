@@ -1,0 +1,14 @@
+targets:
+  $default:
+    builders:
+      dart_mappable:
+        generate_for:
+          - lib/commands/run/models/template.dart
+
+        options:
+          # exclude: []
+          include: [TemplateDef, InputDef, OutputDef]
+          caseStyle: camelCase
+          enumCaseStyle: camelCase
+          ignoreNull: true
+          discriminatorKey: isOfType
