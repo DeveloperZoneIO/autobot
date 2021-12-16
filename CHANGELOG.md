@@ -1,3 +1,6 @@
+## 0.2.0
+- Allow `writeMethod` field for template outputs
+
 ## 0.1.0
 - Include environment variables for rendering outputs
 - Read yaml file and expose its variables to environment
