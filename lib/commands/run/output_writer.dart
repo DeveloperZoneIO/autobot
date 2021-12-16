@@ -4,38 +4,32 @@ class OutputWriter with TextRenderable {
   OutputWriter(this.owner);
 
   final RunCommand owner;
-  final _writeTasks = <WriteTask>[];
 
-  OutputWriter collectVariables(List<Input> inputs) {
-    for (final input in inputs) {
-      renderVariables[input.key] = input.value;
-    }
-    return this;
-  }
-
-  OutputWriter createWriteTasks(List<TemplateOutputDefinition> outputs) {
-    for (final output in outputs) {
-      if (render(output.canWrite).isFalse()) {
-        continue;
-      }
-
-      _writeTasks.add(WriteTask(
-        fileContent: render(output.content),
-        outputPath: render(output.path),
-      ));
-    }
-
-    return this;
-  }
-
-  OutputWriter writeOutputs() {
-    for (var task in _writeTasks) {
+  OutputWriter writeOutputs(List<OutputTask> tasks) {
+    for (var task in tasks) {
       final outputDir = _getDirectory(task.outputPath);
       if (outputDir.isNotEmpty && !exists(outputDir)) {
         createDir(outputDir, recursive: true);
       }
 
-      task.outputPath.write(task.fileContent);
+      // Keep existing file
+      if (task.writeMethod is KeepExistingFile) {
+        if (!exists(task.outputPath)) task.outputPath.write(task.fileContent);
+      }
+
+      // Replace existing file
+      else if (task.writeMethod is ReplaceExistingFile) {
+        task.outputPath.write(task.fileContent);
+      }
+
+      // Replace file
+      else if (task.writeMethod is ExtendFile) {
+        if (exists(task.outputPath)) {
+          task.outputPath.append(task.fileContent);
+        } else {
+          task.outputPath.write(task.fileContent);
+        }
+      }
     }
 
     return this;
