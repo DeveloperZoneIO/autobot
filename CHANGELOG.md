@@ -1,4 +1,4 @@
-## 0.3.0
+## 0.3.0+1
 - Allow to set input value via arguments
 
 ## 0.2.0
