@@ -1,6 +1,6 @@
 name: autobot
 description: A command line tool for automating common developer tasks like generate files, manage environment, configure projects and setup CI.
-version: 0.3.0+2
+version: 0.4.0
 repository: https://github.com/DeveloperZoneIO/autobot
 
 environment:
@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   args: ^2.3.0
+  cli_script: ^0.2.3+1
   dart_mappable: ^0.8.7
   dcli: ^1.14.1
   mustache_template: ^2.0.0

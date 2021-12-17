@@ -1,9 +1,9 @@
+## 0.4.0
+- Allow javascript section in template
 ## 0.3.0+2
 - Allow to set input value via arguments
-
 ## 0.2.0
 - Allow `writeMethod` field for template outputs
-
 ## 0.1.0
 - Include environment variables for rendering outputs
 - Read yaml file and expose its variables to environment
