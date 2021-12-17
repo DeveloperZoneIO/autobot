@@ -11,8 +11,9 @@ import 'package:autobot/common/map_util.dart';
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/config_reader.dart';
+import 'package:cli_script/cli_script.dart' hide read;
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:dcli/dcli.dart';
+import 'package:dcli/dcli.dart' hide run;
 import 'package:mustache_template/mustache.dart';
 import 'package:yaml/yaml.dart';
 
@@ -24,6 +25,7 @@ part 'template_reader.dart';
 part 'utils/render_mixin.dart';
 part 'utils/string_to_bool.dart';
 part 'output_task_builder.dart';
+part 'script_runner.dart';
 
 part 'models/config.dart';
 part 'models/input.dart';
@@ -51,21 +53,16 @@ class RunCommand extends Command {
     argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
   }
 
-  void _addInputOptions(List<InputDef> inputDefs) {
-    final inputKeys = inputDefs.map((inputDef) => inputDef.key);
-    inputKeys.forEach((key) => argParser.addOption(key));
-  }
-
   @override
-  void run() {
+  void run() async {
     config = readConfig();
     final template = readTemplate();
-    _addInputOptions(template.inputs);
     final userInputs = readInputs(template);
     final envFileInputs = readEnvironmentFile();
     final environmentInputs = readEnvironment();
     final inputs = environmentInputs + envFileInputs + userInputs;
-    final tasks = buildOuputTasks(template.outputs, inputs: inputs);
+    final processedInputs = await runScripts(template.scripts, inputs: inputs);
+    final tasks = buildOuputTasks(template.outputs, inputs: processedInputs);
     writeOutputs(tasks);
   }
 }
@@ -81,4 +78,6 @@ extension FunctionalRunCommand on RunCommand {
       .buildTasks(outputs);
 
   void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
+  Future<List<Input>> runScripts(List<ScriptDef> scriptDefs, {required List<Input> inputs}) =>
+      ScriptRunner(this).runScripts(scriptDefs, inputs);
 }
