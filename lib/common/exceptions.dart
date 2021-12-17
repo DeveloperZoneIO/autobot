@@ -39,3 +39,11 @@ class MissingYamlField implements Exception {
   @override
   String toString() => '$file.yaml file is missing the "$field" property.';
 }
+
+class MissingNodeInstallation implements PrintableException {
+  @override
+  String toString() => 'node is not installed! Please install node. This is require for running custom javascript.';
+
+  @override
+  void tellUser() => print(red(toString()));
+}
