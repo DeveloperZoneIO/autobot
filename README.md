@@ -73,15 +73,41 @@ inputs:
 Running this template, autobot will print the two prompts to the user and assign the
 input values to the keys.
 
+### **scripts**
+Add a list of inputs to tell autobot that you need some information from the user.
+
+```yaml
+inputs:
+  ...
+
+scripts:
+  - js: |
+      // Read the userName value from autobot
+      var userName = autobot.inputs.userName
+
+      // Check if userName is blank. If yes, set a fallback value.
+      if (!userName || userName.length === 0) {
+        autobot.inputs.userName = 'Some fallback name'
+      }
+
+      // Define a new variable
+      var autobot.inputs.varFormJs = 'Hello!'
+```
+
+Running this template, autobot will execute the javascript defined in the `js` field. `autobot.inputs`  is a javascript object where autobot puts all inputs variables in, so that they can be user in javascript and also reads all inputs
+from, so that autobot can use them for the outputs.
+
+**NOTE**: `node` must be installed in your comman line tool! Otherwise aotobot will fail executing the script section.
+
 ### **outputs**
 Add a list of outputs to tell autobot that you what to write some files.
 
 ```yaml
 inputs:
-  - key: userName
-    prompt: What is your name?
-  - key: userAge
-    prompt: How old are you?
+  ...
+
+scripts:
+  ...
 
 outputs:
   - path: some/relative/path.txt
@@ -92,6 +118,7 @@ outputs:
     content: |
       Hi {{ userName }},
       is it true that you are {{ userAge }} years old?
+      This was defined in javascript: {{varFormJs}}
 ```
 
 Autobot uses [mustache](http://mustache.github.io) to redner the output fields. This means that you can use the input keys to render dynamic values in `path`, `write` or `content`, `writeMethod` field of a output definiton.
