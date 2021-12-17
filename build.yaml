@@ -7,7 +7,7 @@ targets:
 
         options:
           # exclude: []
-          include: [TemplateDef, InputDef, OutputDef]
+          include: [TemplateDef, InputDef, OutputDef, ScriptDef]
           caseStyle: camelCase
           enumCaseStyle: camelCase
           ignoreNull: true

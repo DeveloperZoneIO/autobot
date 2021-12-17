@@ -23,6 +23,7 @@ var _mappers = <String, BaseMapper>{
   _typeOf<TemplateDef>(): TemplateDefMapper._(),
   _typeOf<InputDef>(): InputDefMapper._(),
   _typeOf<OutputDef>(): OutputDefMapper._(),
+  _typeOf<ScriptDef>(): ScriptDefMapper._(),
   // enum mappers
   // custom mappers
 };
@@ -35,15 +36,15 @@ class TemplateDefMapper extends BaseMapper<TemplateDef> {
 
   @override Function get decoder => decode;
   TemplateDef decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  TemplateDef fromMap(Map<String, dynamic> map) => TemplateDef(inputs: map.getList('inputs'), outputs: map.getList('outputs'));
+  TemplateDef fromMap(Map<String, dynamic> map) => TemplateDef(inputs: map.getListOpt('inputs') ?? const [], scripts: map.getListOpt('scripts') ?? const [], outputs: map.getListOpt('outputs') ?? const []);
 
   @override Function get encoder => (TemplateDef v) => encode(v);
   dynamic encode(TemplateDef v) => toMap(v);
-  Map<String, dynamic> toMap(TemplateDef t) => {'inputs': Mapper.toValue(t.inputs), 'outputs': Mapper.toValue(t.outputs)};
+  Map<String, dynamic> toMap(TemplateDef t) => {'inputs': Mapper.toValue(t.inputs), 'scripts': Mapper.toValue(t.scripts), 'outputs': Mapper.toValue(t.outputs)};
 
-  @override String? stringify(TemplateDef self) => 'TemplateDef(inputs: ${Mapper.asString(self.inputs)}, outputs: ${Mapper.asString(self.outputs)})';
-  @override int? hash(TemplateDef self) => Mapper.hash(self.inputs) ^ Mapper.hash(self.outputs);
-  @override bool? equals(TemplateDef self, TemplateDef other) => Mapper.isEqual(self.inputs, other.inputs) && Mapper.isEqual(self.outputs, other.outputs);
+  @override String? stringify(TemplateDef self) => 'TemplateDef(inputs: ${Mapper.asString(self.inputs)}, scripts: ${Mapper.asString(self.scripts)}, outputs: ${Mapper.asString(self.outputs)})';
+  @override int? hash(TemplateDef self) => Mapper.hash(self.inputs) ^ Mapper.hash(self.scripts) ^ Mapper.hash(self.outputs);
+  @override bool? equals(TemplateDef self, TemplateDef other) => Mapper.isEqual(self.inputs, other.inputs) && Mapper.isEqual(self.scripts, other.scripts) && Mapper.isEqual(self.outputs, other.outputs);
 
   @override Function get typeFactory => (f) => f<TemplateDef>();
 }
@@ -57,16 +58,18 @@ extension TemplateDefMapperExtension on TemplateDef {
 abstract class TemplateDefCopyWith<$R> {
   factory TemplateDefCopyWith(TemplateDef value, Then<TemplateDef, $R> then) = _TemplateDefCopyWithImpl<$R>;
   ListCopyWith<$R, InputDef, InputDefCopyWith<$R>> get inputs;
+  ListCopyWith<$R, ScriptDef, ScriptDefCopyWith<$R>> get scripts;
   ListCopyWith<$R, OutputDef, OutputDefCopyWith<$R>> get outputs;
-  $R call({List<InputDef>? inputs, List<OutputDef>? outputs});
+  $R call({List<InputDef>? inputs, List<ScriptDef>? scripts, List<OutputDef>? outputs});
 }
 
 class _TemplateDefCopyWithImpl<$R> extends BaseCopyWith<TemplateDef, $R> implements TemplateDefCopyWith<$R> {
   _TemplateDefCopyWithImpl(TemplateDef value, Then<TemplateDef, $R> then) : super(value, then);
 
   @override ListCopyWith<$R, InputDef, InputDefCopyWith<$R>> get inputs => ListCopyWith(_value.inputs, (v, t) => InputDefCopyWith(v, t), (v) => call(inputs: v));
+  @override ListCopyWith<$R, ScriptDef, ScriptDefCopyWith<$R>> get scripts => ListCopyWith(_value.scripts, (v, t) => ScriptDefCopyWith(v, t), (v) => call(scripts: v));
   @override ListCopyWith<$R, OutputDef, OutputDefCopyWith<$R>> get outputs => ListCopyWith(_value.outputs, (v, t) => OutputDefCopyWith(v, t), (v) => call(outputs: v));
-  @override $R call({List<InputDef>? inputs, List<OutputDef>? outputs}) => _then(TemplateDef(inputs: inputs ?? _value.inputs, outputs: outputs ?? _value.outputs));
+  @override $R call({List<InputDef>? inputs, List<ScriptDef>? scripts, List<OutputDef>? outputs}) => _then(TemplateDef(inputs: inputs ?? _value.inputs, scripts: scripts ?? _value.scripts, outputs: outputs ?? _value.outputs));
 }
 
 class InputDefMapper extends BaseMapper<InputDef> {
@@ -137,6 +140,41 @@ class _OutputDefCopyWithImpl<$R> extends BaseCopyWith<OutputDef, $R> implements 
   _OutputDefCopyWithImpl(OutputDef value, Then<OutputDef, $R> then) : super(value, then);
 
   @override $R call({String? content, String? path, String? write, Object? writeMethod = _none, String? extendAt}) => _then(OutputDef(content: content ?? _value.content, path: path ?? _value.path, write: write ?? _value.write, writeMethod: or(writeMethod, _value.writeMethod), extendAt: extendAt ?? _value.extendAt));
+}
+
+class ScriptDefMapper extends BaseMapper<ScriptDef> {
+  ScriptDefMapper._();
+
+  @override Function get decoder => decode;
+  ScriptDef decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
+  ScriptDef fromMap(Map<String, dynamic> map) => ScriptDef(js: map.getOpt('js'));
+
+  @override Function get encoder => (ScriptDef v) => encode(v);
+  dynamic encode(ScriptDef v) => toMap(v);
+  Map<String, dynamic> toMap(ScriptDef s) => {if (Mapper.toValue(s.js) != null) 'js': Mapper.toValue(s.js)};
+
+  @override String? stringify(ScriptDef self) => 'ScriptDef(js: ${Mapper.asString(self.js)})';
+  @override int? hash(ScriptDef self) => Mapper.hash(self.js);
+  @override bool? equals(ScriptDef self, ScriptDef other) => Mapper.isEqual(self.js, other.js);
+
+  @override Function get typeFactory => (f) => f<ScriptDef>();
+}
+
+extension ScriptDefMapperExtension on ScriptDef {
+  String toJson() => Mapper.toJson(this);
+  Map<String, dynamic> toMap() => Mapper.toMap(this);
+  ScriptDefCopyWith<ScriptDef> get copyWith => ScriptDefCopyWith(this, _$identity);
+}
+
+abstract class ScriptDefCopyWith<$R> {
+  factory ScriptDefCopyWith(ScriptDef value, Then<ScriptDef, $R> then) = _ScriptDefCopyWithImpl<$R>;
+  $R call({String? js});
+}
+
+class _ScriptDefCopyWithImpl<$R> extends BaseCopyWith<ScriptDef, $R> implements ScriptDefCopyWith<$R> {
+  _ScriptDefCopyWithImpl(ScriptDef value, Then<ScriptDef, $R> then) : super(value, then);
+
+  @override $R call({Object? js = _none}) => _then(ScriptDef(js: or(js, _value.js)));
 }
 
 
