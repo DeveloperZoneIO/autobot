@@ -1,9 +1,14 @@
 import 'template.mapper.g.dart';
 
 class TemplateDef with Mappable {
-  TemplateDef({required this.inputs, required this.outputs});
+  TemplateDef({
+    this.inputs = const [],
+    this.scripts = const [],
+    this.outputs = const [],
+  });
 
   final List<InputDef> inputs;
+  final List<ScriptDef> scripts;
   final List<OutputDef> outputs;
 }
 
@@ -28,4 +33,10 @@ class OutputDef with Mappable {
   final String write;
   final String? writeMethod;
   final String extendAt;
+}
+
+class ScriptDef with Mappable {
+  ScriptDef({this.js});
+
+  final String? js;
 }
