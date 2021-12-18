@@ -5,43 +5,28 @@ class EnvironmentReader {
 
   final RunCommand owner;
 
-  List<Input> readEnvironment() {
-    return Platform.environment.entries.map((envPair) {
-      return Input(
-        key: envPair.key,
-        value: envPair.value,
-      );
-    }).toList();
-  }
+  Map<String, String> readEnvironment() => Platform.environment;
 
-  List<Input> readEnvironmentFiles() {
-    final inputs = <Input>[];
+  Map<String, dynamic> readEnvironmentFiles() {
+    final variables = <String, dynamic>{};
 
     for (final filePath in owner.config.environmentFilePaths) {
-      inputs.addAll(
+      variables.addAll(
         _readSingleEnvironmentFile(filePath),
       );
     }
 
-    return inputs;
+    return variables;
   }
 
-  List<Input> _readSingleEnvironmentFile(String path) {
-    if (!exists(path)) return [];
+  Map<String, dynamic> _readSingleEnvironmentFile(String path) {
+    if (!exists(path)) return {};
 
-    final dotEnvContent = tryRead(path)?.toParagraph();
-    if (dotEnvContent == null || dotEnvContent.isEmpty) return [];
+    final fileContent = tryRead(path)?.toParagraph();
+    if (fileContent == null || fileContent.isEmpty) return {};
 
-    final YamlMap envYaml = loadYaml(dotEnvContent);
-    final inputs = <Input>[];
-
-    for (final key in envYaml.keys) {
-      if (key is! String) continue;
-      final value = envYaml[key];
-      if (value is! String) continue;
-      inputs.add(Input(key: key, value: value));
-    }
-
-    return inputs;
+    final YamlMap envYaml = loadYaml(fileContent);
+    final envJson = jsonEncode(envYaml);
+    return jsonDecode(envJson);
   }
 }

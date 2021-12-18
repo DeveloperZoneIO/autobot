@@ -5,10 +5,8 @@ class OutputTaskBuilder with TextRenderable {
 
   final RunCommand owner;
 
-  OutputTaskBuilder collectInputs(List<Input> inputs) {
-    for (final input in inputs) {
-      renderVariables[input.key] = input.value;
-    }
+  OutputTaskBuilder collectVariables(Map<String, dynamic> variables) {
+    renderVariables.addAll(variables);
     return this;
   }
 

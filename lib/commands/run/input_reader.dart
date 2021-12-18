@@ -24,14 +24,13 @@ class InputReader {
     return this;
   }
 
-  List<Input> askForInputvalues(TemplateDef template) {
-    return template.inputs.map((inputDef) {
-      final argumentInput = _argumentInputs.tryGet(inputDef.key);
-
-      return Input(
-        key: inputDef.key,
-        value: argumentInput ?? ask(yellow(inputDef.prompt)),
-      );
-    }).toList();
+  Map<Key, Value> askForInputvalues(TemplateDef template) {
+    return template.inputs.toMap(
+      keyProvider: (inputDef) => inputDef.key,
+      valueProvider: (inputDef) {
+        final argumentInput = _argumentInputs.tryGet(inputDef.key);
+        return argumentInput ?? ask(yellow(inputDef.prompt));
+      },
+    );
   }
 }
