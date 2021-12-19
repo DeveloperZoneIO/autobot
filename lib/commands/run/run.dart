@@ -25,7 +25,10 @@ part 'template_reader.dart';
 part 'utils/render_mixin.dart';
 part 'utils/string_to_bool.dart';
 part 'output_task_builder.dart';
-part 'script_runner.dart';
+part 'script_service.dart';
+part 'base_scrip_runner.dart';
+part 'js_runner.dart';
+part 'shell_runner.dart';
 
 part 'models/config.dart';
 part 'models/input.dart';
@@ -85,5 +88,5 @@ extension FunctionalRunCommand on RunCommand {
 
   void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
   Future<Map<String, dynamic>> runScripts(List<ScriptDef> scriptDefs, {required Map<String, dynamic> variables}) =>
-      ScriptRunner(this).runScripts(scriptDefs, variables);
+      ScriptService(this).runScripts(scriptDefs, variables);
 }

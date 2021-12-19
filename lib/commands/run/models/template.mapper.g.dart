@@ -147,15 +147,15 @@ class ScriptDefMapper extends BaseMapper<ScriptDef> {
 
   @override Function get decoder => decode;
   ScriptDef decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  ScriptDef fromMap(Map<String, dynamic> map) => ScriptDef(js: map.getOpt('js'));
+  ScriptDef fromMap(Map<String, dynamic> map) => ScriptDef(js: map.getOpt('js'), shell: map.getOpt('shell'));
 
   @override Function get encoder => (ScriptDef v) => encode(v);
   dynamic encode(ScriptDef v) => toMap(v);
-  Map<String, dynamic> toMap(ScriptDef s) => {if (Mapper.toValue(s.js) != null) 'js': Mapper.toValue(s.js)};
+  Map<String, dynamic> toMap(ScriptDef s) => {if (Mapper.toValue(s.js) != null) 'js': Mapper.toValue(s.js), if (Mapper.toValue(s.shell) != null) 'shell': Mapper.toValue(s.shell)};
 
-  @override String? stringify(ScriptDef self) => 'ScriptDef(js: ${Mapper.asString(self.js)})';
-  @override int? hash(ScriptDef self) => Mapper.hash(self.js);
-  @override bool? equals(ScriptDef self, ScriptDef other) => Mapper.isEqual(self.js, other.js);
+  @override String? stringify(ScriptDef self) => 'ScriptDef(js: ${Mapper.asString(self.js)}, shell: ${Mapper.asString(self.shell)})';
+  @override int? hash(ScriptDef self) => Mapper.hash(self.js) ^ Mapper.hash(self.shell);
+  @override bool? equals(ScriptDef self, ScriptDef other) => Mapper.isEqual(self.js, other.js) && Mapper.isEqual(self.shell, other.shell);
 
   @override Function get typeFactory => (f) => f<ScriptDef>();
 }
@@ -168,13 +168,13 @@ extension ScriptDefMapperExtension on ScriptDef {
 
 abstract class ScriptDefCopyWith<$R> {
   factory ScriptDefCopyWith(ScriptDef value, Then<ScriptDef, $R> then) = _ScriptDefCopyWithImpl<$R>;
-  $R call({String? js});
+  $R call({String? js, String? shell});
 }
 
 class _ScriptDefCopyWithImpl<$R> extends BaseCopyWith<ScriptDef, $R> implements ScriptDefCopyWith<$R> {
   _ScriptDefCopyWithImpl(ScriptDef value, Then<ScriptDef, $R> then) : super(value, then);
 
-  @override $R call({Object? js = _none}) => _then(ScriptDef(js: or(js, _value.js)));
+  @override $R call({Object? js = _none, Object? shell = _none}) => _then(ScriptDef(js: or(js, _value.js), shell: or(shell, _value.shell)));
 }
 
 

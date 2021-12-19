@@ -36,7 +36,11 @@ class OutputDef with Mappable {
 }
 
 class ScriptDef with Mappable {
-  ScriptDef({this.js});
+  ScriptDef({
+    this.js,
+    this.shell,
+  });
 
   final String? js;
+  final String? shell;
 }
