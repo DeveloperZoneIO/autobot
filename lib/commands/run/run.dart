@@ -64,8 +64,9 @@ class RunCommand extends Command {
       ..addAll(environmentInputs)
       ..addAll(envFileInputs)
       ..addAll(promptVariables);
-    // final processedInputs = await runScripts(template.scripts, inputs: inputs);
-    final tasks = buildOuputTasks(template.outputs, variables: variables);
+    final processedVariables = await runScripts(template.scripts, variables: variables);
+    print(grey(jsonEncode(processedVariables)));
+    final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
     writeOutputs(tasks);
   }
 }
