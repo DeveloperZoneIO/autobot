@@ -20,6 +20,7 @@ import 'package:yaml/yaml.dart';
 part 'run_config_reader.dart';
 part 'environment_reader.dart';
 part 'input_reader.dart';
+part 'input_file_reader.dart';
 part 'output_writer.dart';
 part 'template_reader.dart';
 part 'utils/render_mixin.dart';
@@ -39,6 +40,8 @@ class RunCommand extends Command {
   final kOptionTemplateAbbr = 't';
   final kOptionInput = 'input';
   final kOptionInputAbbr = 'i';
+  final kOptionInputFile = 'input-file';
+  final kOptionInputFileAbbr = 'f';
 
   RunCommand() {
     _addOptions();
@@ -54,6 +57,7 @@ class RunCommand extends Command {
   void _addOptions() {
     argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
     argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
+    argParser.addMultiOption(kOptionInputFile, abbr: kOptionInputFileAbbr);
   }
 
   @override
@@ -61,11 +65,13 @@ class RunCommand extends Command {
     config = readConfig();
     final template = readTemplate();
     final promptVariables = readInputs(template);
-    final envFileInputs = readEnvironmentFile();
-    final environmentInputs = readEnvironment();
+    final inputFileVariables = readInputFiles();
+    final envFileVariables = readEnvironmentFile();
+    final environmentVariables = readEnvironment();
     final variables = <String, dynamic>{}
-      ..addAll(environmentInputs)
-      ..addAll(envFileInputs)
+      ..addAll(environmentVariables)
+      ..addAll(envFileVariables)
+      ..addAll(inputFileVariables)
       ..addAll(promptVariables);
     final processedVariables = await runScripts(template.scripts, variables: variables);
     print(grey(jsonEncode(processedVariables)));
@@ -76,17 +82,25 @@ class RunCommand extends Command {
 
 extension FunctionalRunCommand on RunCommand {
   TemplateDef readTemplate() => RunTemplateReader(this).readTemplate();
+
   Map<String, String> readInputs(TemplateDef template) =>
       InputReader(this).collectInputsFromArgs().askForInputvalues(template);
+
+  Map<String, dynamic> readInputFiles() => InputFileReader(this).collectVariablesFromInputFiles();
+
   Map<String, String> readEnvironment() => EnvironmentReader(this).readEnvironment();
+
   Map<String, dynamic> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
+
   RunConfig readConfig() => RunConfigReader(this).readConfig();
+
   List<OutputTask> buildOuputTasks(List<OutputDef> outputs, {required Map<String, dynamic> variables}) =>
       OutputTaskBuilder(this) //
           .collectVariables(variables)
           .buildTasks(outputs);
 
   void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
+
   Future<Map<String, dynamic>> runScripts(List<ScriptDef> scriptDefs, {required Map<String, dynamic> variables}) =>
       ScriptService(this).runScripts(scriptDefs, variables);
 }
