@@ -5,65 +5,43 @@ class ScriptRunner {
 
   final RunCommand owner;
 
-  Future<List<Input>> runScripts(List<ScriptDef> scripDefs, List<Input> inputs) async {
-    var mutableInputs = List<Input>.from(inputs);
+  Future<Map<String, dynamic>> runScripts(List<ScriptDef> scripDefs, Map<String, dynamic> variables) async {
+    var mutableVariables = Map<String, dynamic>.from(variables);
 
     for (var scriptDef in scripDefs) {
       if (scriptDef.js != null) {
-        mutableInputs = await _runJavascript(scriptDef.js!, inputs);
+        final javascript = _createJavascript(scriptDef.js!, variables);
+        final jsVariabels = await _runJavascript(javascript);
+        mutableVariables.addAll(jsVariabels);
       }
     }
 
-    return List.from(mutableInputs);
+    return mutableVariables;
   }
 
-  Future<List<Input>> _runJavascript(String javascript, List<Input> inputs) async {
-    final jsTemporaryFilePath = '$pwd/.temporary_script_execution_file.js';
-
-    // Define autobot object in javascript
-    jsTemporaryFilePath.write('''
+  String _createJavascript(String scriptContent, Map<String, dynamic> variables) {
+    return '''
     var autobot = {}
-    autobot.inputs = {}
-    ''');
+    autobot.variables = JSON.parse('${jsonEncode(variables)}')
 
-    // Fill autobot object with inputs
-    for (final input in inputs) {
-      final jsAddInputToAoutobotObject = 'autobot.inputs.${input.key} = "${input.value}"';
-      jsTemporaryFilePath.append(jsAddInputToAoutobotObject);
-    }
+    $scriptContent
 
-    // Add custom js script from template
-    jsTemporaryFilePath.append(javascript);
+    var variablesJson = JSON.stringify(autobot.variables)
+    console.log(variablesJson) 
+    ''';
+  }
 
-    // Return autobot inputs
-    jsTemporaryFilePath.append('''
-    var joineAutobotInputs = ''
-    for (key in autobot.inputs) { 
-      joineAutobotInputs = joineAutobotInputs + ';' + key + '=' + autobot.inputs[key]
-    }
-    console.log(joineAutobotInputs) 
-    ''');
+  Future<Map<String, dynamic>> _runJavascript(String javascript) async {
+    final temporaryJsFile = '$pwd/.temporary_script_execution_file.js';
+    temporaryJsFile.write(javascript);
 
-    // runs the temporary script file
-    final scriptOutput = await Script.pipeline([
-      Script('node $jsTemporaryFilePath'),
+    final jsResult = await Script.pipeline([
+      Script('node $temporaryJsFile'),
     ]).stdout.text;
 
-    // Parse the inputs from javascript
-    final processeInputs = scriptOutput //
-        .split(';')
-        .where((keyValue) => keyValue.contains('='))
-        .map((keyValueString) {
-      final pair = keyValueString.split('=');
-      return Input(
-        key: pair[0],
-        value: pair[1],
-      );
-    }).toList();
-
     await Future.delayed(const Duration(milliseconds: 10));
-    delete(jsTemporaryFilePath);
+    delete(temporaryJsFile);
 
-    return processeInputs;
+    return jsonDecode(jsResult);
   }
 }

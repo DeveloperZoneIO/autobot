@@ -7,7 +7,7 @@ import 'package:autobot/commands/run/models/template.dart';
 import 'package:autobot/commands/run/models/template.mapper.g.dart';
 import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
-import 'package:autobot/common/map_util.dart';
+import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/config_reader.dart';
@@ -57,27 +57,33 @@ class RunCommand extends Command {
   void run() async {
     config = readConfig();
     final template = readTemplate();
-    final userInputs = readInputs(template);
+    final promptVariables = readInputs(template);
     final envFileInputs = readEnvironmentFile();
     final environmentInputs = readEnvironment();
-    final inputs = environmentInputs + envFileInputs + userInputs;
-    final processedInputs = await runScripts(template.scripts, inputs: inputs);
-    final tasks = buildOuputTasks(template.outputs, inputs: processedInputs);
+    final variables = <String, dynamic>{}
+      ..addAll(environmentInputs)
+      ..addAll(envFileInputs)
+      ..addAll(promptVariables);
+    final processedVariables = await runScripts(template.scripts, variables: variables);
+    print(grey(jsonEncode(processedVariables)));
+    final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
     writeOutputs(tasks);
   }
 }
 
 extension FunctionalRunCommand on RunCommand {
   TemplateDef readTemplate() => RunTemplateReader(this).readTemplate();
-  List<Input> readInputs(TemplateDef template) => InputReader(this).collectInputsFromArgs().askForInputvalues(template);
-  List<Input> readEnvironment() => EnvironmentReader(this).readEnvironment();
-  List<Input> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
+  Map<String, String> readInputs(TemplateDef template) =>
+      InputReader(this).collectInputsFromArgs().askForInputvalues(template);
+  Map<String, String> readEnvironment() => EnvironmentReader(this).readEnvironment();
+  Map<String, dynamic> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
   RunConfig readConfig() => RunConfigReader(this).readConfig();
-  List<OutputTask> buildOuputTasks(List<OutputDef> outputs, {required List<Input> inputs}) => OutputTaskBuilder(this) //
-      .collectInputs(inputs)
-      .buildTasks(outputs);
+  List<OutputTask> buildOuputTasks(List<OutputDef> outputs, {required Map<String, dynamic> variables}) =>
+      OutputTaskBuilder(this) //
+          .collectVariables(variables)
+          .buildTasks(outputs);
 
   void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
-  Future<List<Input>> runScripts(List<ScriptDef> scriptDefs, {required List<Input> inputs}) =>
-      ScriptRunner(this).runScripts(scriptDefs, inputs);
+  Future<Map<String, dynamic>> runScripts(List<ScriptDef> scriptDefs, {required Map<String, dynamic> variables}) =>
+      ScriptRunner(this).runScripts(scriptDefs, variables);
 }
