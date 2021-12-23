@@ -10,7 +10,8 @@ class InitCommand extends Command {
   }
 
   @override
-  String get description => 'Adds a config file to the current working directory.';
+  String get description =>
+      'Adds a config file to the current working directory.';
 
   @override
   String get name => 'init';
