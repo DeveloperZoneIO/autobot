@@ -8,6 +8,7 @@ import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/pubspec.dart';
 import 'package:dcli/dcli.dart';
 
+/// The name of config file.
 const kConfigFileName = 'autobot_config';
 
 void main(List<String> args) async {
@@ -20,6 +21,7 @@ void main(List<String> args) async {
   });
 }
 
+/// Initializes all commands and runs a command matching to the given [args].
 void _runAutobot(List<String> args) async {
   CommandRunner(Pubspec.name, Pubspec.description)
     ..addCommand(RunCommand())
