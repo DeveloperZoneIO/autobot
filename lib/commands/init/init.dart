@@ -4,6 +4,9 @@ import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/string_util.dart';
 import 'package:dcli/dcli.dart';
 
+/// Defines the init command of autobot.
+/// `autobot init` creates a autobot config yaml in the working directory.
+/// `autobot init -g` creates a autobot config yaml in the home directory.
 class InitCommand extends Command {
   InitCommand() {
     argParser.addFlag('global', abbr: 'g', defaultsTo: false);
