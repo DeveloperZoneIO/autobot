@@ -1,15 +1,18 @@
-import 'package:autobot/autobot.dart';
 import 'package:autobot/pubspec.dart';
-import 'package:autobot/tell.dart' as tell;
+import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
 import 'package:autobot/autobot.dart' as autobot;
 
 void main() {
   test('autobot version prints the current version', () {
-    tell.prints.clear();
+    TellManager.clearPrints();
     final arguments = ['version'];
     autobot.main(arguments);
-    expect(tell.prints, [orange('autobot ${Pubspec.version}')]);
+
+    expect(
+      TellManager.firstPrint,
+      orange('autobot ${Pubspec.version}'),
+    );
   });
 }
