@@ -1,10 +1,12 @@
 part of 'run.dart';
 
+/// Helper for writting the putput files.
 class OutputWriter with TextRenderable {
   OutputWriter(this.owner);
 
   final RunCommand owner;
 
+  /// Converts the given [tasks] into files and writes them.
   OutputWriter writeOutputs(List<OutputTask> tasks) {
     for (var task in tasks) {
       final outputDir = _getDirectory(task.outputPath);
@@ -37,6 +39,7 @@ class OutputWriter with TextRenderable {
     return this;
   }
 
+  /// Extends a existing file using the given method defined by [extendAt].
   void _extendFile(OutputTask task, String extendAt) {
     // Bottom
     if (extendAt == 'bottom') {
@@ -65,6 +68,7 @@ class OutputWriter with TextRenderable {
     }
   }
 
+  /// Retrieves the directory wehere the output file should be placed in.
   String _getDirectory(String path) {
     final lastSlashIndex = path.lastIndexOf("/");
     if (lastSlashIndex == path.length) return path;

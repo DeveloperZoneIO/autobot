@@ -1,15 +1,18 @@
 part of 'run.dart';
 
+/// Helper for building write tasks.
 class OutputTaskBuilder with TextRenderable {
   OutputTaskBuilder(this.owner);
 
   final RunCommand owner;
 
+  /// Reads all variables so that they can be uses for rendering with mustache.
   OutputTaskBuilder collectVariables(Map<String, dynamic> variables) {
     renderVariables.addAll(variables);
     return this;
   }
 
+  /// Creats the [WirteTask]s with values that already renderd using mustache.
   List<OutputTask> buildTasks(List<OutputDef> outputs) {
     return outputs
         .map((outputDef) {
@@ -25,6 +28,7 @@ class OutputTaskBuilder with TextRenderable {
         .toList();
   }
 
+  /// Finds the [WriteMethod] of the given [outputDef].
   WriteMethod _getWriteMethod(OutputDef outputDef) {
     final writeMethod = outputDef.writeMethod;
 
