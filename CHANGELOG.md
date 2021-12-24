@@ -1,4 +1,4 @@
-## 0.5.0
+## 0.5.0+1
 - Support for nested mustache variabels
 - Allwos for adding shell scripts to the script section
 - Adds the `input-file` option argument for reading variables from a yaml file
