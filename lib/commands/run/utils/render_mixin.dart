@@ -10,7 +10,8 @@ mixin TextRenderable {
     while (true) {
       final hasMatch = _kMustacheVariableRegex.hasMatch(renderedText);
       if (hasMatch) {
-        renderedText = Template(renderedText, lenient: true).renderString(renderVariables);
+        renderedText =
+            Template(renderedText, lenient: true).renderString(renderVariables);
       } else {
         break;
       }
