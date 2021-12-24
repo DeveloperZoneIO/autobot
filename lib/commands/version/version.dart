@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:autobot/pubspec.dart';
+import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 
 /// Defines the version command of autobot.
@@ -14,6 +15,6 @@ class VersionCommand extends Command {
   @override
   void run() async {
     final message = '${Pubspec.name} ${Pubspec.version}';
-    print(orange(message));
+    tell(orange(message));
   }
 }

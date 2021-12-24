@@ -11,6 +11,7 @@ import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/config_reader.dart';
+import 'package:autobot/tell.dart';
 import 'package:cli_script/cli_script.dart' hide read;
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dcli/dcli.dart' hide run;
@@ -80,7 +81,7 @@ class RunCommand extends Command {
       ..addAll(promptVariables);
     final processedVariables =
         await runScripts(template.scripts, variables: variables);
-    print(grey(jsonEncode(processedVariables)));
+    tell(grey(jsonEncode(processedVariables)));
     final tasks =
         buildOuputTasks(template.outputs, variables: processedVariables);
     writeOutputs(tasks);

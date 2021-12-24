@@ -1,4 +1,5 @@
 import 'package:autobot/common/string_util.dart';
+import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 
 abstract class PrintableException implements Exception {
@@ -19,11 +20,11 @@ class MissingConfigFile implements PrintableException {
 
   @override
   void tellUser() {
-    print(red('No autobot config file found!'));
-    print(grey(
+    tell(red('No autobot config file found!'));
+    tell(grey(
         'Add a autobot_config.yaml to the current working directory using: autobot init'));
-    print(yellow('OR'));
-    print(grey(
+    tell(yellow('OR'));
+    tell(grey(
         'Add a .autobot_config.yaml to your home directory using: autobot init -g'));
   }
 }
@@ -48,5 +49,5 @@ class MissingNodeInstallation implements PrintableException {
       'node is not installed! Please install node. This is require for running custom javascript.';
 
   @override
-  void tellUser() => print(red(toString()));
+  void tellUser() => tell(red(toString()));
 }

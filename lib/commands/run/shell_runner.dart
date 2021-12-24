@@ -18,6 +18,6 @@ class ShellRunner extends ScriptRunner {
   Future<void> _run(String shellScript) async {
     await Script.pipeline([
       Script(shellScript),
-    ]).stdout.lines.forEach((line) => print(line));
+    ]).stdout.lines.forEach((line) => tell(line));
   }
 }
