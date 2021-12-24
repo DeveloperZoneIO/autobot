@@ -20,9 +20,11 @@ class MissingConfigFile implements PrintableException {
   @override
   void tellUser() {
     print(red('No autobot config file found!'));
-    print(grey('Add a autobot_config.yaml to the current working directory using: autobot init'));
+    print(grey(
+        'Add a autobot_config.yaml to the current working directory using: autobot init'));
     print(yellow('OR'));
-    print(grey('Add a .autobot_config.yaml to your home directory using: autobot init -g'));
+    print(grey(
+        'Add a .autobot_config.yaml to your home directory using: autobot init -g'));
   }
 }
 
@@ -42,7 +44,8 @@ class MissingYamlField implements Exception {
 
 class MissingNodeInstallation implements PrintableException {
   @override
-  String toString() => 'node is not installed! Please install node. This is require for running custom javascript.';
+  String toString() =>
+      'node is not installed! Please install node. This is require for running custom javascript.';
 
   @override
   void tellUser() => print(red(toString()));
