@@ -1,10 +1,12 @@
 part of 'run.dart';
 
+/// Runs a shell script.
 class ShellRunner extends ScriptRunner {
   ShellRunner(RunCommand owner) : super(owner);
 
   @override
-  Future<Map<String, dynamic>> run(String script, Map<String, dynamic> variables) async {
+  Future<Map<String, dynamic>> run(
+      String script, Map<String, dynamic> variables) async {
     await _run(_prepareScript(script, variables));
     return variables;
   }
@@ -14,16 +16,8 @@ class ShellRunner extends ScriptRunner {
   }
 
   Future<void> _run(String shellScript) async {
-    // final temporaryJsFile = '$pwd/.temporary_script_execution_file.js';
-    // temporaryJsFile.write(shellScript);
-
-    final jsResult = await Script.pipeline([
+    await Script.pipeline([
       Script(shellScript),
     ]).stdout.lines.forEach((line) => print(line));
-
-    // await Future.delayed(const Duration(milliseconds: 10));
-    // delete(temporaryJsFile);
-
-    // return jsonDecode(jsResult);
   }
 }

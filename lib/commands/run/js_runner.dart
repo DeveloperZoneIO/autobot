@@ -1,13 +1,18 @@
 part of 'run.dart';
 
+/// Runs a javascript script.
 class JsRunner extends ScriptRunner {
   JsRunner(RunCommand owner) : super(owner);
 
   @override
-  Future<Map<String, dynamic>> run(String script, Map<String, dynamic> variables) async {
+  Future<Map<String, dynamic>> run(
+      String script, Map<String, dynamic> variables) async {
     return _run(_prepareScript(script, variables));
   }
 
+  /// Wraps the javascript form template within javascript necessary for:
+  /// - proviing a `autobot.inputs` object to the javascript form template
+  /// - returning the `autobot.inputs` object
   String _prepareScript(String scriptContent, Map<String, dynamic> variables) {
     return '''
     var autobot = {}
@@ -20,6 +25,11 @@ class JsRunner extends ScriptRunner {
     ''';
   }
 
+  /// Runs the javascript.
+  /// 1. Create a temporary js file
+  /// 2. Execute it running node from the shell
+  /// 3. Read the results
+  /// 4. Delete the temporary js file
   Future<Map<String, dynamic>> _run(String javascript) async {
     final temporaryJsFile = '$pwd/.temporary_script_execution_file.js';
     temporaryJsFile.write(javascript);

@@ -1,4 +1,5 @@
 extension StringUtil on String {
+  /// Strips the right empty space offset of a multiline string.
   String stripMargin({String reduce = '\t'}) {
     final lines = split('\n');
     var minIndent = -1;

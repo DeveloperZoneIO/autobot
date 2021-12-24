@@ -2,6 +2,8 @@ import 'package:args/command_runner.dart';
 import 'package:autobot/pubspec.dart';
 import 'package:dcli/dcli.dart';
 
+/// Defines the version command of autobot.
+/// `autobot version` print the version of the installed autobot.
 class VersionCommand extends Command {
   @override
   String get description => 'Prints the version of auotbot.';
