@@ -11,6 +11,7 @@ dependencies:
   cli_script: ^0.2.3+1
   dart_mappable: ^0.8.7
   dcli: ^1.14.1
+  equatable: ^2.0.3
   mustache_template: ^2.0.0
   path: ^1.8.0
   super_annotations: ^0.3.6
