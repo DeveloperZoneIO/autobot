@@ -10,6 +10,8 @@ import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/common/yaml_utils.dart';
+import 'package:autobot/components/read_yaml_as.dart';
+import 'package:autobot/components/resources.dart';
 import 'package:autobot/config_reader.dart';
 import 'package:autobot/tell.dart';
 import 'package:cli_script/cli_script.dart' hide read;
@@ -60,8 +62,7 @@ class RunCommand extends Command {
 
   /// Adds all options to run command.
   void _addOptions() {
-    argParser.addOption(kOptionTemplate,
-        abbr: kOptionTemplateAbbr, mandatory: true);
+    argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
     argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
     argParser.addMultiOption(kOptionInputFile, abbr: kOptionInputFileAbbr);
   }
@@ -69,7 +70,7 @@ class RunCommand extends Command {
   @override
   void run() async {
     config = readConfig();
-    final template = readTemplate();
+    final template = readYamlAs<TemplateDef>(templateFilePath);
     final promptVariables = readInputs(template);
     final inputFileVariables = readInputFiles();
     final envFileVariables = readEnvironmentFile();
@@ -79,12 +80,18 @@ class RunCommand extends Command {
       ..addAll(envFileVariables)
       ..addAll(inputFileVariables)
       ..addAll(promptVariables);
-    final processedVariables =
-        await runScripts(template.scripts, variables: variables);
+    final processedVariables = await runScripts(template.scripts, variables: variables);
     tell(grey(jsonEncode(processedVariables)));
-    final tasks =
-        buildOuputTasks(template.outputs, variables: processedVariables);
+    final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
     writeOutputs(tasks);
+  }
+
+  String get templateFileName {
+    return argResults![kOptionTemplate] + '.yaml';
+  }
+
+  String get templateFilePath {
+    return config.templateDirectory + templateFileName;
   }
 }
 
@@ -95,14 +102,11 @@ extension FunctionalRunCommand on RunCommand {
   Map<String, String> readInputs(TemplateDef template) =>
       InputReader(this).collectInputsFromArgs().askForInputvalues(template);
 
-  Map<String, dynamic> readInputFiles() =>
-      InputFileReader(this).collectVariablesFromInputFiles();
+  Map<String, dynamic> readInputFiles() => InputFileReader(this).collectVariablesFromInputFiles();
 
-  Map<String, String> readEnvironment() =>
-      EnvironmentReader(this).readEnvironment();
+  Map<String, String> readEnvironment() => EnvironmentReader(this).readEnvironment();
 
-  Map<String, dynamic> readEnvironmentFile() =>
-      EnvironmentReader(this).readEnvironmentFiles();
+  Map<String, dynamic> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
 
   RunConfig readConfig() => RunConfigReader(this).readConfig();
 
@@ -112,8 +116,7 @@ extension FunctionalRunCommand on RunCommand {
           .collectVariables(variables)
           .buildTasks(outputs);
 
-  void writeOutputs(List<OutputTask> tasks) =>
-      OutputWriter(this).writeOutputs(tasks);
+  void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
 
   Future<Map<String, dynamic>> runScripts(List<ScriptDef> scriptDefs,
           {required Map<String, dynamic> variables}) =>
