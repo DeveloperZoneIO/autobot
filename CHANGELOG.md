@@ -1,4 +1,4 @@
-## 0.5.1
+## 0.5.1+1
 - Add tests
 ## 0.5.0+1
 - Support for nested mustache variabels
