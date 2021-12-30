@@ -6,6 +6,7 @@ import 'package:autobot/commands/run/run.dart';
 import 'package:autobot/commands/version/version.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/pubspec.dart';
+import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 
 /// The name of config file.
@@ -16,7 +17,7 @@ void main(List<String> args) async {
     if (e is PrintableException) {
       e.tellUser();
     } else {
-      print(red(e.toString()));
+      tell(red(e.toString()));
     }
   });
 }

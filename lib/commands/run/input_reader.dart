@@ -12,28 +12,19 @@ class InputReader {
 
   /// Reads the input argument and collects all variables.
   InputReader collectInputsFromArgs() {
-    final argInputs = owner.argResults![owner.kOptionInput] ?? const [];
-
-    for (final String keyValuePair in argInputs) {
-      try {
-        final pair = keyValuePair.split('=');
-        final key = pair[0].trim();
-        final value = pair[1].trim();
-        _argumentInputs[key] = value;
-      } catch (_) {}
-    }
+    final List<String> argInputs = owner.argResults![owner.kOptionInput] ?? const [];
+    _argumentInputs.addAll(parsePairs(argInputs));
 
     return this;
   }
 
   /// Asks the cli user for the missing inputs value and returns them as a [Map].
   Map<Key, Value> askForInputvalues(TemplateDef template) {
-    return template.inputs.toMap(
-      keyProvider: (inputDef) => inputDef.key,
-      valueProvider: (inputDef) {
-        final argumentInput = _argumentInputs.tryGet(inputDef.key);
-        return argumentInput ?? ask(yellow(inputDef.prompt));
-      },
-    );
+    return template.inputs.toMap((inputDef) {
+      return Pair(
+        key: inputDef.key,
+        value: _argumentInputs.tryGet(inputDef.key) ?? ask(yellow(inputDef.prompt)),
+      );
+    });
   }
 }

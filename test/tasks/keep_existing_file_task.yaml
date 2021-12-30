@@ -1,0 +1,6 @@
+outputs:
+  - path: letters.txt
+    content: abc
+  - path: letters.txt
+    writeMethod: keepExistingFile
+    content: def

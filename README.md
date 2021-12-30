@@ -6,11 +6,10 @@
 
 <p align="center">
 <a href="https://pub.dev/packages/autobot"><img src="https://img.shields.io/pub/v/autobot.svg" alt="Pub"></a>
-<a href="https://pub.dev/packages/autobot"><img src="https://badgen.net/pub/points/autobot" alt="dart sdk version"></a>
-<a href="https://pub.dev/packages/autobot"><img src="https://badgen.net/pub/dart-platform/autobot" alt="dart supported platforms"></a>
-<a href="https://pub.dev/packages/autobot"><img src="https://badgen.net/pub/sdk-version/autobot" alt="dart sdk version"></a>
-<a href="https://pub.dev/packages/autobot"><img src="https://badgen.net/github/license/DeveloperZoneIO/autobot" alt="MIT-license"></a>
-
+<a href="https://pub.dev/packages/autobot/score"><img src="https://badgen.net/pub/points/autobot" alt="autobot pub score"></a>
+<a href="https://dart.dev/overview"><img src="https://badgen.net/pub/dart-platform/autobot" alt="dart supported platforms"></a>
+<a href="https://dart.dev/get-dart"><img src="https://badgen.net/pub/sdk-version/autobot" alt="dart sdk version"></a>
+<a href="https://github.com/DeveloperZoneIO/autobot"><img src="https://badgen.net/github/license/DeveloperZoneIO/autobot" alt="MIT-license"></a>
 </p>
 
 Autobot is a command-line templating engine for automating standardised repetitive operations, such as creating a new project with a specific folder structure or creating files and classes according to a predefined scheme to ensure compliance with architectural specifications. Autobot can also be used for configuring projects by creating build configurations both locally and in the CI.

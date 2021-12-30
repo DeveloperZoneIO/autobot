@@ -1,0 +1,9 @@
+scripts:
+  - js: |
+      autobot.inputs.var1 = "ABC"
+      autobot.inputs.var2 = "DEF"
+
+outputs:
+  - path: result.txt
+    writeMethod: replaceExistingFile
+    content: "{{var1}}, {{var2}}"
