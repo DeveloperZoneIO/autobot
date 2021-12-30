@@ -6,10 +6,9 @@ import 'package:autobot/autobot.dart' as autobot;
 import 'package:yaml/yaml.dart';
 
 void main() {
-  test(
-      '`\$ autobot init` creates a autobot_config.yaml in the current working directory',
-      () {
-    final configFilePath = '$pwd/autobot_config.yaml';
+  final configFilePath = '$pwd/autobot_config.yaml';
+
+  test('`autobot init` creates config in working directory', () {
     TellManager.clearPrints();
     TestManager.deleteIfExists(configFilePath);
 
@@ -22,9 +21,7 @@ void main() {
     expect(config['config']['templateDirectory'] is String, true);
   });
 
-  test(
-      '`\$ autobot init -g` creates a .autobot_config.yaml in the home directory',
-      () {
+  test('`autobot init -g` creates config in home directory', () {
     final configFilePath = '$homeDir/.autobot_config.yaml';
     TellManager.clearPrints();
     TestManager.deleteIfExists(configFilePath);

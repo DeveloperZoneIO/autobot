@@ -1,0 +1,54 @@
+inputs:
+  - key: "answer"
+    prompt: "The most damaging phrase in the language is?"
+  - key: "caption"
+    prompt: "Who did say that?"
+  - key: "configClass"
+    prompt: "Give the config class a name: "
+
+scripts:
+  # Creates a snake case version of [configClass]
+  - js: |
+      autobot.variables.configClassSnakeCase = autobot.variables.configClass.split(/(?=[A-Z])/).join('_').toLowerCase();
+    # Sets the type flags of the key-value pairs in build_config map.
+  - js: |
+      for (let i = 0; i < autobot.variables.build_config.length; i++) {
+        var field = autobot.variables.build_config[i]
+        field.isString = (typeof field.value === 'string')
+        field.isBool = (typeof field.value == "boolean")
+        field.isNum = (!field.isString && !field.isBool)
+      }
+
+outputs:
+  - path: quote.txt
+    writeMethod: replaceExistingFile
+    content: “The most damaging phrase in the language is.. {{answer}}” - {{caption}}
+
+  - path: "{{configClassSnakeCase}}.dart"
+    writeMethod: replaceExistingFile
+    content: |
+      class {{configClass}} {
+        {{#build_config}}
+          {{#isString}}
+        static const String {{key}} = '{{{value}}}';
+          {{/isString}}
+          {{#isBool}}
+        static const bool {{key}} = {{value}};
+          {{/isBool}}
+          {{#isNum}}
+        static const double {{key}} = {{value}};
+          {{/isNum}}
+        {{/build_config}}
+      }
+
+  - path: hidden1.txt
+    write: n
+    content: -- empty --
+
+  - path: hidden2.txt
+    write: no
+    content: -- empty --
+
+  - path: hidden3.txt
+    write: false
+    content: -- empty --

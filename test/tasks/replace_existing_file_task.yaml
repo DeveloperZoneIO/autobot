@@ -1,0 +1,6 @@
+outputs:
+  - path: letters.txt
+    content: abc
+  - path: letters.txt
+    writeMethod: replaceExistingFile
+    content: def
