@@ -12,16 +12,8 @@ class InputReader {
 
   /// Reads the input argument and collects all variables.
   InputReader collectInputsFromArgs() {
-    final argInputs = owner.argResults![owner.kOptionInput] ?? const [];
-
-    for (final String keyValuePair in argInputs) {
-      try {
-        final pair = keyValuePair.split('=');
-        final key = pair[0].trim();
-        final value = pair[1].trim();
-        _argumentInputs[key] = value;
-      } catch (_) {}
-    }
+    final List<String> argInputs = owner.argResults![owner.kOptionInput] ?? const [];
+    _argumentInputs.addAll(parsePairs(argInputs));
 
     return this;
   }

@@ -29,11 +29,8 @@ class RunConfigReader {
 
   /// Parses the environment file values form the given [configYaml].
   List<String> _getEnvironmentFiles(YamlMap configYaml) {
-    final YamlList filePaths = configYaml.require(
-      kYamlEnvironmentFilePathsField,
-      fileName: kConfigFileName,
-    );
-
+    final YamlList filePaths =
+        configYaml.tryGet(kYamlEnvironmentFilePathsField) ?? YamlList();
     return filePaths.whereType<String>().toList();
   }
 }
