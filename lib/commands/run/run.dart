@@ -80,8 +80,8 @@ class RunCommand extends Command {
       ..addAll(envFileVariables)
       ..addAll(inputFileVariables)
       ..addAll(promptVariables);
-    final processedVariables = await runScripts(template.scripts, variables: variables);
     tell(grey(jsonEncode(processedVariables)));
+    final processedVariables = runScripts(template.scripts, variables: variables);
     final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
     writeOutputs(tasks);
   }
@@ -118,7 +118,7 @@ extension FunctionalRunCommand on RunCommand {
 
   void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
 
-  Future<Map<String, dynamic>> runScripts(List<ScriptDef> scriptDefs,
+  Map<String, dynamic> runScripts(List<ScriptDef> scriptDefs,
           {required Map<String, dynamic> variables}) =>
       ScriptService(this).runScripts(scriptDefs, variables);
 }
