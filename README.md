@@ -5,11 +5,19 @@
 </p>
 
 <p align="center">
+<!-- version badge -->
 <a href="https://pub.dev/packages/autobot"><img src="https://img.shields.io/pub/v/autobot.svg" alt="Pub"></a>
+<!--pub points badge -->
 <a href="https://pub.dev/packages/autobot/score"><img src="https://badgen.net/pub/points/autobot" alt="autobot pub score"></a>
-<a href="https://github.com/DeveloperZoneIO/autobot/actions/workflows/test_master.yml"><img src="https://github.com/DeveloperZoneIO/autobot/actions/workflows/test_master.yml/badge.svg" alt="pipeline/ci status"></a>
+<!-- release status badge -->
+<a href="https://github.com/DeveloperZoneIO/autobot/actions/workflows/deploy_production.yml"><img src="https://github.com/DeveloperZoneIO/autobot/actions/workflows/deploy_production.yml/badge.svg" alt="pipeline/ci release status"></a>
+<!-- develop status badge -->
+<a href="https://github.com/DeveloperZoneIO/autobot/actions/workflows/test_develop.yml"><img src="https://github.com/DeveloperZoneIO/autobot/actions/workflows/test_develop.yml/badge.svg" alt="pipeline/ci delevop status"></a>
+<!-- platform badge -->
 <a href="https://dart.dev/overview"><img src="https://badgen.net/pub/dart-platform/autobot" alt="dart supported platforms"></a>
+<!-- dart sdk badge -->
 <a href="https://dart.dev/get-dart"><img src="https://badgen.net/pub/sdk-version/autobot" alt="dart sdk version"></a>
+<!-- license badge -->
 <a href="https://github.com/DeveloperZoneIO/autobot"><img src="https://badgen.net/github/license/DeveloperZoneIO/autobot" alt="MIT-license"></a>
 </p>
 
