@@ -6,43 +6,37 @@ import 'package:args/command_runner.dart';
 import 'package:autobot/autobot.dart';
 import 'package:autobot/commands/run/models/template.dart';
 import 'package:autobot/commands/run/models/template.mapper.g.dart';
-import 'package:autobot/common/dcli_utils.dart';
-import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/common/collection_util.dart';
-import 'package:autobot/common/null_utils.dart';
+import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/types.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/components/components.dart';
 import 'package:autobot/components/parse_pair.dart';
 import 'package:autobot/components/read_yaml_as.dart';
-import 'package:autobot/components/resources.dart';
 import 'package:autobot/components/yaml_to_map.dart';
 import 'package:autobot/config_reader.dart';
 import 'package:autobot/tell.dart';
 import 'package:cli_script/cli_script.dart' hide read;
-import 'package:collection/src/iterable_extensions.dart';
-import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dcli/dcli.dart' hide run;
 import 'package:mustache_template/mustache.dart';
 import 'package:yaml/yaml.dart';
 
-part 'run_config_reader.dart';
-part 'environment_reader.dart';
-part 'input_reader.dart';
-part 'input_file_reader.dart';
-part 'output_writer.dart';
-part 'template_reader.dart';
-part 'utils/render_mixin.dart';
-part 'utils/string_to_bool.dart';
-part 'output_task_builder.dart';
-part 'script_service.dart';
 part 'base_scrip_runner.dart';
+part 'environment_reader.dart';
+part 'input_file_reader.dart';
+part 'input_reader.dart';
 part 'js_runner.dart';
-part 'shell_runner.dart';
-
 part 'models/config.dart';
 part 'models/input.dart';
 part 'models/output_task.dart';
+part 'output_task_builder.dart';
+part 'output_writer.dart';
+part 'run_config_reader.dart';
+part 'script_service.dart';
+part 'shell_runner.dart';
+part 'template_reader.dart';
+part 'utils/render_mixin.dart';
+part 'utils/string_to_bool.dart';
 
 /// Defines the run command of autobot.
 /// `autobot run -t <task_name>` runs the task machting to <task_name>.
@@ -66,11 +60,9 @@ class RunCommand extends Command {
   @override
   String get name => 'run';
 
-  /// TODO: Test to check for breaking changes
   String get templateFileName => argResults![kOptionTemplate] + '.yaml';
   String get templateFilePath => config.templateDirectory + templateFileName;
 
-  // TODO: Test to check for breaking changes.
   /// List of key-value string pairs from `--input`.
   List<String> get inputArgument => argResults![kOptionInput] ?? const [];
 
@@ -111,8 +103,6 @@ class RunCommand extends Command {
     writeOutputs(tasks);
   }
 
-  // TODO: Test function
-  ///
   Map<Key, Value> askForMissingInputValues(TemplateDef template, Map<String, String> variables) {
     return template.inputs.toMap((inputDef) {
       final valueExistForKey = variables.containsKey(inputDef.key);
@@ -125,7 +115,6 @@ class RunCommand extends Command {
     });
   }
 
-  // TODO: Test function
   Map<Key, dynamic> readInputFiles(List<String> paths) {
     final yamls = paths.map(readYaml);
     final contentMaps = yamls.map(yamlToMap);
