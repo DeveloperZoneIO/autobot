@@ -5,9 +5,8 @@ class ShellRunner extends ScriptRunner {
   ShellRunner(RunCommand owner) : super(owner);
 
   @override
-  Future<Map<String, dynamic>> run(
-      String script, Map<String, dynamic> variables) async {
-    await _run(_prepareScript(script, variables));
+  Map<String, dynamic> run(String script, Map<String, dynamic> variables) {
+    _run(_prepareScript(script, variables));
     return variables;
   }
 
@@ -15,9 +14,11 @@ class ShellRunner extends ScriptRunner {
     return scriptContent;
   }
 
-  Future<void> _run(String shellScript) async {
-    await Script.pipeline([
-      Script(shellScript),
-    ]).stdout.lines.forEach((line) => print(line));
+  void _run(String shellScript) {
+    waitFor(
+      Script.pipeline([
+        Script(shellScript),
+      ]).stdout.lines.forEach((line) => tell(line)),
+    );
   }
 }

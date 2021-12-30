@@ -1,0 +1,22 @@
+outputs:
+  - path: letters.txt
+    content: abc
+
+  - path: letters.txt
+    writeMethod: extendFile
+    content: def
+
+  - path: letters.txt
+    writeMethod: extendFile
+    extendAt: bottom
+    content: ghi
+
+  - path: letters.txt
+    writeMethod: extendFile
+    extendAt: top
+    content: LETTERS
+
+  - path: letters.txt
+    writeMethod: extendFile
+    extendAt: LETTERS
+    content: " ---"

@@ -6,6 +6,5 @@ abstract class ScriptRunner {
 
   final RunCommand owner;
 
-  Future<Map<String, dynamic>> run(
-      String script, Map<String, dynamic> variables);
+  Map<String, dynamic> run(String script, Map<String, dynamic> variables);
 }

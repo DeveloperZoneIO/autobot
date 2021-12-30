@@ -1,0 +1,11 @@
+build_config:
+  - key: baseUrl
+    value: "http://www.google.com/api/v4/"
+  - key: apiKey
+    value: "{{API_KEY}}"
+  - key: version
+    value: 38
+  - key: isDebug
+    value: true
+  - key: isProduction
+    value: false

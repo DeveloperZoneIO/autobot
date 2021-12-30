@@ -1,3 +1,4 @@
+import 'dart:cli';
 import 'dart:convert';
 import 'dart:io';
 
@@ -9,9 +10,17 @@ import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/null_utils.dart';
+import 'package:autobot/common/types.dart';
 import 'package:autobot/common/yaml_utils.dart';
+import 'package:autobot/components/components.dart';
+import 'package:autobot/components/parse_pair.dart';
+import 'package:autobot/components/read_yaml_as.dart';
+import 'package:autobot/components/resources.dart';
+import 'package:autobot/components/yaml_to_map.dart';
 import 'package:autobot/config_reader.dart';
+import 'package:autobot/tell.dart';
 import 'package:cli_script/cli_script.dart' hide read;
+import 'package:collection/src/iterable_extensions.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dcli/dcli.dart' hide run;
 import 'package:mustache_template/mustache.dart';
@@ -57,33 +66,70 @@ class RunCommand extends Command {
   @override
   String get name => 'run';
 
+  /// TODO: Test to check for breaking changes
+  String get templateFileName => argResults![kOptionTemplate] + '.yaml';
+  String get templateFilePath => config.templateDirectory + templateFileName;
+
+  // TODO: Test to check for breaking changes.
+  /// List of key-value string pairs from `--input`.
+  List<String> get inputArgument => argResults![kOptionInput] ?? const [];
+
+  /// List of input file paths form `--input-file`
+  List<String> get inputFileArgument => argResults![kOptionInputFile] ?? const [];
+
+  /// List of environment file paths
+  List<String> get environmentFilePaths => config.environmentFilePaths;
+
   /// Adds all options to run command.
   void _addOptions() {
-    argParser.addOption(kOptionTemplate,
-        abbr: kOptionTemplateAbbr, mandatory: true);
+    argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
     argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
     argParser.addMultiOption(kOptionInputFile, abbr: kOptionInputFileAbbr);
   }
 
   @override
   void run() async {
+    // TODO: Replace with: readYamlAs<RunConfig>();
+    // TODO: Remove RunConfig and use Config only
     config = readConfig();
-    final template = readTemplate();
-    final promptVariables = readInputs(template);
-    final inputFileVariables = readInputFiles();
-    final envFileVariables = readEnvironmentFile();
-    final environmentVariables = readEnvironment();
-    final variables = <String, dynamic>{}
-      ..addAll(environmentVariables)
-      ..addAll(envFileVariables)
-      ..addAll(inputFileVariables)
-      ..addAll(promptVariables);
-    final processedVariables =
-        await runScripts(template.scripts, variables: variables);
-    print(grey(jsonEncode(processedVariables)));
-    final tasks =
-        buildOuputTasks(template.outputs, variables: processedVariables);
+    final template = readYamlAs<TemplateDef>(templateFilePath);
+    final inputVariables = parsePairs(inputArgument);
+    final promptVariables = askForMissingInputValues(template, inputVariables);
+    final fileVariables = readInputFiles(inputFileArgument);
+    final environmentFileVariables = readInputFiles(environmentFilePaths);
+    final environmentVariables = Platform.environment;
+    final variables = mergeAll([
+      environmentVariables,
+      environmentFileVariables,
+      fileVariables,
+      inputVariables,
+      promptVariables,
+    ]);
+
+    final processedVariables = runScripts(template.scripts, variables: variables);
+    final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
     writeOutputs(tasks);
+  }
+
+  // TODO: Test function
+  ///
+  Map<Key, Value> askForMissingInputValues(TemplateDef template, Map<String, String> variables) {
+    return template.inputs.toMap((inputDef) {
+      final valueExistForKey = variables.containsKey(inputDef.key);
+      if (valueExistForKey) return null;
+
+      return Pair(
+        key: inputDef.key,
+        value: ask(yellow(inputDef.prompt)),
+      );
+    });
+  }
+
+  // TODO: Test function
+  Map<Key, dynamic> readInputFiles(List<String> paths) {
+    final yamls = paths.map(readYaml);
+    final contentMaps = yamls.map(yamlToMap);
+    return contentMaps.isEmpty ? {} : contentMaps.reduce(merge);
   }
 }
 
@@ -94,14 +140,9 @@ extension FunctionalRunCommand on RunCommand {
   Map<String, String> readInputs(TemplateDef template) =>
       InputReader(this).collectInputsFromArgs().askForInputvalues(template);
 
-  Map<String, dynamic> readInputFiles() =>
-      InputFileReader(this).collectVariablesFromInputFiles();
+  Map<String, String> readEnvironment() => EnvironmentReader(this).readEnvironment();
 
-  Map<String, String> readEnvironment() =>
-      EnvironmentReader(this).readEnvironment();
-
-  Map<String, dynamic> readEnvironmentFile() =>
-      EnvironmentReader(this).readEnvironmentFiles();
+  Map<String, dynamic> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
 
   RunConfig readConfig() => RunConfigReader(this).readConfig();
 
@@ -111,10 +152,9 @@ extension FunctionalRunCommand on RunCommand {
           .collectVariables(variables)
           .buildTasks(outputs);
 
-  void writeOutputs(List<OutputTask> tasks) =>
-      OutputWriter(this).writeOutputs(tasks);
+  void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
 
-  Future<Map<String, dynamic>> runScripts(List<ScriptDef> scriptDefs,
+  Map<String, dynamic> runScripts(List<ScriptDef> scriptDefs,
           {required Map<String, dynamic> variables}) =>
       ScriptService(this).runScripts(scriptDefs, variables);
 }

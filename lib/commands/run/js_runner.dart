@@ -5,8 +5,7 @@ class JsRunner extends ScriptRunner {
   JsRunner(RunCommand owner) : super(owner);
 
   @override
-  Future<Map<String, dynamic>> run(
-      String script, Map<String, dynamic> variables) async {
+  Map<String, dynamic> run(String script, Map<String, dynamic> variables) {
     return _run(_prepareScript(script, variables));
   }
 
@@ -30,15 +29,18 @@ class JsRunner extends ScriptRunner {
   /// 2. Execute it running node from the shell
   /// 3. Read the results
   /// 4. Delete the temporary js file
-  Future<Map<String, dynamic>> _run(String javascript) async {
+  Map<String, dynamic> _run(String javascript) {
     final temporaryJsFile = '$pwd/.temporary_script_execution_file.js';
     temporaryJsFile.write(javascript);
 
-    final jsResult = await Script.pipeline([
-      Script('node $temporaryJsFile'),
-    ]).stdout.text;
+    final jsResult = waitFor(
+      Script.pipeline([
+        Script('node $temporaryJsFile'),
+      ]).stdout.text,
+      timeout: const Duration(seconds: 5),
+    );
 
-    await Future.delayed(const Duration(milliseconds: 10));
+    waitFor(Future.delayed(const Duration(milliseconds: 10)));
     delete(temporaryJsFile);
 
     return jsonDecode(jsResult);
