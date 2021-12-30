@@ -1,4 +1,3 @@
-import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
