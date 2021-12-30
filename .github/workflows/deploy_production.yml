@@ -17,28 +17,16 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1
 
-      - name: Run tests
-        run: dart run test
-
-      - name: Remove dar-mode image from README
+      - name: Remove dark-mode image from README
         run: |
           tail -n +2 "README.md" > "README.tmp" && mv "README.tmp" "README.md"
 
       # Uploads the autobot package to pub.dev
-      - name: Check autobot befor publishing
-        uses: sakebook/actions-flutter-pub-publisher@v1.3.1
-        with:
-          credential: ${{ secrets.PUB_DEV_UPLOAD_CREDENTIALS_JSON }}
-          flutter_package: false
-          skip_test: true
-          dry_run: true
-
       - name: Publish autobot to pub.dev
         uses: sakebook/actions-flutter-pub-publisher@v1.3.1
         with:
           credential: ${{ secrets.PUB_DEV_UPLOAD_CREDENTIALS_JSON }}
           flutter_package: false
-          skip_test: true
+          skip_test: false
           dry_run: false
