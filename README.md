@@ -7,6 +7,7 @@
 <p align="center">
 <a href="https://pub.dev/packages/autobot"><img src="https://img.shields.io/pub/v/autobot.svg" alt="Pub"></a>
 <a href="https://pub.dev/packages/autobot/score"><img src="https://badgen.net/pub/points/autobot" alt="autobot pub score"></a>
+<a href="https://github.com/DeveloperZoneIO/autobot/actions/workflows/test_master.yml"><img src="https://github.com/DeveloperZoneIO/autobot/actions/workflows/test_master.yml/badge.svg" alt="pipeline/ci status"></a>
 <a href="https://dart.dev/overview"><img src="https://badgen.net/pub/dart-platform/autobot" alt="dart supported platforms"></a>
 <a href="https://dart.dev/get-dart"><img src="https://badgen.net/pub/sdk-version/autobot" alt="dart sdk version"></a>
 <a href="https://github.com/DeveloperZoneIO/autobot"><img src="https://badgen.net/github/license/DeveloperZoneIO/autobot" alt="MIT-license"></a>
