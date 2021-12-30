@@ -28,5 +28,5 @@ jobs:
         with:
           credential: ${{ secrets.PUB_DEV_UPLOAD_CREDENTIALS_JSON }}
           flutter_package: false
-          skip_test: false
+          skip_test: true
           dry_run: false
