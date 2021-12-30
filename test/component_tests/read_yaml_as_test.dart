@@ -10,7 +10,7 @@ void main() {
   });
 
   test('readYamlAs() -> Reads yaml file and returns a object representation', () {
-    final bigTaskPath = '$pwd/test/test_tasks/big_task.yaml';
+    final bigTaskPath = '$pwd/test/tasks/big_task.yaml';
     final template = readYamlAs<TemplateDef>(bigTaskPath);
 
     // Check inputs
