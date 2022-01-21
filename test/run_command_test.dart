@@ -92,4 +92,20 @@ class BuildConfig {
     expect(read(filePath).toParagraph(), "LETTERS ---\nabc\ndef\nghi");
     delete(filePath);
   });
+
+  test('autobot run -> shell.', () {
+    final filePath1 = '$pwd/sh_result.txt';
+    final filePath2 = '$pwd/shellVarValue';
+
+    if (exists(filePath1)) delete(filePath1);
+    if (exists(filePath2)) delete(filePath2);
+
+    autobot.main(["run", "-t", "shell_task", "-i", "shellVar=shellVarValue"]);
+
+    expect(exists(filePath1), true);
+    expect(exists(filePath2), true);
+
+    delete(filePath1);
+    delete(filePath2);
+  });
 }

@@ -1,0 +1,3 @@
+scripts:
+  - shell: touch sh_result.txt
+  - shell: touch {{shellVar}}
