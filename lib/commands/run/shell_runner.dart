@@ -1,17 +1,18 @@
 part of 'run.dart';
 
 /// Runs a shell script.
-class ShellRunner extends ScriptRunner {
+class ShellRunner extends ScriptRunner with TextRenderable {
   ShellRunner(RunCommand owner) : super(owner);
 
   @override
   Map<String, dynamic> run(String script, Map<String, dynamic> variables) {
-    _run(_prepareScript(script, variables));
+    renderVariables.addAll(variables);
+    _run(_prepareScript(script));
     return variables;
   }
 
-  String _prepareScript(String scriptContent, Map<String, dynamic> variables) {
-    return scriptContent;
+  String _prepareScript(String scriptContent) {
+    return render(scriptContent);
   }
 
   void _run(String shellScript) {
