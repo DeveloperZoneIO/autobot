@@ -1,3 +1,6 @@
+## 0.5.2
+- Render mustache templates in shell script
+- Test shell scripts
 ## 0.5.1+1
 - Add tests
 ## 0.5.0+1
