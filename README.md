@@ -6,7 +6,7 @@
 
 <p align="center">
 <!-- version badge -->
-<a href="https://pub.dev/packages/autobot"><img src="https://img.shields.io/pub/v/autobot.svg" alt="Pub"></a>
+<a href="https://pub.dev/packages/autobot"><img src="https://img.shields.io/pub/v/autobot?logo=dart" alt="Pub"></a>
 <!--pub points badge -->
 <a href="https://pub.dev/packages/autobot/score"><img src="https://badgen.net/pub/points/autobot" alt="autobot pub score"></a>
 <!-- release status badge -->
@@ -98,15 +98,15 @@ inputs:
 scripts:
   - js: |
       // Read the userName value from autobot
-      var userName = autobot.inputs.userName
+      var userName = autobot.variables.userName
 
       // Check whether userName is blank. If yes, set a fallback value.
       if (!userName || userName.length === 0) {
-        autobot.inputs.userName = 'Some fallback name'
+        autobot.variables.userName = 'Some fallback name'
       }
 
       // Define a new variable
-      autobot.inputs.varFormJs = 'Hello!'
+      autobot.variables.varFormJs = 'Hello!'
 
 outputs:
   - path: some/relative/path.txt
@@ -124,7 +124,7 @@ The `inputs` field accepts only a list of prompt objects. A prompt object requir
 ## scripts
 The `scripts` field accepts a list of script objects. A scrip object requires a script key which is either `js` (this stands for javascript) or `shell`. The value of those keys hast to be a string containing the related script.
 
-Autobot provides the `autobot` object to all javascripts for accessing and modifing variables. The variables are contained in the `autobot.inputs` object. See the `scripts` in the example-autobot-task.yaml above.
+Autobot provides the `autobot` object to all javascripts for accessing and modifing variables. The variables are contained in the `autobot.variables` object. See the `scripts` in the example-autobot-task.yaml above.
 **NOTE**: Running javascripts requires that `node` is installed in your comman line tool! Otherwise autobot will fail executing the javascripts.
 ## outputs
 The `outputs` field accepts a list of output objects. An output object must contain at least the following keywords: `path` and `content`. `path` defines where a new file will be created and `content` defines the content of this file. See the available fields of output object in the list below. All values of the output object fileds can be a [mustache](https://mustache.github.io) template. This means that the string values can have variables enclosed in double or triple curly braces, like for example `"Hello {{userName}}"`. `{{userName}}` will then be replaced by the value assigned to `userName`.
