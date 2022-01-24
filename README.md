@@ -54,6 +54,10 @@ Create a `autobot_config.yaml` in the working directory:
 ```bash
 $ autobot init
 ```
+Create a `autobot_config.yaml` in a subfoler of working directory:
+```bash
+$ autobot init -p subfolder/subsubfolder/
+```
 Create a `.autobot_config.yaml` in the home directory:
 ```bash
 $ autobot init -g
