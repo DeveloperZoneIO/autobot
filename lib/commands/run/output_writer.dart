@@ -9,7 +9,7 @@ class OutputWriter with TextRenderable {
   /// Converts the given [tasks] into files and writes them.
   OutputWriter writeOutputs(List<OutputTask> tasks) {
     for (var task in tasks) {
-      final outputDir = _getDirectory(task.outputPath);
+      final outputDir = task.outputPath.getDir();
       if (outputDir.isNotEmpty && !exists(outputDir)) {
         createDir(outputDir, recursive: true);
       }
@@ -66,12 +66,5 @@ class OutputWriter with TextRenderable {
       extendedChars.insertAll(matches.first.end, newContentChars);
       task.outputPath.write(extendedChars.join(''));
     }
-  }
-
-  /// Retrieves the directory wehere the output file should be placed in.
-  String _getDirectory(String path) {
-    final lastSlashIndex = path.lastIndexOf("/");
-    if (lastSlashIndex == path.length) return path;
-    return path.replaceRange(lastSlashIndex + 1, null, '');
   }
 }
