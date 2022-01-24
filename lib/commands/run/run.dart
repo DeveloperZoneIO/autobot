@@ -8,6 +8,7 @@ import 'package:autobot/commands/run/models/template.dart';
 import 'package:autobot/commands/run/models/template.mapper.g.dart';
 import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/dcli_utils.dart';
+import 'package:autobot/common/path_util.dart';
 import 'package:autobot/common/types.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/components/components.dart';
