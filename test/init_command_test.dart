@@ -6,19 +6,34 @@ import 'package:autobot/autobot.dart' as autobot;
 import 'package:yaml/yaml.dart';
 
 void main() {
-  final configFilePath = '$pwd/autobot_config.yaml';
+  final defaultConfigFilePath = '$pwd/autobot_config.yaml';
 
   test('`autobot init` creates config in working directory', () {
+    TellManager.clearPrints();
+    TestManager.deleteIfExists(defaultConfigFilePath);
+
+    // Run init command
+    autobot.main(['init']);
+
+    expect(exists(defaultConfigFilePath), true);
+    final YamlMap config = loadYaml(read(defaultConfigFilePath).toParagraph());
+    expect(config['config'] is YamlMap, true);
+    expect(config['config']['templateDirectory'] is String, true);
+  });
+
+  test('`autobot init -p` creates config in given path', () {
+    final configFilePath = '$pwd/customDir/subDir/autobot_config.yaml';
     TellManager.clearPrints();
     TestManager.deleteIfExists(configFilePath);
 
     // Run init command
-    autobot.main(['init']);
+    autobot.main(['init', '-p', 'customDir/subDir/']);
 
     expect(exists(configFilePath), true);
     final YamlMap config = loadYaml(read(configFilePath).toParagraph());
     expect(config['config'] is YamlMap, true);
     expect(config['config']['templateDirectory'] is String, true);
+    TestManager.deleteIfExists(configFilePath);
   });
 
   test('`autobot init -g` creates config in home directory', () {
