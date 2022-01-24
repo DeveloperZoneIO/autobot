@@ -1,3 +1,5 @@
+## 0.5.3
+- Add path option for init command
 ## 0.5.2
 - Render mustache templates in shell script
 - Test shell scripts
