@@ -1,6 +1,24 @@
 part of '../run.dart';
 
-abstract class WriteMethod {}
+abstract class WriteMethod {
+  WriteMethod();
+
+  factory WriteMethod.from({required String name, required String extendAt}) {
+    switch (name) {
+      case ExtendFile.key:
+        return ExtendFile(extendAt: extendAt);
+
+      case KeepExistingFile.key:
+        return KeepExistingFile();
+
+      case ReplaceExistingFile.key:
+        return ReplaceExistingFile();
+
+      default:
+        return KeepExistingFile();
+    }
+  }
+}
 
 class ReplaceExistingFile extends WriteMethod {
   static const String key = 'replaceExistingFile';

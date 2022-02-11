@@ -4,10 +4,21 @@ targets:
       dart_mappable:
         generate_for:
           - lib/commands/run/models/template.dart
+          # - lib/autobot.dart
 
         options:
           # exclude: []
-          include: [TemplateDef, InputDef, OutputDef, ScriptDef]
+          include:
+            [
+              MetaNode,
+              AskStep,
+              VariablesStep,
+              ReadStep,
+              JavascriptStep,
+              ShellScriptStep,
+              WriteStep,
+              RunTaskStep,
+            ]
           caseStyle: camelCase
           enumCaseStyle: camelCase
           ignoreNull: true

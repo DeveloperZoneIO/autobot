@@ -20,3 +20,22 @@ outputs:
     writeMethod: extendFile
     extendAt: LETTERS
     content: " ---"
+
+task:
+  body:
+    - output:
+        path: letters.txt
+        content: abc
+
+meta:
+  name: some random task
+  description: This task does currently nothing
+
+steps:
+  - type: ask
+    key:
+  - type: output
+    path: slkfjlaks
+    content: lskjfklaj
+
+  - type: variable

@@ -42,7 +42,7 @@ part 'utils/string_to_bool.dart';
 /// Defines the run command of autobot.
 /// `autobot run -t <task_name>` runs the task machting to <task_name>.
 /// `autobot run -t <task_name> -i var1=a,var2=b` runs the task machting to <task_name> and inserts the given variables to autobot variables.
-class RunCommand extends Command {
+class RunCommand extends Command with TextRenderable {
   final kOptionTemplate = 'template';
   final kOptionTemplateAbbr = 't';
   final kOptionInput = 'input';
@@ -85,38 +85,61 @@ class RunCommand extends Command {
     // TODO: Replace with: readYamlAs<RunConfig>();
     // TODO: Remove RunConfig and use Config only
     config = readConfig();
-    final template = readYamlAs<TemplateDef>(templateFilePath);
-    final inputVariables = parsePairs(inputArgument);
-    final promptVariables = askForMissingInputValues(template, inputVariables);
-    final fileVariables = readInputFiles(inputFileArgument);
-    final environmentFileVariables = readInputFiles(environmentFilePaths);
-    final environmentVariables = Platform.environment;
-    final variables = mergeAll([
-      environmentVariables,
-      environmentFileVariables,
-      fileVariables,
-      inputVariables,
-      promptVariables,
-    ]);
+    final task = readYamlAs<TaskNode>(templateFilePath);
 
-    final processedVariables = runScripts(template.scripts, variables: variables);
-    final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
-    writeOutputs(tasks);
+    renderVariables.clear();
+    renderVariables.addAll(Platform.environment);
+    renderVariables.addAll(parsePairs(inputArgument));
+    renderVariables.addAll(readInputFiles(inputFileArgument));
+
+    // for (final step in task.steps) {
+    //   if (step is AskStep) readInput(step.key, step.prompt);
+    //   if (step is VarsStep) renderVariables.addAll(step.vars);
+    //   if (step is WriteStep) writeOutput(step as WriteStep);
+    //   if (step is RunJavascriptStep) runJs(step.run_javascript);
+    //   if (step is ShellStep) runShell(step.run_command);
+    // }
+
+    // final processedVariables = runScripts(template.scripts, variables: allVariables);
+    // final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
+    // writeOutputs(tasks);
   }
 
-  Map<Key, Value> askForMissingInputValues(TemplateDef template, Map<String, String> variables) {
-    return template.inputs.toMap((inputDef) {
-      final valueExistForKey = variables.containsKey(inputDef.key);
-      if (valueExistForKey) return null;
-
-      return Pair(
-        key: inputDef.key,
-        value: ask(yellow(inputDef.prompt)),
-      );
-    });
+  void runJs(String javascript) {
+    final vars = JsRunner(this).run(javascript, renderVariables);
+    renderVariables.clear();
+    renderVariables.addAll(vars);
   }
 
-  Map<Key, dynamic> readInputFiles(List<String> paths) {
+  void runShell(String shellScript) {
+    final vars = ShellRunner(this).run(shellScript, renderVariables);
+    renderVariables.clear();
+    renderVariables.addAll(vars);
+  }
+
+  void readInput(String key, String prompt) {
+    if (!renderVariables.containsKey(key)) {
+      renderVariables[key] = ask(yellow(prompt));
+    }
+  }
+
+  void writeOutput(WriteStep step) {
+    final writeFile = render(step.enabled).meansTrue;
+    if (!writeFile) return;
+
+    final outputTask = OutputTask(
+      fileContent: render(step.content),
+      outputPath: render(step.path),
+      writeMethod: WriteMethod.from(
+        name: render(step.writeMethod),
+        extendAt: render(step.extendAt),
+      ),
+    );
+
+    writeOutputs([outputTask]);
+  }
+
+  Map<String, dynamic> readInputFiles(List<String> paths) {
     final yamls = paths.map(readYaml);
     final contentMaps = yamls.map(yamlToMap);
     return contentMaps.isEmpty ? {} : contentMaps.reduce(merge);
@@ -125,10 +148,10 @@ class RunCommand extends Command {
 
 /// Wraps all helpers in simple functions to make [RunCommand.run] easier to read.
 extension FunctionalRunCommand on RunCommand {
-  TemplateDef readTemplate() => RunTemplateReader(this).readTemplate();
+  // TaskWrapper readTemplate() => RunTemplateReader(this).readTemplate();
 
-  Map<String, String> readInputs(TemplateDef template) =>
-      InputReader(this).collectInputsFromArgs().askForInputvalues(template);
+  // Map<String, String> readInputs(TaskWrapper template) =>
+  //     InputReader(this).collectInputsFromArgs().askForInputvalues(template);
 
   Map<String, String> readEnvironment() => EnvironmentReader(this).readEnvironment();
 
@@ -136,15 +159,15 @@ extension FunctionalRunCommand on RunCommand {
 
   RunConfig readConfig() => RunConfigReader(this).readConfig();
 
-  List<OutputTask> buildOuputTasks(List<OutputDef> outputs,
-          {required Map<String, dynamic> variables}) =>
-      OutputTaskBuilder(this) //
-          .collectVariables(variables)
-          .buildTasks(outputs);
+  // List<OutputTask> buildOuputTasks(List<OutputDef> outputs,
+  //         {required Map<String, dynamic> variables}) =>
+  //     OutputTaskBuilder(this) //
+  //         .collectVariables(variables)
+  //         .buildTasks(outputs);
 
   void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
 
-  Map<String, dynamic> runScripts(List<ScriptDef> scriptDefs,
-          {required Map<String, dynamic> variables}) =>
-      ScriptService(this).runScripts(scriptDefs, variables);
+  // Map<String, dynamic> runScripts(List<ScriptDef> scriptDefs,
+  //         {required Map<String, dynamic> variables}) =>
+  //     ScriptService(this).runScripts(scriptDefs, variables);
 }
