@@ -13,7 +13,7 @@ import 'package:autobot/common/types.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/components/components.dart';
 import 'package:autobot/components/parse_pair.dart';
-import 'package:autobot/components/read_yaml_as.dart';
+import 'package:autobot/components/task/task.dart';
 import 'package:autobot/components/yaml_to_map.dart';
 import 'package:autobot/config_reader.dart';
 import 'package:autobot/tell.dart';
@@ -129,7 +129,7 @@ class RunCommand extends Command with TextRenderable {
 
     final outputTask = OutputTask(
       fileContent: render(step.content),
-      outputPath: render(step.path),
+      outputPath: render(step.file),
       writeMethod: WriteMethod.from(
         name: render(step.writeMethod),
         extendAt: render(step.extendAt),

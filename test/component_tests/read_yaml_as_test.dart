@@ -1,5 +1,5 @@
 import 'package:autobot/commands/run/models/template.dart';
-import 'package:autobot/components/read_yaml_as.dart';
+import 'package:autobot/components/task/task.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';

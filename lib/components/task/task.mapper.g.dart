@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_mappable/dart_mappable.dart';
 
-import 'template.dart';
+import 'task.dart';
 
 
 // === ALL STATICALLY REGISTERED MAPPERS ===
@@ -22,13 +22,13 @@ var _mappers = <String, BaseMapper>{
   // class mappers
   _typeOf<MetaNode>(): MetaNodeMapper._(),
   _typeOf<StepNode>(): StepNodeMapper._(),
-  _typeOf<AskStep>(): AskStepMapper._(),
   _typeOf<VariablesStep>(): VariablesStepMapper._(),
+  _typeOf<AskStep>(): AskStepMapper._(),
   _typeOf<ReadStep>(): ReadStepMapper._(),
   _typeOf<JavascriptStep>(): JavascriptStepMapper._(),
-  _typeOf<ShellScriptStep>(): ShellScriptStepMapper._(),
-  _typeOf<WriteStep>(): WriteStepMapper._(),
   _typeOf<RunTaskStep>(): RunTaskStepMapper._(),
+  _typeOf<CommandStep>(): CommandStepMapper._(),
+  _typeOf<WriteStep>(): WriteStepMapper._(),
   // enum mappers
   // custom mappers
 };
@@ -78,10 +78,10 @@ class StepNodeMapper extends BaseMapper<StepNode> {
   StepNode decode(dynamic v) => _checked(v, (Map<String, dynamic> map) {
     switch(map['type']) {
       case 'AskStep': return AskStepMapper._().decode(map);
+      case 'CommandStep': return CommandStepMapper._().decode(map);
       case 'JavascriptStep': return JavascriptStepMapper._().decode(map);
       case 'ReadStep': return ReadStepMapper._().decode(map);
       case 'RunTaskStep': return RunTaskStepMapper._().decode(map);
-      case 'ShellScriptStep': return ShellScriptStepMapper._().decode(map);
       case 'VariablesStep': return VariablesStepMapper._().decode(map);
       case 'WriteStep': return WriteStepMapper._().decode(map);
       default: return fromMap(map);
@@ -91,13 +91,13 @@ class StepNodeMapper extends BaseMapper<StepNode> {
 
   @override Function get encoder => (StepNode v) => encode(v);
   dynamic encode(StepNode v) {
-    if (v is AskStep) { return AskStepMapper._().encode(v); }
-    else if (v is VariablesStep) { return VariablesStepMapper._().encode(v); }
+    if (v is VariablesStep) { return VariablesStepMapper._().encode(v); }
+    else if (v is AskStep) { return AskStepMapper._().encode(v); }
     else if (v is ReadStep) { return ReadStepMapper._().encode(v); }
     else if (v is JavascriptStep) { return JavascriptStepMapper._().encode(v); }
-    else if (v is ShellScriptStep) { return ShellScriptStepMapper._().encode(v); }
-    else if (v is WriteStep) { return WriteStepMapper._().encode(v); }
     else if (v is RunTaskStep) { return RunTaskStepMapper._().encode(v); }
+    else if (v is CommandStep) { return CommandStepMapper._().encode(v); }
+    else if (v is WriteStep) { return WriteStepMapper._().encode(v); }
     else { return toMap(v); }
   }
   Map<String, dynamic> toMap(StepNode s) => {};
@@ -112,41 +112,6 @@ class StepNodeMapper extends BaseMapper<StepNode> {
 extension StepNodeMapperExtension on StepNode {
   String toJson() => Mapper.toJson(this);
   Map<String, dynamic> toMap() => Mapper.toMap(this);
-}
-
-class AskStepMapper extends BaseMapper<AskStep> {
-  AskStepMapper._();
-
-  @override Function get decoder => decode;
-  AskStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  AskStep fromMap(Map<String, dynamic> map) => AskStep(map.get('key'), map.get('prompt'));
-
-  @override Function get encoder => (AskStep v) => encode(v);
-  dynamic encode(AskStep v) => toMap(v);
-  Map<String, dynamic> toMap(AskStep a) => {'key': Mapper.toValue(a.key), 'prompt': Mapper.toValue(a.prompt), 'type': 'AskStep'};
-
-  @override String? stringify(AskStep self) => 'AskStep(key: ${Mapper.asString(self.key)}, prompt: ${Mapper.asString(self.prompt)})';
-  @override int? hash(AskStep self) => Mapper.hash(self.key) ^ Mapper.hash(self.prompt);
-  @override bool? equals(AskStep self, AskStep other) => Mapper.isEqual(self.key, other.key) && Mapper.isEqual(self.prompt, other.prompt);
-
-  @override Function get typeFactory => (f) => f<AskStep>();
-}
-
-extension AskStepMapperExtension on AskStep {
-  String toJson() => Mapper.toJson(this);
-  Map<String, dynamic> toMap() => Mapper.toMap(this);
-  AskStepCopyWith<AskStep> get copyWith => AskStepCopyWith(this, _$identity);
-}
-
-abstract class AskStepCopyWith<$R> {
-  factory AskStepCopyWith(AskStep value, Then<AskStep, $R> then) = _AskStepCopyWithImpl<$R>;
-  $R call({String? key, String? prompt});
-}
-
-class _AskStepCopyWithImpl<$R> extends BaseCopyWith<AskStep, $R> implements AskStepCopyWith<$R> {
-  _AskStepCopyWithImpl(AskStep value, Then<AskStep, $R> then) : super(value, then);
-
-  @override $R call({String? key, String? prompt}) => _then(AskStep(key ?? _value.key, prompt ?? _value.prompt));
 }
 
 class VariablesStepMapper extends BaseMapper<VariablesStep> {
@@ -184,12 +149,47 @@ class _VariablesStepCopyWithImpl<$R> extends BaseCopyWith<VariablesStep, $R> imp
   @override $R call({List<Map<String, dynamic>>? vars}) => _then(VariablesStep(vars ?? _value.vars));
 }
 
+class AskStepMapper extends BaseMapper<AskStep> {
+  AskStepMapper._();
+
+  @override Function get decoder => decode;
+  AskStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
+  AskStep fromMap(Map<String, dynamic> map) => AskStep(map.get('key'), map.get('prompt'));
+
+  @override Function get encoder => (AskStep v) => encode(v);
+  dynamic encode(AskStep v) => toMap(v);
+  Map<String, dynamic> toMap(AskStep a) => {'key': Mapper.toValue(a.key), 'prompt': Mapper.toValue(a.prompt), 'type': 'AskStep'};
+
+  @override String? stringify(AskStep self) => 'AskStep(key: ${Mapper.asString(self.key)}, prompt: ${Mapper.asString(self.prompt)})';
+  @override int? hash(AskStep self) => Mapper.hash(self.key) ^ Mapper.hash(self.prompt);
+  @override bool? equals(AskStep self, AskStep other) => Mapper.isEqual(self.key, other.key) && Mapper.isEqual(self.prompt, other.prompt);
+
+  @override Function get typeFactory => (f) => f<AskStep>();
+}
+
+extension AskStepMapperExtension on AskStep {
+  String toJson() => Mapper.toJson(this);
+  Map<String, dynamic> toMap() => Mapper.toMap(this);
+  AskStepCopyWith<AskStep> get copyWith => AskStepCopyWith(this, _$identity);
+}
+
+abstract class AskStepCopyWith<$R> {
+  factory AskStepCopyWith(AskStep value, Then<AskStep, $R> then) = _AskStepCopyWithImpl<$R>;
+  $R call({String? key, String? prompt});
+}
+
+class _AskStepCopyWithImpl<$R> extends BaseCopyWith<AskStep, $R> implements AskStepCopyWith<$R> {
+  _AskStepCopyWithImpl(AskStep value, Then<AskStep, $R> then) : super(value, then);
+
+  @override $R call({String? key, String? prompt}) => _then(AskStep(key ?? _value.key, prompt ?? _value.prompt));
+}
+
 class ReadStepMapper extends BaseMapper<ReadStep> {
   ReadStepMapper._();
 
   @override Function get decoder => decode;
   ReadStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  ReadStep fromMap(Map<String, dynamic> map) => ReadStep(map.get('file'), map.get('required'));
+  ReadStep fromMap(Map<String, dynamic> map) => ReadStep(map.get('file'), required: map.getOpt('required') ?? false);
 
   @override Function get encoder => (ReadStep v) => encode(v);
   dynamic encode(ReadStep v) => toMap(v);
@@ -216,7 +216,7 @@ abstract class ReadStepCopyWith<$R> {
 class _ReadStepCopyWithImpl<$R> extends BaseCopyWith<ReadStep, $R> implements ReadStepCopyWith<$R> {
   _ReadStepCopyWithImpl(ReadStep value, Then<ReadStep, $R> then) : super(value, then);
 
-  @override $R call({String? file, bool? required}) => _then(ReadStep(file ?? _value.file, required ?? _value.required));
+  @override $R call({String? file, bool? required}) => _then(ReadStep(file ?? _value.file, required: required ?? _value.required));
 }
 
 class JavascriptStepMapper extends BaseMapper<JavascriptStep> {
@@ -224,15 +224,15 @@ class JavascriptStepMapper extends BaseMapper<JavascriptStep> {
 
   @override Function get decoder => decode;
   JavascriptStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  JavascriptStep fromMap(Map<String, dynamic> map) => JavascriptStep(map.get('runJavascript'));
+  JavascriptStep fromMap(Map<String, dynamic> map) => JavascriptStep(map.get('run'));
 
   @override Function get encoder => (JavascriptStep v) => encode(v);
   dynamic encode(JavascriptStep v) => toMap(v);
-  Map<String, dynamic> toMap(JavascriptStep j) => {'runJavascript': Mapper.toValue(j.run_javascript), 'type': 'JavascriptStep'};
+  Map<String, dynamic> toMap(JavascriptStep j) => {'run': Mapper.toValue(j.run), 'type': 'JavascriptStep'};
 
-  @override String? stringify(JavascriptStep self) => 'JavascriptStep(run_javascript: ${Mapper.asString(self.run_javascript)})';
-  @override int? hash(JavascriptStep self) => Mapper.hash(self.run_javascript);
-  @override bool? equals(JavascriptStep self, JavascriptStep other) => Mapper.isEqual(self.run_javascript, other.run_javascript);
+  @override String? stringify(JavascriptStep self) => 'JavascriptStep(run: ${Mapper.asString(self.run)})';
+  @override int? hash(JavascriptStep self) => Mapper.hash(self.run);
+  @override bool? equals(JavascriptStep self, JavascriptStep other) => Mapper.isEqual(self.run, other.run);
 
   @override Function get typeFactory => (f) => f<JavascriptStep>();
 }
@@ -245,83 +245,13 @@ extension JavascriptStepMapperExtension on JavascriptStep {
 
 abstract class JavascriptStepCopyWith<$R> {
   factory JavascriptStepCopyWith(JavascriptStep value, Then<JavascriptStep, $R> then) = _JavascriptStepCopyWithImpl<$R>;
-  $R call({String? run_javascript});
+  $R call({String? run});
 }
 
 class _JavascriptStepCopyWithImpl<$R> extends BaseCopyWith<JavascriptStep, $R> implements JavascriptStepCopyWith<$R> {
   _JavascriptStepCopyWithImpl(JavascriptStep value, Then<JavascriptStep, $R> then) : super(value, then);
 
-  @override $R call({String? run_javascript}) => _then(JavascriptStep(run_javascript ?? _value.run_javascript));
-}
-
-class ShellScriptStepMapper extends BaseMapper<ShellScriptStep> {
-  ShellScriptStepMapper._();
-
-  @override Function get decoder => decode;
-  ShellScriptStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  ShellScriptStep fromMap(Map<String, dynamic> map) => ShellScriptStep(map.get('runCommand'));
-
-  @override Function get encoder => (ShellScriptStep v) => encode(v);
-  dynamic encode(ShellScriptStep v) => toMap(v);
-  Map<String, dynamic> toMap(ShellScriptStep s) => {'runCommand': Mapper.toValue(s.run_command), 'type': 'ShellScriptStep'};
-
-  @override String? stringify(ShellScriptStep self) => 'ShellScriptStep(run_command: ${Mapper.asString(self.run_command)})';
-  @override int? hash(ShellScriptStep self) => Mapper.hash(self.run_command);
-  @override bool? equals(ShellScriptStep self, ShellScriptStep other) => Mapper.isEqual(self.run_command, other.run_command);
-
-  @override Function get typeFactory => (f) => f<ShellScriptStep>();
-}
-
-extension ShellScriptStepMapperExtension on ShellScriptStep {
-  String toJson() => Mapper.toJson(this);
-  Map<String, dynamic> toMap() => Mapper.toMap(this);
-  ShellScriptStepCopyWith<ShellScriptStep> get copyWith => ShellScriptStepCopyWith(this, _$identity);
-}
-
-abstract class ShellScriptStepCopyWith<$R> {
-  factory ShellScriptStepCopyWith(ShellScriptStep value, Then<ShellScriptStep, $R> then) = _ShellScriptStepCopyWithImpl<$R>;
-  $R call({String? run_command});
-}
-
-class _ShellScriptStepCopyWithImpl<$R> extends BaseCopyWith<ShellScriptStep, $R> implements ShellScriptStepCopyWith<$R> {
-  _ShellScriptStepCopyWithImpl(ShellScriptStep value, Then<ShellScriptStep, $R> then) : super(value, then);
-
-  @override $R call({String? run_command}) => _then(ShellScriptStep(run_command ?? _value.run_command));
-}
-
-class WriteStepMapper extends BaseMapper<WriteStep> {
-  WriteStepMapper._();
-
-  @override Function get decoder => decode;
-  WriteStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  WriteStep fromMap(Map<String, dynamic> map) => WriteStep(map.get('path'), map.get('content'), writeMethod: map.getOpt('writeMethod') ?? 'default', enabled: map.getOpt('enabled') ?? 'yes', extendAt: map.getOpt('extendAt') ?? 'bottom');
-
-  @override Function get encoder => (WriteStep v) => encode(v);
-  dynamic encode(WriteStep v) => toMap(v);
-  Map<String, dynamic> toMap(WriteStep w) => {'path': Mapper.toValue(w.path), 'content': Mapper.toValue(w.content), 'writeMethod': Mapper.toValue(w.writeMethod), 'enabled': Mapper.toValue(w.enabled), 'extendAt': Mapper.toValue(w.extendAt), 'type': 'WriteStep'};
-
-  @override String? stringify(WriteStep self) => 'WriteStep(path: ${Mapper.asString(self.path)}, content: ${Mapper.asString(self.content)}, writeMethod: ${Mapper.asString(self.writeMethod)}, enabled: ${Mapper.asString(self.enabled)}, extendAt: ${Mapper.asString(self.extendAt)})';
-  @override int? hash(WriteStep self) => Mapper.hash(self.path) ^ Mapper.hash(self.content) ^ Mapper.hash(self.writeMethod) ^ Mapper.hash(self.enabled) ^ Mapper.hash(self.extendAt);
-  @override bool? equals(WriteStep self, WriteStep other) => Mapper.isEqual(self.path, other.path) && Mapper.isEqual(self.content, other.content) && Mapper.isEqual(self.writeMethod, other.writeMethod) && Mapper.isEqual(self.enabled, other.enabled) && Mapper.isEqual(self.extendAt, other.extendAt);
-
-  @override Function get typeFactory => (f) => f<WriteStep>();
-}
-
-extension WriteStepMapperExtension on WriteStep {
-  String toJson() => Mapper.toJson(this);
-  Map<String, dynamic> toMap() => Mapper.toMap(this);
-  WriteStepCopyWith<WriteStep> get copyWith => WriteStepCopyWith(this, _$identity);
-}
-
-abstract class WriteStepCopyWith<$R> {
-  factory WriteStepCopyWith(WriteStep value, Then<WriteStep, $R> then) = _WriteStepCopyWithImpl<$R>;
-  $R call({String? path, String? content, String? writeMethod, String? enabled, String? extendAt});
-}
-
-class _WriteStepCopyWithImpl<$R> extends BaseCopyWith<WriteStep, $R> implements WriteStepCopyWith<$R> {
-  _WriteStepCopyWithImpl(WriteStep value, Then<WriteStep, $R> then) : super(value, then);
-
-  @override $R call({String? path, String? content, String? writeMethod, String? enabled, String? extendAt}) => _then(WriteStep(path ?? _value.path, content ?? _value.content, writeMethod: writeMethod ?? _value.writeMethod, enabled: enabled ?? _value.enabled, extendAt: extendAt ?? _value.extendAt));
+  @override $R call({String? run}) => _then(JavascriptStep(run ?? _value.run));
 }
 
 class RunTaskStepMapper extends BaseMapper<RunTaskStep> {
@@ -357,6 +287,76 @@ class _RunTaskStepCopyWithImpl<$R> extends BaseCopyWith<RunTaskStep, $R> impleme
   _RunTaskStepCopyWithImpl(RunTaskStep value, Then<RunTaskStep, $R> then) : super(value, then);
 
   @override $R call({String? file}) => _then(RunTaskStep(file ?? _value.file));
+}
+
+class CommandStepMapper extends BaseMapper<CommandStep> {
+  CommandStepMapper._();
+
+  @override Function get decoder => decode;
+  CommandStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
+  CommandStep fromMap(Map<String, dynamic> map) => CommandStep(map.get('run'));
+
+  @override Function get encoder => (CommandStep v) => encode(v);
+  dynamic encode(CommandStep v) => toMap(v);
+  Map<String, dynamic> toMap(CommandStep c) => {'run': Mapper.toValue(c.run), 'type': 'CommandStep'};
+
+  @override String? stringify(CommandStep self) => 'CommandStep(run: ${Mapper.asString(self.run)})';
+  @override int? hash(CommandStep self) => Mapper.hash(self.run);
+  @override bool? equals(CommandStep self, CommandStep other) => Mapper.isEqual(self.run, other.run);
+
+  @override Function get typeFactory => (f) => f<CommandStep>();
+}
+
+extension CommandStepMapperExtension on CommandStep {
+  String toJson() => Mapper.toJson(this);
+  Map<String, dynamic> toMap() => Mapper.toMap(this);
+  CommandStepCopyWith<CommandStep> get copyWith => CommandStepCopyWith(this, _$identity);
+}
+
+abstract class CommandStepCopyWith<$R> {
+  factory CommandStepCopyWith(CommandStep value, Then<CommandStep, $R> then) = _CommandStepCopyWithImpl<$R>;
+  $R call({String? run});
+}
+
+class _CommandStepCopyWithImpl<$R> extends BaseCopyWith<CommandStep, $R> implements CommandStepCopyWith<$R> {
+  _CommandStepCopyWithImpl(CommandStep value, Then<CommandStep, $R> then) : super(value, then);
+
+  @override $R call({String? run}) => _then(CommandStep(run ?? _value.run));
+}
+
+class WriteStepMapper extends BaseMapper<WriteStep> {
+  WriteStepMapper._();
+
+  @override Function get decoder => decode;
+  WriteStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
+  WriteStep fromMap(Map<String, dynamic> map) => WriteStep(map.get('file'), map.get('content'), writeMethod: map.getOpt('writeMethod') ?? 'default', enabled: map.getOpt('enabled') ?? 'yes', extendAt: map.getOpt('extendAt') ?? 'bottom');
+
+  @override Function get encoder => (WriteStep v) => encode(v);
+  dynamic encode(WriteStep v) => toMap(v);
+  Map<String, dynamic> toMap(WriteStep w) => {'file': Mapper.toValue(w.file), 'content': Mapper.toValue(w.content), 'writeMethod': Mapper.toValue(w.writeMethod), 'enabled': Mapper.toValue(w.enabled), 'extendAt': Mapper.toValue(w.extendAt), 'type': 'WriteStep'};
+
+  @override String? stringify(WriteStep self) => 'WriteStep(file: ${Mapper.asString(self.file)}, content: ${Mapper.asString(self.content)}, writeMethod: ${Mapper.asString(self.writeMethod)}, enabled: ${Mapper.asString(self.enabled)}, extendAt: ${Mapper.asString(self.extendAt)})';
+  @override int? hash(WriteStep self) => Mapper.hash(self.file) ^ Mapper.hash(self.content) ^ Mapper.hash(self.writeMethod) ^ Mapper.hash(self.enabled) ^ Mapper.hash(self.extendAt);
+  @override bool? equals(WriteStep self, WriteStep other) => Mapper.isEqual(self.file, other.file) && Mapper.isEqual(self.content, other.content) && Mapper.isEqual(self.writeMethod, other.writeMethod) && Mapper.isEqual(self.enabled, other.enabled) && Mapper.isEqual(self.extendAt, other.extendAt);
+
+  @override Function get typeFactory => (f) => f<WriteStep>();
+}
+
+extension WriteStepMapperExtension on WriteStep {
+  String toJson() => Mapper.toJson(this);
+  Map<String, dynamic> toMap() => Mapper.toMap(this);
+  WriteStepCopyWith<WriteStep> get copyWith => WriteStepCopyWith(this, _$identity);
+}
+
+abstract class WriteStepCopyWith<$R> {
+  factory WriteStepCopyWith(WriteStep value, Then<WriteStep, $R> then) = _WriteStepCopyWithImpl<$R>;
+  $R call({String? file, String? content, String? writeMethod, String? enabled, String? extendAt});
+}
+
+class _WriteStepCopyWithImpl<$R> extends BaseCopyWith<WriteStep, $R> implements WriteStepCopyWith<$R> {
+  _WriteStepCopyWithImpl(WriteStep value, Then<WriteStep, $R> then) : super(value, then);
+
+  @override $R call({String? file, String? content, String? writeMethod, String? enabled, String? extendAt}) => _then(WriteStep(file ?? _value.file, content ?? _value.content, writeMethod: writeMethod ?? _value.writeMethod, enabled: enabled ?? _value.enabled, extendAt: extendAt ?? _value.extendAt));
 }
 
 

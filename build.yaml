@@ -3,7 +3,7 @@ targets:
     builders:
       dart_mappable:
         generate_for:
-          - lib/commands/run/models/template.dart
+          - lib/components/task/task.dart
           # - lib/autobot.dart
 
         options:
@@ -15,7 +15,7 @@ targets:
               VariablesStep,
               ReadStep,
               JavascriptStep,
-              ShellScriptStep,
+              CommandStep,
               WriteStep,
               RunTaskStep,
             ]

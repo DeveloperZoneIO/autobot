@@ -1,6 +1,6 @@
 import 'package:autobot/commands/run/models/template.dart';
 import 'package:autobot/components/components.dart';
-import 'package:autobot/components/read_yaml_as.dart';
+import 'package:autobot/components/task/task.dart';
 import 'package:autobot/components/yaml_to_map.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
