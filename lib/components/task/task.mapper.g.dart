@@ -119,7 +119,7 @@ class VariablesStepMapper extends BaseMapper<VariablesStep> {
 
   @override Function get decoder => decode;
   VariablesStep decode(dynamic v) => _checked(v, (Map<String, dynamic> map) => fromMap(map));
-  VariablesStep fromMap(Map<String, dynamic> map) => VariablesStep(map.getList('vars'));
+  VariablesStep fromMap(Map<String, dynamic> map) => VariablesStep(map.getMap('vars'));
 
   @override Function get encoder => (VariablesStep v) => encode(v);
   dynamic encode(VariablesStep v) => toMap(v);
@@ -140,13 +140,13 @@ extension VariablesStepMapperExtension on VariablesStep {
 
 abstract class VariablesStepCopyWith<$R> {
   factory VariablesStepCopyWith(VariablesStep value, Then<VariablesStep, $R> then) = _VariablesStepCopyWithImpl<$R>;
-  $R call({List<Map<String, dynamic>>? vars});
+  $R call({Map<String, dynamic>? vars});
 }
 
 class _VariablesStepCopyWithImpl<$R> extends BaseCopyWith<VariablesStep, $R> implements VariablesStepCopyWith<$R> {
   _VariablesStepCopyWithImpl(VariablesStep value, Then<VariablesStep, $R> then) : super(value, then);
 
-  @override $R call({List<Map<String, dynamic>>? vars}) => _then(VariablesStep(vars ?? _value.vars));
+  @override $R call({Map<String, dynamic>? vars}) => _then(VariablesStep(vars ?? _value.vars));
 }
 
 class AskStepMapper extends BaseMapper<AskStep> {

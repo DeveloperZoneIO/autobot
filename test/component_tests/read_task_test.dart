@@ -40,9 +40,15 @@ void main() {
 
   test('readTask() -> Can parse variables step', () {
     final steps = task.steps.whereType<VariablesStep>();
+    final vars = steps.first.vars;
     expect(steps.length, 1);
-    expect(steps.first.vars.first['key'], 'value');
-    expect(steps.first.vars[1]['key2'], 'value');
+    expect(vars['key'], 'value');
+    expect(vars['key2'], 'value');
+    expect(vars['sub_map']['sub_map_key_1'], 1);
+    expect(vars['sub_map']['sub_map_key_2'], 2);
+    expect(vars['list'].length, 2);
+    expect(vars['list'][0], 'a');
+    expect(vars['list'][1], 'b');
   });
 
   test('readTask() -> Can parse ask step', () {

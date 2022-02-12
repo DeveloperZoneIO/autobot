@@ -4,8 +4,14 @@ meta:
 
 steps:
   - vars:
-      - key: value
-      - key2: value
+    key: value
+    key2: value
+    sub_map:
+      sub_map_key_1: 1
+      sub_map_key_2: 2
+    list:
+      - a
+      - b
 
   - ask:
     key: a

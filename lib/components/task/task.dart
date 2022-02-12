@@ -41,7 +41,7 @@ Task _getTaskFromFile(String filePath) {
       case 'ask':
         return Mapper.fromMap<AskStep>(map);
       case 'vars':
-        return Mapper.fromMap<VariablesStep>(map);
+        return VariablesStep(map..remove('vars'));
       case 'read':
         return Mapper.fromMap<ReadStep>(map);
       case 'javascript':

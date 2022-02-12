@@ -4,8 +4,6 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:autobot/autobot.dart';
-import 'package:autobot/commands/run/models/template.dart';
-import 'package:autobot/commands/run/models/template.mapper.g.dart';
 import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/path_util.dart';
@@ -85,20 +83,20 @@ class RunCommand extends Command with TextRenderable {
     // TODO: Replace with: readYamlAs<RunConfig>();
     // TODO: Remove RunConfig and use Config only
     config = readConfig();
-    final task = readYamlAs<TaskNode>(templateFilePath);
+    final task = Task.fromFile(templateFilePath);
 
     renderVariables.clear();
     renderVariables.addAll(Platform.environment);
     renderVariables.addAll(parsePairs(inputArgument));
     renderVariables.addAll(readInputFiles(inputFileArgument));
 
-    // for (final step in task.steps) {
-    //   if (step is AskStep) readInput(step.key, step.prompt);
-    //   if (step is VarsStep) renderVariables.addAll(step.vars);
-    //   if (step is WriteStep) writeOutput(step as WriteStep);
-    //   if (step is RunJavascriptStep) runJs(step.run_javascript);
-    //   if (step is ShellStep) runShell(step.run_command);
-    // }
+    for (final step in task.steps) {
+      if (step is VariablesStep) renderVariables.addAll(step.vars);
+      // if (step is AskStep) readInput(step.key, step.prompt);
+      // if (step is WriteStep) writeOutput(step as WriteStep);
+      // if (step is RunJavascriptStep) runJs(step.run_javascript);
+      // if (step is ShellStep) runShell(step.run_command);
+    }
 
     // final processedVariables = runScripts(template.scripts, variables: allVariables);
     // final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
