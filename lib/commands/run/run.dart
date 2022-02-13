@@ -102,6 +102,7 @@ class RunCommand extends Command with TextRenderable {
       if (step is JavascriptStep) runJs(step.run);
       if (step is CommandStep) runShell(step.run);
       if (step is WriteStep) writeOutput(step);
+      if (step is ReadStep) readFile(step);
     }
 
     // final processedVariables = runScripts(template.scripts, variables: allVariables);
@@ -141,10 +142,32 @@ class RunCommand extends Command with TextRenderable {
     writeOutputs([outputTask]);
   }
 
+  void readFile(ReadStep step) {
+    if (step.required) {
+      renderVariables.addAll(readInputFiles([step.file]));
+      return;
+    }
+
+    final result = tryReadInputFiles([step.file]);
+    if (result != null) {
+      renderVariables.addAll(result);
+    }
+  }
+
   Map<String, dynamic> readInputFiles(List<String> paths) {
     final yamls = paths.map(readYaml);
     final contentMaps = yamls.map(yamlToMap);
     return contentMaps.isEmpty ? {} : contentMaps.reduce(merge);
+  }
+
+  Map<String, dynamic>? tryReadInputFiles(List<String> paths) {
+    try {
+      final yamls = paths.map(readYaml);
+      final contentMaps = yamls.map(yamlToMap);
+      return contentMaps.isEmpty ? {} : contentMaps.reduce(merge);
+    } catch (_) {
+      return null;
+    }
   }
 }
 

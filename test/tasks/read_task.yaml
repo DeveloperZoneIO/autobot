@@ -2,43 +2,13 @@ meta:
   title: BigTask
   description: Serves as a big test task for testing autobot
 
-steps:
-  - ask:
-    key: a
-    prompt: prompt_a
-
-  - ask:
-    key: b
-    prompt: prompt_b
-
-  - ask:
-    key: c
-    prompt: prompt_c
-
-  - javascript:
-    run: autobot.inputs.var1 = "a"
-  
-  - javascript:
-    run: autobot.inputs.var2 = "b"
+steps:  
+  - read:
+    file: test/variable_files/includable.yaml
 
   - write:
     file: result.txt
-    enabled: true
-    writeMethod: extendFile
-    extendAt: top
-    content: |
-      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-  
-  - write:
-    file: result2.txt
-    writeMethod: extendFile
-    extendAt: top
-    content: |
-      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-
-  - read:
-    file: variable_files/includable.yaml
-
+    content: "{{var_from_includable}} + {{var2_from_includable}}"
 # - read:
 #   file: buildConfig/{{env}}_buil.yaml
 #   required: false

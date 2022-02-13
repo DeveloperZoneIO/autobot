@@ -108,4 +108,14 @@ class BuildConfig {
     delete(filePath1);
     delete(filePath2);
   });
+
+  test('autobot run -> Can read in yaml files.', () {
+    autobot.main(["run", "-t", "read_task"]);
+
+    final resultFilePath = '$pwd/result.txt';
+    expect(exists(resultFilePath), true);
+
+    expect(read(resultFilePath).toParagraph(), "abc123! + 123456789");
+    delete(resultFilePath);
+  });
 }
