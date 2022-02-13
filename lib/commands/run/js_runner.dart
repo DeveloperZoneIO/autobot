@@ -13,9 +13,12 @@ class JsRunner extends ScriptRunner {
   /// - proviing a `autobot.inputs` object to the javascript form template
   /// - returning the `autobot.inputs` object
   String _prepareScript(String scriptContent, Map<String, dynamic> variables) {
+    final jsConformVariablesMap = variables.unstringifyMapValues();
+    final variablesJson = jsonEncode(jsConformVariablesMap);
+
     return '''
     var autobot = {}
-    autobot.variables = JSON.parse('${jsonEncode(variables)}')
+    autobot.variables = JSON.parse('$variablesJson')
 
     $scriptContent
 
@@ -33,6 +36,7 @@ class JsRunner extends ScriptRunner {
     final temporaryJsFile = '$pwd/.temporary_script_execution_file.js';
     temporaryJsFile.write(javascript);
 
+    // ignore: deprecated_member_use
     final jsResult = waitFor(
       Script.pipeline([
         Script('node $temporaryJsFile'),
@@ -40,8 +44,16 @@ class JsRunner extends ScriptRunner {
       timeout: const Duration(seconds: 5),
     );
 
+    // ignore: deprecated_member_use
     waitFor(Future.delayed(const Duration(milliseconds: 10)));
     delete(temporaryJsFile);
+
+    if (jsResult.isEmpty) {
+      throw TellUser((tell) {
+        tell(red('Seems like you haven\'t installed node.'));
+        tell('Please ensure node is installed in you command line');
+      });
+    }
 
     return jsonDecode(jsResult);
   }

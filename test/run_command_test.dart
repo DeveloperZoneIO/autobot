@@ -95,12 +95,12 @@ class BuildConfig {
 
   test('autobot run -> shell.', () {
     final filePath1 = '$pwd/sh_result.txt';
-    final filePath2 = '$pwd/shellVarValue';
+    final filePath2 = '$pwd/sh_result_2.txt';
 
     if (exists(filePath1)) delete(filePath1);
     if (exists(filePath2)) delete(filePath2);
 
-    autobot.main(["run", "-t", "shell_task", "-i", "shellVar=shellVarValue"]);
+    autobot.main(["run", "-t", "shell_task", "-i", "shellVar=sh_result_2.txt"]);
 
     expect(exists(filePath1), true);
     expect(exists(filePath2), true);

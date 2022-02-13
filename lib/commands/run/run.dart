@@ -6,11 +6,14 @@ import 'package:args/command_runner.dart';
 import 'package:autobot/autobot.dart';
 import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/dcli_utils.dart';
+import 'package:autobot/common/exceptions.dart';
+import 'package:autobot/common/map_extension.dart';
 import 'package:autobot/common/path_util.dart';
 import 'package:autobot/common/types.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/components/components.dart';
 import 'package:autobot/components/parse_pair.dart';
+import 'package:autobot/components/read_yaml.dart';
 import 'package:autobot/components/task/task.dart';
 import 'package:autobot/components/yaml_to_map.dart';
 import 'package:autobot/config_reader.dart';
@@ -88,14 +91,17 @@ class RunCommand extends Command with TextRenderable {
     renderVariables.clear();
     renderVariables.addAll(Platform.environment);
     renderVariables.addAll(parsePairs(inputArgument));
-    renderVariables.addAll(readInputFiles(inputFileArgument));
+
+    final inputFilePaths = inputFileArgument + config.environmentFilePaths;
+    final fileMaps = readInputFiles(inputFilePaths);
+    renderVariables.addAll(fileMaps);
 
     for (final step in task.steps) {
       if (step is VariablesStep) renderVariables.addAll(step.vars);
-      // if (step is AskStep) readInput(step.key, step.prompt);
-      // if (step is WriteStep) writeOutput(step as WriteStep);
-      // if (step is RunJavascriptStep) runJs(step.run_javascript);
-      // if (step is ShellStep) runShell(step.run_command);
+      if (step is AskStep) askForInputIfMissing(step.key, step.prompt);
+      if (step is JavascriptStep) runJs(step.run);
+      if (step is CommandStep) runShell(step.run);
+      if (step is WriteStep) writeOutput(step);
     }
 
     // final processedVariables = runScripts(template.scripts, variables: allVariables);
@@ -110,12 +116,10 @@ class RunCommand extends Command with TextRenderable {
   }
 
   void runShell(String shellScript) {
-    final vars = ShellRunner(this).run(shellScript, renderVariables);
-    renderVariables.clear();
-    renderVariables.addAll(vars);
+    ShellRunner(this).run(shellScript, renderVariables);
   }
 
-  void readInput(String key, String prompt) {
+  void askForInputIfMissing(String key, String prompt) {
     if (!renderVariables.containsKey(key)) {
       renderVariables[key] = ask(yellow(prompt));
     }

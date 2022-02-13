@@ -3,10 +3,6 @@ meta:
   description: Serves as a big test task for testing autobot
 
 steps:
-  - vars:
-      - key: value
-      - key2: value
-
   - ask:
     key: a
     prompt: prompt_a
@@ -18,7 +14,28 @@ steps:
   - ask:
     key: c
     prompt: prompt_c
-    
+
+  - javascript:
+    run: autobot.inputs.var1 = "a"
+  
+  - javascript:
+    run: autobot.inputs.var2 = "b"
+
+  - write:
+    file: result.txt
+    enabled: true
+    writeMethod: extendFile
+    extendAt: top
+    content: |
+      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+  
+  - write:
+    file: result2.txt
+    writeMethod: extendFile
+    extendAt: top
+    content: |
+      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+
 # - read:
 #   file: buildConfig/{{env}}_buil.yaml
 #   required: false

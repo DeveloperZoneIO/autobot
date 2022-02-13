@@ -1,41 +1,27 @@
-outputs:
-  - path: letters.txt
+steps:
+  - write:
+    file: letters.txt
     content: abc
 
-  - path: letters.txt
+  - write:
+    file: letters.txt
     writeMethod: extendFile
     content: def
 
-  - path: letters.txt
+  - write:
+    file: letters.txt
     writeMethod: extendFile
     extendAt: bottom
     content: ghi
 
-  - path: letters.txt
+  - write:
+    file: letters.txt
     writeMethod: extendFile
     extendAt: top
     content: LETTERS
 
-  - path: letters.txt
+  - write:
+    file: letters.txt
     writeMethod: extendFile
     extendAt: LETTERS
     content: " ---"
-
-task:
-  body:
-    - output:
-        path: letters.txt
-        content: abc
-
-meta:
-  name: some random task
-  description: This task does currently nothing
-
-steps:
-  - type: ask
-    key:
-  - type: output
-    path: slkfjlaks
-    content: lskjfklaj
-
-  - type: variable

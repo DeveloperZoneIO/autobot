@@ -58,8 +58,15 @@ Task _getTaskFromFile(String filePath) {
     }
   }).toList();
 
+  final metaMap = taskMap['meta'];
+  MetaNode? meta;
+
+  if (metaMap != null) {
+    meta = Mapper.fromMap(metaMap);
+  }
+
   return Task(
-    meta: Mapper.fromMap(taskMap['meta']),
+    meta: meta,
     steps: steps,
   );
 }

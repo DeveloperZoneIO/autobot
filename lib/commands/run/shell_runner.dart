@@ -16,6 +16,7 @@ class ShellRunner extends ScriptRunner with TextRenderable {
   }
 
   void _run(String shellScript) {
+    // ignore: deprecated_member_use
     waitFor(
       Script.pipeline([
         Script(shellScript),
