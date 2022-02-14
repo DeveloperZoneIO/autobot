@@ -4,15 +4,16 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:autobot/autobot.dart';
+import 'package:autobot/commands/run/task_runner.dart';
 import 'package:autobot/common/collection_util.dart';
 import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/common/map_extension.dart';
 import 'package:autobot/common/path_util.dart';
-import 'package:autobot/common/types.dart';
 import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/components/components.dart';
 import 'package:autobot/components/parse_pair.dart';
+import 'package:autobot/components/read_data_file.dart';
 import 'package:autobot/components/read_yaml.dart';
 import 'package:autobot/components/task/task.dart';
 import 'package:autobot/components/yaml_to_map.dart';
@@ -43,7 +44,7 @@ part 'utils/string_to_bool.dart';
 /// Defines the run command of autobot.
 /// `autobot run -t <task_name>` runs the task machting to <task_name>.
 /// `autobot run -t <task_name> -i var1=a,var2=b` runs the task machting to <task_name> and inserts the given variables to autobot variables.
-class RunCommand extends Command with TextRenderable {
+class RunCommand extends Command with TextRenderable, StepHandlers {
   final kOptionTemplate = 'template';
   final kOptionTemplateAbbr = 't';
   final kOptionInput = 'input';
@@ -51,28 +52,18 @@ class RunCommand extends Command with TextRenderable {
   final kOptionInputFile = 'input-file';
   final kOptionInputFileAbbr = 'f';
 
-  RunCommand() {
-    _addOptions();
-  }
-
   late final RunConfig config;
 
   @override
   String get description => 'Runs a yaml template file.';
   @override
   String get name => 'run';
-
   String get templateFileName => argResults![kOptionTemplate] + '.yaml';
   String get templateFilePath => config.templateDirectory + templateFileName;
 
-  /// List of key-value string pairs from `--input`.
-  List<String> get inputArgument => argResults![kOptionInput] ?? const [];
-
-  /// List of input file paths form `--input-file`
-  List<String> get inputFileArgument => argResults![kOptionInputFile] ?? const [];
-
-  /// List of environment file paths
-  List<String> get environmentFilePaths => config.environmentFilePaths;
+  RunCommand() {
+    _addOptions();
+  }
 
   /// Adds all options to run command.
   void _addOptions() {
@@ -83,50 +74,64 @@ class RunCommand extends Command with TextRenderable {
 
   @override
   void run() async {
-    // TODO: Replace with: readYamlAs<RunConfig>();
     // TODO: Remove RunConfig and use Config only
-    config = readConfig();
+    config = RunConfigReader().readConfig();
+    final runner = TaskRunner();
+
+    renderData.clear();
+
+    // collect environment variables
+    renderData.addAll(Platform.environment);
+
+    // collect variables from cli arguments
+    final variablesFromArgs = argResults![kOptionInput] ?? const [];
+    final unpackedVariablesFromArgs = parsePairs(variablesFromArgs);
+    renderData.addAll(unpackedVariablesFromArgs);
+
+    // collect variables from files given by cli argument
+    final List<String> dataFilePathsArg = argResults![kOptionInputFile] ?? const [];
+    final allDataFilePaths = dataFilePathsArg + config.environmentFilePaths;
+    final dataFromAllFiles = readDataFromFiles(allDataFilePaths);
+    renderData.addAll(dataFromAllFiles);
+
     final task = Task.fromFile(templateFilePath);
 
-    renderVariables.clear();
-    renderVariables.addAll(Platform.environment);
-    renderVariables.addAll(parsePairs(inputArgument));
-
-    final inputFilePaths = inputFileArgument + config.environmentFilePaths;
-    final fileMaps = readInputFiles(inputFilePaths);
-    renderVariables.addAll(fileMaps);
-
     for (final step in task.steps) {
-      if (step is VariablesStep) renderVariables.addAll(step.vars);
-      if (step is AskStep) askForInputIfMissing(step.key, step.prompt);
-      if (step is JavascriptStep) runJs(step.run);
-      if (step is CommandStep) runShell(step.run);
-      if (step is WriteStep) writeOutput(step);
-      if (step is ReadStep) readFile(step);
+      if (step is VariablesStep) handleVariablesStep(step);
+      if (step is AskStep) handleAskStep(step.key, step.prompt);
+      if (step is JavascriptStep) handleJavascriptStep(step.run);
+      if (step is CommandStep) handleCommandStep(step.run);
+      if (step is WriteStep) handleWriteStep(step);
+      if (step is ReadStep) handleReadStep(step);
     }
 
-    // final processedVariables = runScripts(template.scripts, variables: allVariables);
-    // final tasks = buildOuputTasks(template.outputs, variables: processedVariables);
-    // writeOutputs(tasks);
+    await runner.run();
+  }
+}
+
+/// Wraps all step handlers for stucture reasons.
+mixin StepHandlers on TextRenderable {
+  void handleVariablesStep(VariablesStep step) {
+    renderData.addAll(step.vars);
   }
 
-  void runJs(String javascript) {
-    final vars = JsRunner(this).run(javascript, renderVariables);
-    renderVariables.clear();
-    renderVariables.addAll(vars);
+  void handleJavascriptStep(String javascript) {
+    final vars = JsRunner().run(javascript, renderData);
+    renderData.clear();
+    renderData.addAll(vars);
   }
 
-  void runShell(String shellScript) {
-    ShellRunner(this).run(shellScript, renderVariables);
+  void handleCommandStep(String shellScript) {
+    ShellRunner().run(shellScript, renderData);
   }
 
-  void askForInputIfMissing(String key, String prompt) {
-    if (!renderVariables.containsKey(key)) {
-      renderVariables[key] = ask(yellow(prompt));
+  void handleAskStep(String key, String prompt) {
+    if (!renderData.containsKey(key)) {
+      renderData[key] = ask(yellow(prompt));
     }
   }
 
-  void writeOutput(WriteStep step) {
+  void handleWriteStep(WriteStep step) {
     final writeFile = render(step.enabled).meansTrue;
     if (!writeFile) return;
 
@@ -139,60 +144,18 @@ class RunCommand extends Command with TextRenderable {
       ),
     );
 
-    writeOutputs([outputTask]);
+    OutputWriter().writeOutputs([outputTask]);
   }
 
-  void readFile(ReadStep step) {
+  void handleReadStep(ReadStep step) {
     if (step.required) {
-      renderVariables.addAll(readInputFiles([step.file]));
+      renderData.addAll(readDataFromFiles([step.file]));
       return;
     }
 
-    final result = tryReadInputFiles([step.file]);
+    final result = tryReadDataFromFile([step.file]);
     if (result != null) {
-      renderVariables.addAll(result);
+      renderData.addAll(result);
     }
   }
-
-  Map<String, dynamic> readInputFiles(List<String> paths) {
-    final yamls = paths.map(readYaml);
-    final contentMaps = yamls.map(yamlToMap);
-    return contentMaps.isEmpty ? {} : contentMaps.reduce(merge);
-  }
-
-  Map<String, dynamic>? tryReadInputFiles(List<String> paths) {
-    try {
-      final yamls = paths.map(readYaml);
-      final contentMaps = yamls.map(yamlToMap);
-      return contentMaps.isEmpty ? {} : contentMaps.reduce(merge);
-    } catch (_) {
-      return null;
-    }
-  }
-}
-
-/// Wraps all helpers in simple functions to make [RunCommand.run] easier to read.
-extension FunctionalRunCommand on RunCommand {
-  // TaskWrapper readTemplate() => RunTemplateReader(this).readTemplate();
-
-  // Map<String, String> readInputs(TaskWrapper template) =>
-  //     InputReader(this).collectInputsFromArgs().askForInputvalues(template);
-
-  Map<String, String> readEnvironment() => EnvironmentReader(this).readEnvironment();
-
-  Map<String, dynamic> readEnvironmentFile() => EnvironmentReader(this).readEnvironmentFiles();
-
-  RunConfig readConfig() => RunConfigReader(this).readConfig();
-
-  // List<OutputTask> buildOuputTasks(List<OutputDef> outputs,
-  //         {required Map<String, dynamic> variables}) =>
-  //     OutputTaskBuilder(this) //
-  //         .collectVariables(variables)
-  //         .buildTasks(outputs);
-
-  void writeOutputs(List<OutputTask> tasks) => OutputWriter(this).writeOutputs(tasks);
-
-  // Map<String, dynamic> runScripts(List<ScriptDef> scriptDefs,
-  //         {required Map<String, dynamic> variables}) =>
-  //     ScriptService(this).runScripts(scriptDefs, variables);
 }

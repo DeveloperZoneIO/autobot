@@ -1,10 +1,7 @@
 part of 'run.dart';
 
 /// Runs a javascript script.
-class JsRunner extends ScriptRunner {
-  JsRunner(RunCommand owner) : super(owner);
-
-  @override
+class JsRunner {
   Map<String, dynamic> run(String script, Map<String, dynamic> variables) {
     return _run(_prepareScript(script, variables));
   }

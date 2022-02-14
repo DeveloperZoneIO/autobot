@@ -2,10 +2,6 @@ part of 'run.dart';
 
 /// Helper for writting the putput files.
 class OutputWriter with TextRenderable {
-  OutputWriter(this.owner);
-
-  final RunCommand owner;
-
   /// Converts the given [tasks] into files and writes them.
   OutputWriter writeOutputs(List<OutputTask> tasks) {
     for (var task in tasks) {
