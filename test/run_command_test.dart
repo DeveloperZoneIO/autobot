@@ -118,4 +118,14 @@ class BuildConfig {
     expect(read(resultFilePath).toParagraph(), "abc123! + 123456789");
     delete(resultFilePath);
   });
+
+  test('autobot run -> Can run subtasks.', () {
+    autobot.main(["run", "-t", "with_subtask_task"]);
+
+    final resultFilePath = '$pwd/subtask_test_result.txt';
+    expect(exists(resultFilePath), true);
+
+    expect(read(resultFilePath).toParagraph(), "a, b, c, d");
+    delete(resultFilePath);
+  });
 }

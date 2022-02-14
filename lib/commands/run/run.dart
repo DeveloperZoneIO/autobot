@@ -44,7 +44,7 @@ part 'utils/string_to_bool.dart';
 /// Defines the run command of autobot.
 /// `autobot run -t <task_name>` runs the task machting to <task_name>.
 /// `autobot run -t <task_name> -i var1=a,var2=b` runs the task machting to <task_name> and inserts the given variables to autobot variables.
-class RunCommand extends Command with TextRenderable, StepHandlers {
+class RunCommand extends Command {
   final kOptionTemplate = 'template';
   final kOptionTemplateAbbr = 't';
   final kOptionInput = 'input';
@@ -59,7 +59,7 @@ class RunCommand extends Command with TextRenderable, StepHandlers {
   @override
   String get name => 'run';
   String get templateFileName => argResults![kOptionTemplate] + '.yaml';
-  String get templateFilePath => config.templateDirectory + templateFileName;
+  String get taskFilePath => config.templateDirectory + templateFileName;
 
   RunCommand() {
     _addOptions();
@@ -76,86 +76,24 @@ class RunCommand extends Command with TextRenderable, StepHandlers {
   void run() async {
     // TODO: Remove RunConfig and use Config only
     config = RunConfigReader().readConfig();
-    final runner = TaskRunner();
-
-    renderData.clear();
+    final runner = TaskRunner(taskDirectory: config.templateDirectory);
 
     // collect environment variables
-    renderData.addAll(Platform.environment);
+    runner.renderData.addAll(Platform.environment);
 
     // collect variables from cli arguments
     final variablesFromArgs = argResults![kOptionInput] ?? const [];
     final unpackedVariablesFromArgs = parsePairs(variablesFromArgs);
-    renderData.addAll(unpackedVariablesFromArgs);
+    runner.renderData.addAll(unpackedVariablesFromArgs);
 
     // collect variables from files given by cli argument
     final List<String> dataFilePathsArg = argResults![kOptionInputFile] ?? const [];
     final allDataFilePaths = dataFilePathsArg + config.environmentFilePaths;
     final dataFromAllFiles = readDataFromFiles(allDataFilePaths);
-    renderData.addAll(dataFromAllFiles);
+    runner.renderData.addAll(dataFromAllFiles);
 
-    final task = Task.fromFile(templateFilePath);
-
-    for (final step in task.steps) {
-      if (step is VariablesStep) handleVariablesStep(step);
-      if (step is AskStep) handleAskStep(step.key, step.prompt);
-      if (step is JavascriptStep) handleJavascriptStep(step.run);
-      if (step is CommandStep) handleCommandStep(step.run);
-      if (step is WriteStep) handleWriteStep(step);
-      if (step is ReadStep) handleReadStep(step);
-    }
-
-    await runner.run();
-  }
-}
-
-/// Wraps all step handlers for stucture reasons.
-mixin StepHandlers on TextRenderable {
-  void handleVariablesStep(VariablesStep step) {
-    renderData.addAll(step.vars);
-  }
-
-  void handleJavascriptStep(String javascript) {
-    final vars = JsRunner().run(javascript, renderData);
-    renderData.clear();
-    renderData.addAll(vars);
-  }
-
-  void handleCommandStep(String shellScript) {
-    ShellRunner().run(shellScript, renderData);
-  }
-
-  void handleAskStep(String key, String prompt) {
-    if (!renderData.containsKey(key)) {
-      renderData[key] = ask(yellow(prompt));
-    }
-  }
-
-  void handleWriteStep(WriteStep step) {
-    final writeFile = render(step.enabled).meansTrue;
-    if (!writeFile) return;
-
-    final outputTask = OutputTask(
-      fileContent: render(step.content),
-      outputPath: render(step.file),
-      writeMethod: WriteMethod.from(
-        name: render(step.writeMethod),
-        extendAt: render(step.extendAt),
-      ),
-    );
-
-    OutputWriter().writeOutputs([outputTask]);
-  }
-
-  void handleReadStep(ReadStep step) {
-    if (step.required) {
-      renderData.addAll(readDataFromFiles([step.file]));
-      return;
-    }
-
-    final result = tryReadDataFromFile([step.file]);
-    if (result != null) {
-      renderData.addAll(result);
-    }
+    // run the task
+    final mainTask = Task.fromFile(taskFilePath);
+    await runner.run(mainTask);
   }
 }

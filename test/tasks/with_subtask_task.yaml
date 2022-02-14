@@ -1,0 +1,12 @@
+steps:
+  - vars:
+    mainTaskVar1: a
+    mainTaskVar2: b
+
+  - runTask:
+    file: subtask.yaml
+
+  - write:
+    file: subtask_test_result.txt
+    writeMethod: replaceExistingFile
+    content: "{{mainTaskVar1}}, {{mainTaskVar2}}, {{subtaskVar1}}, {{subtaskVar2}}"

@@ -1,0 +1,4 @@
+steps:
+  - vars:
+    subtaskVar1: c
+    subtaskVar2: d
