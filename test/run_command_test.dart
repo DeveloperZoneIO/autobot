@@ -109,7 +109,7 @@ class BuildConfig {
     delete(filePath2);
   });
 
-  test('autobot run -> Can read in yaml files.', () {
+  test('autobot run -> Can read yaml files.', () {
     autobot.main(["run", "-t", "read_task"]);
 
     final resultFilePath = '$pwd/result.txt';

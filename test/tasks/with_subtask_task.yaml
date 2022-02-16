@@ -1,10 +1,11 @@
 steps:
   - vars:
+    task: subtask.yaml
     mainTaskVar1: a
     mainTaskVar2: b
 
   - runTask:
-    file: subtask.yaml
+    file: "{{task}}"
 
   - write:
     file: subtask_test_result.txt

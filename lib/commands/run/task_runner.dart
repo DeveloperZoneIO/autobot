@@ -59,14 +59,16 @@ class TaskRunner with TextRenderable {
 
   void handleReadStep(ReadStep step) {
     if (step.required) {
-      final data = readDataFromFiles([render(step.file)]);
+      final file = render(step.file);
+      final data = readDataFromFiles([file]);
       renderData.addAll(data);
       return;
     }
 
-    final result = tryReadDataFromFile([step.file]);
-    if (result != null) {
-      renderData.addAll(result);
+    final file = render(step.file);
+    final data = tryReadDataFromFile([file]);
+    if (data != null) {
+      renderData.addAll(data);
     }
   }
 
