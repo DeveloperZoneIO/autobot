@@ -1,3 +1,7 @@
+## 0.5.5-experimental
+
+- Render all `read` and `runTask` fields
+
 ## 0.5.4-experimental
 
 - Change task layout

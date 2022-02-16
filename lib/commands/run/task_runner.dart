@@ -37,7 +37,7 @@ class TaskRunner with TextRenderable {
 
   void handleAskStep(String key, String prompt) {
     if (!renderData.containsKey(key)) {
-      renderData[key] = ask(yellow(prompt));
+      renderData[key] = ask(yellow(render(prompt)));
     }
   }
 
@@ -59,7 +59,8 @@ class TaskRunner with TextRenderable {
 
   void handleReadStep(ReadStep step) {
     if (step.required) {
-      renderData.addAll(readDataFromFiles([step.file]));
+      final data = readDataFromFiles([render(step.file)]);
+      renderData.addAll(data);
       return;
     }
 
@@ -70,7 +71,7 @@ class TaskRunner with TextRenderable {
   }
 
   Future<void> handleRunTaskStep(RunTaskStep step) async {
-    final subtask = Task.fromFile(taskDirectory + step.file);
+    final subtask = Task.fromFile(render(taskDirectory) + render(step.file));
     await run(subtask);
   }
 }
