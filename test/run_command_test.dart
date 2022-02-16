@@ -119,10 +119,11 @@ class BuildConfig {
     delete(resultFilePath);
   });
 
-  test('autobot run -> Can run subtasks.', () {
+  test('autobot run -> Can run subtasks.', () async {
     autobot.main(["run", "-t", "with_subtask_task"]);
 
     final resultFilePath = '$pwd/subtask_test_result.txt';
+    await Future.delayed(const Duration(milliseconds: 50));
     expect(exists(resultFilePath), true);
 
     expect(read(resultFilePath).toParagraph(), "a, b, c, d");
