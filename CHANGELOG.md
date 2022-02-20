@@ -1,3 +1,10 @@
+## 0.6.0
+
+[BREAKING CHANGES]
+
+- Rename `--template` argument to `--task`
+- Fix readme
+
 ## 0.5.6-experimental
 
 [BREAKING CHANGES]
