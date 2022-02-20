@@ -12,6 +12,9 @@ steps:
     key: "configClass"
     prompt: "Give the config class a name: "
 
+  - read:
+    file: test/variable_files/secrets.yaml
+
   - javascript:
     run: | # Creates a snake case version of [configClass]
       autobot.variables.configClassSnakeCase = autobot.variables.configClass.split(/(?=[A-Z])/).join('_').toLowerCase();

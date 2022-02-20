@@ -3,12 +3,10 @@ import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
 import 'package:autobot/autobot.dart' as autobot;
 
-final _configFilePath = '$pwd/autobot_config.yaml';
+final _configFilePath = '$pwd/.autobot_config.yaml';
 final _configFileContent = '''
 config:
-  templateDirectory: test/tasks/
-  environmentFilePaths:
-    - test/variable_files/secrets.yaml''';
+  taskDir: test/tasks/''';
 
 void main() {
   setUp(() {
