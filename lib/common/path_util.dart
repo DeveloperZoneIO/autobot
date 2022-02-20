@@ -7,7 +7,7 @@ extension PathUtil on String {
     return replaceRange(lastSlashIndex + 1, null, '');
   }
 
-  /// Creates all missing directories defined in the path.
+  /// Creates all missing directories from path.
   void createDirectory() {
     final directory = getDir();
     if (directory.isNotEmpty && !exists(directory)) {

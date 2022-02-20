@@ -13,7 +13,7 @@ Progress? tryRead(String path) {
 }
 
 /// Returns the home directory of the OS.
-String get homeDir {
+String get homeDirectory {
   try {
     if (Platform.isMacOS) return Platform.environment['HOME']!;
     if (Platform.isLinux) return Platform.environment['HOME']!;
@@ -23,3 +23,5 @@ String get homeDir {
     throw Exception('Missing home directory');
   }
 }
+
+String get currentWorkingDirectory => pwd;
