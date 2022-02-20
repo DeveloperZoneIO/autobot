@@ -1,0 +1,51 @@
+meta:
+  title: BigTask
+  description: Serves as a big test task for testing autobot
+
+steps:
+  - vars:
+    key: value
+    key2: value
+    sub_map:
+      sub_map_key_1: 1
+      sub_map_key_2: 2
+    list:
+      - a
+      - b
+
+  - ask:
+    key: a
+    prompt: prompt_a
+
+  - ask:
+    key: b
+    prompt: prompt_b
+    
+  - read:
+    file: some/file/path.yaml
+    required: true
+
+  - javascript:
+    run: var x = 123
+
+  - read:
+    file: some/file/path.yaml
+
+  - command:
+    run: VAR=hallo
+
+  - write:
+    file: some/file/path.yaml
+    enabled: false
+    writeMethod: extendFile
+    extendAt: top
+    content: sdfgjhkfdjvkldjflgadj
+
+  - runTask:
+    file: some/task.yaml
+
+  - write:
+    file: some/file/path2.yaml
+    writeMethod: extendFile
+    extendAt: top
+    content: sdfgjhkfdjvkldjflgadj2

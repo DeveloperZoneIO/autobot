@@ -1,0 +1,15 @@
+meta:
+  title: BigTask
+  description: Serves as a big test task for testing autobot
+
+steps:
+  - vars:
+    fileToRead: test/variable_files/includable.yaml
+
+  - read:
+    file: "{{fileToRead}}"
+
+  - write:
+    file: result.txt
+    writeMethod: replaceExistingFile
+    content: "{{var_from_includable}} + {{var2_from_includable}}"
