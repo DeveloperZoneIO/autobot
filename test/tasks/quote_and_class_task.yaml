@@ -1,17 +1,26 @@
-inputs:
-  - key: "answer"
+
+steps:
+  - ask: # ask -> prompt | prompt -> phrase
+    key: "answer"
     prompt: "The most damaging phrase in the language is?"
-  - key: "caption"
+
+  - ask:
+    key: "caption"
     prompt: "Who did say that?"
-  - key: "configClass"
+
+  - ask:
+    key: "configClass"
     prompt: "Give the config class a name: "
 
-scripts:
-  # Creates a snake case version of [configClass]
-  - js: |
+  - read:
+    file: test/variable_files/secrets.yaml
+
+  - javascript:
+    run: | # Creates a snake case version of [configClass]
       autobot.variables.configClassSnakeCase = autobot.variables.configClass.split(/(?=[A-Z])/).join('_').toLowerCase();
-    # Sets the type flags of the key-value pairs in build_config map.
-  - js: |
+
+  - javascript:
+    run: | # Sets the type flags of the key-value pairs in build_config map
       for (let i = 0; i < autobot.variables.build_config.length; i++) {
         var field = autobot.variables.build_config[i]
         field.isString = (typeof field.value === 'string')
@@ -19,12 +28,13 @@ scripts:
         field.isNum = (!field.isString && !field.isBool)
       }
 
-outputs:
-  - path: quote.txt
+  - write:
+    file: quote.txt
     writeMethod: replaceExistingFile
     content: “The most damaging phrase in the language is.. {{answer}}” - {{caption}}
 
-  - path: "{{configClassSnakeCase}}.dart"
+  - write:
+    file: "{{configClassSnakeCase}}.dart"
     writeMethod: replaceExistingFile
     content: |
       class {{configClass}} {
@@ -41,14 +51,17 @@ outputs:
         {{/build_config}}
       }
 
-  - path: hidden1.txt
-    write: n
+  - write:
+    file: hidden1.txt
+    enabled: n
     content: -- empty --
 
-  - path: hidden2.txt
-    write: no
+  - write:
+    file: hidden2.txt
+    enabled: no
     content: -- empty --
 
-  - path: hidden3.txt
-    write: false
+  - write:
+    file: hidden3.txt
+    enabled: false
     content: -- empty --

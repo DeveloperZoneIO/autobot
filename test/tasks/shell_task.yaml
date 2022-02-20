@@ -1,3 +1,6 @@
-scripts:
-  - shell: touch sh_result.txt
-  - shell: touch {{shellVar}}
+steps:
+  - command: 
+    run: touch sh_result.txt
+
+  - command: 
+    run: touch {{shellVar}}

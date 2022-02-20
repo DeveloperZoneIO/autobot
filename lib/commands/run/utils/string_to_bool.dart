@@ -1,9 +1,9 @@
 part of '../run.dart';
 
 extension StringBoolean on String {
-  bool get meansYes =>
+  bool get meansTrue =>
       toLowerCase().trim() == 'true' ||
       toLowerCase().trim() == 'yes' ||
       toLowerCase().trim() == 'y';
-  bool get meansNo => !meansYes;
+  bool get meansFalse => !meansTrue;
 }
