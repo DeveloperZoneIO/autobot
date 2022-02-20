@@ -1,8 +1,17 @@
+## 0.5.6-experimental
+
+[BREAKING CHANGES]
+
+- Change config filed `templateDirecory` to `taskDir`
+- Remove config file `environmentFilePaths` -> Use `read` step instead
+
 ## 0.5.5-experimental
 
 - Render all `read` and `runTask` fields
 
 ## 0.5.4-experimental
+
+[BREAKING CHANGES]
 
 - Change task layout
 
