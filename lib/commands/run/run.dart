@@ -31,7 +31,7 @@ part 'utils/string_to_bool.dart';
 class RunCommand extends Command {
   final AutobotConfig? config;
 
-  final kOptionTemplate = 'template';
+  final kOptionTemplate = 'task';
   final kOptionTemplateAbbr = 't';
   final kOptionInput = 'input';
   final kOptionInputAbbr = 'i';
