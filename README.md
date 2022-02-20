@@ -25,13 +25,17 @@ Autobot is a command-line templating engine for automating standardised repetiti
 
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Run an autobot-task](#run-an-autobot-task)
-- [autobot-task](#autobot-task)
-  - [inputs](#inputs)
-  - [scripts](#scripts)
-  - [outputs](#outputs)
-- [Autobot and CI](#autobot-and-ci)
+- [Tasks](#tasks)
+  - [Available steps](#available-steps)
+    - [ask](#ask)
+    - [command](#command)
+    - [javascript](#javascript)
+    - [read](#read)
+    - [runTask](#runtask)
+    - [vars](#vars)
+    - [write](#write)
 - [Environment](#environment)
+- [Autobot and CI](#autobot-and-ci)
 
 # Installation
 
