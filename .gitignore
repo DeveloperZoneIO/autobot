@@ -8,7 +8,7 @@ build/
 # Manual testing
 templates/
 autobot_env.yaml
-autobot_config.yaml
+.autobot_config.yaml
 
 # Binaries
 out/
