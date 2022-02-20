@@ -4,6 +4,7 @@ targets:
       dart_mappable:
         generate_for:
           - lib/components/task/task.dart
+          - lib/components/autobot_config.dart
           # - lib/autobot.dart
 
         options:
@@ -18,6 +19,7 @@ targets:
               CommandStep,
               WriteStep,
               RunTaskStep,
+              AutobotConfig,
             ]
           caseStyle: camelCase
           enumCaseStyle: camelCase
