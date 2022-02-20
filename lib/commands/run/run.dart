@@ -6,10 +6,8 @@ import 'package:args/command_runner.dart';
 import 'package:cli_script/cli_script.dart' hide read;
 import 'package:dcli/dcli.dart' hide run;
 import 'package:mustache_template/mustache.dart';
-import 'package:yaml/yaml.dart';
 
 import 'package:autobot/commands/run/task_runner.dart';
-import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/common/map_extension.dart';
 import 'package:autobot/common/path_util.dart';
@@ -20,18 +18,10 @@ import 'package:autobot/components/read_data_file.dart';
 import 'package:autobot/components/task/task.dart';
 import 'package:autobot/tell.dart';
 
-part 'base_scrip_runner.dart';
-part 'input_file_reader.dart';
-part 'input_reader.dart';
 part 'js_runner.dart';
-part 'models/config.dart';
-part 'models/input.dart';
 part 'models/output_task.dart';
-part 'output_task_builder.dart';
 part 'output_writer.dart';
-part 'script_service.dart';
 part 'shell_runner.dart';
-part 'template_reader.dart';
 part 'utils/render_mixin.dart';
 part 'utils/string_to_bool.dart';
 
@@ -66,8 +56,6 @@ class RunCommand extends Command {
 
   @override
   void run() async {
-    final _config = config;
-
     final taskRunner = TaskRunner(taskDirectory: requireConfig.taskDir);
 
     // collect environment variables
