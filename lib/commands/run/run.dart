@@ -31,17 +31,18 @@ part 'utils/string_to_bool.dart';
 class RunCommand extends Command {
   final AutobotConfig? config;
 
-  final kOptionTask = 'task';
-  final kOptionTaskAbbr = 't';
-  final kOptionInput = 'input';
-  final kOptionInputAbbr = 'i';
-  final kOptionInputFile = 'input-file';
-  final kOptionInputFileAbbr = 'f';
+  static final kOptionTask = 'task';
+  static final kOptionTaskAbbr = 't';
+  static final kOptionInput = 'input';
+  static final kOptionInputAbbr = 'i';
+  static final kOptionInputFile = 'input-file';
+  static final kOptionInputFileAbbr = 'f';
+  static final kName = 'run';
 
   @override
   String get description => 'Runs a yaml template file.';
   @override
-  String get name => 'run';
+  String get name => kName;
 
   RunCommand(this.config) {
     _addOptions();
