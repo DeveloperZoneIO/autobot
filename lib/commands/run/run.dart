@@ -31,17 +31,18 @@ part 'utils/string_to_bool.dart';
 class RunCommand extends Command {
   final AutobotConfig? config;
 
-  final kOptionTemplate = 'task';
-  final kOptionTemplateAbbr = 't';
-  final kOptionInput = 'input';
-  final kOptionInputAbbr = 'i';
-  final kOptionInputFile = 'input-file';
-  final kOptionInputFileAbbr = 'f';
+  static final kOptionTask = 'task';
+  static final kOptionTaskAbbr = 't';
+  static final kOptionInput = 'input';
+  static final kOptionInputAbbr = 'i';
+  static final kOptionInputFile = 'input-file';
+  static final kOptionInputFileAbbr = 'f';
+  static final kName = 'run';
 
   @override
   String get description => 'Runs a yaml template file.';
   @override
-  String get name => 'run';
+  String get name => kName;
 
   RunCommand(this.config) {
     _addOptions();
@@ -49,7 +50,7 @@ class RunCommand extends Command {
 
   /// Adds all options to run command.
   void _addOptions() {
-    argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
+    argParser.addOption(kOptionTask, abbr: kOptionTaskAbbr, mandatory: true);
     argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
     argParser.addMultiOption(kOptionInputFile, abbr: kOptionInputFileAbbr);
   }
@@ -76,7 +77,7 @@ class RunCommand extends Command {
     await taskRunner.run(mainTask);
   }
 
-  String getTaskName() => argResults![kOptionTemplate] + '.yaml';
+  String getTaskName() => argResults![kOptionTask] + '.yaml';
   String getTaskPath() => requireConfig.taskDir + getTaskName();
 
   AutobotConfig get requireConfig {
