@@ -31,8 +31,8 @@ part 'utils/string_to_bool.dart';
 class RunCommand extends Command {
   final AutobotConfig? config;
 
-  final kOptionTemplate = 'task';
-  final kOptionTemplateAbbr = 't';
+  final kOptionTask = 'task';
+  final kOptionTaskAbbr = 't';
   final kOptionInput = 'input';
   final kOptionInputAbbr = 'i';
   final kOptionInputFile = 'input-file';
@@ -49,7 +49,7 @@ class RunCommand extends Command {
 
   /// Adds all options to run command.
   void _addOptions() {
-    argParser.addOption(kOptionTemplate, abbr: kOptionTemplateAbbr, mandatory: true);
+    argParser.addOption(kOptionTask, abbr: kOptionTaskAbbr, mandatory: true);
     argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
     argParser.addMultiOption(kOptionInputFile, abbr: kOptionInputFileAbbr);
   }
@@ -76,7 +76,7 @@ class RunCommand extends Command {
     await taskRunner.run(mainTask);
   }
 
-  String getTaskName() => argResults![kOptionTemplate] + '.yaml';
+  String getTaskName() => argResults![kOptionTask] + '.yaml';
   String getTaskPath() => requireConfig.taskDir + getTaskName();
 
   AutobotConfig get requireConfig {
