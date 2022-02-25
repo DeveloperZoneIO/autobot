@@ -127,4 +127,15 @@ class BuildConfig {
     expect(read(resultFilePath).toParagraph(), "a, b, c, d");
     delete(resultFilePath);
   });
+
+  test('autobot run -> run --task shortcut is working', () async {
+    final filePath = '$pwd/letters.txt';
+    if (exists(filePath)) delete(filePath);
+
+    autobot.main(["replace_existing_file_task"]);
+
+    expect(exists(filePath), true);
+    expect(read(filePath).toParagraph(), "def");
+    delete(filePath);
+  });
 }
