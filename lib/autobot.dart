@@ -48,7 +48,7 @@ List<String> _resolveArgumentShortcuts(List<String> args, List<String> commandNa
 
     if (!doesCommandExist) {
       final name = RunCommand.kName;
-      final taskOption = '--${RunCommand.kOptionTask}';
+      final taskOption = '--${RunCommandArgs.kOptionTask}';
       args.insertAll(0, [name, taskOption]);
     }
   }

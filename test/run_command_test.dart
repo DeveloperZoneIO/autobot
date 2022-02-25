@@ -138,4 +138,15 @@ class BuildConfig {
     expect(read(filePath).toParagraph(), "def");
     delete(filePath);
   });
+
+  test('autobot run -> can parse task flags', () async {
+    final filePath = '$pwd/result.txt';
+    if (exists(filePath)) delete(filePath);
+
+    autobot.main(["flag_test_task:FLAG_A:FLAG_B"]);
+
+    expect(exists(filePath), true);
+    expect(read(filePath).toParagraph(), "First flag is FLAG_A and second flag is FLAG_B");
+    delete(filePath);
+  });
 }
