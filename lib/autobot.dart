@@ -25,11 +25,14 @@ void main(List<String> args) async {
 /// Initializes all commands and runs the requested command.
 void _runAutobot(List<String> args) async {
   final config = _getAutobotConfig();
-  CommandRunner(Pubspec.name, Pubspec.description)
+  final commandRunner = CommandRunner(Pubspec.name, Pubspec.description)
     ..addCommand(RunCommand(config))
     ..addCommand(InitCommand())
-    ..addCommand(VersionCommand())
-    ..run(args);
+    ..addCommand(VersionCommand());
+
+  final commandNames = commandRunner.commands.keys.toList();
+  args = _resolveArgumentShortcuts(args, commandNames);
+  commandRunner.run(args);
 }
 
 AutobotConfig? _getAutobotConfig() {
@@ -38,10 +41,17 @@ AutobotConfig? _getAutobotConfig() {
   return AutobotConfig.fromFileOrNull(workingPath) ?? AutobotConfig.fromFileOrNull(homePath);
 }
 
+List<String> _resolveArgumentShortcuts(List<String> args, List<String> commandNames) {
+  if (args.isNotEmpty) {
+    final commandFromArgs = args.first;
+    final doesCommandExist = commandNames.any((name) => name == commandFromArgs);
 
-// final specificFilePath = '$pwd/$kConfigFileName.yaml';
-//     final globalFilePath = '$homeDir/.$kConfigFileName.yaml';
-//     final readProgress = tryRead(specificFilePath) ?? tryRead(globalFilePath);
-//     final templateContent =
-//         readProgress.unpackOrThrow(MissingConfigFile()).toParagraph();
-//     return loadYaml(templateContent)['config'];
+    if (!doesCommandExist) {
+      final name = RunCommand.kName;
+      final taskOption = '--${RunCommand.kOptionTask}';
+      args.insertAll(0, [name, taskOption]);
+    }
+  }
+
+  return args;
+}
