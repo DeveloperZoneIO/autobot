@@ -3,12 +3,10 @@ import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
 import 'package:autobot/autobot.dart' as autobot;
 
-final _configFilePath = '$pwd/autobot_config.yaml';
+final _configFilePath = '$pwd/.autobot_config.yaml';
 final _configFileContent = '''
 config:
-  templateDirectory: test/tasks/
-  environmentFilePaths:
-    - test/variable_files/secrets.yaml''';
+  taskDir: test/tasks/''';
 
 void main() {
   setUp(() {
@@ -95,17 +93,60 @@ class BuildConfig {
 
   test('autobot run -> shell.', () {
     final filePath1 = '$pwd/sh_result.txt';
-    final filePath2 = '$pwd/shellVarValue';
+    final filePath2 = '$pwd/sh_result_2.txt';
 
     if (exists(filePath1)) delete(filePath1);
     if (exists(filePath2)) delete(filePath2);
 
-    autobot.main(["run", "-t", "shell_task", "-i", "shellVar=shellVarValue"]);
+    autobot.main(["run", "-t", "shell_task", "-i", "shellVar=sh_result_2.txt"]);
 
     expect(exists(filePath1), true);
     expect(exists(filePath2), true);
 
     delete(filePath1);
     delete(filePath2);
+  });
+
+  test('autobot run -> Can read yaml files.', () {
+    autobot.main(["run", "-t", "read_task"]);
+
+    final resultFilePath = '$pwd/result.txt';
+    expect(exists(resultFilePath), true);
+
+    expect(read(resultFilePath).toParagraph(), "abc123! + 123456789");
+    delete(resultFilePath);
+  });
+
+  test('autobot run -> Can run subtasks.', () async {
+    autobot.main(["run", "-t", "with_subtask_task"]);
+
+    final resultFilePath = '$pwd/subtask_test_result.txt';
+    await Future.delayed(const Duration(milliseconds: 50));
+    expect(exists(resultFilePath), true);
+
+    expect(read(resultFilePath).toParagraph(), "a, b, c, d");
+    delete(resultFilePath);
+  });
+
+  test('autobot run -> run --task shortcut is working', () async {
+    final filePath = '$pwd/letters.txt';
+    if (exists(filePath)) delete(filePath);
+
+    autobot.main(["replace_existing_file_task"]);
+
+    expect(exists(filePath), true);
+    expect(read(filePath).toParagraph(), "def");
+    delete(filePath);
+  });
+
+  test('autobot run -> can parse task flags', () async {
+    final filePath = '$pwd/result.txt';
+    if (exists(filePath)) delete(filePath);
+
+    autobot.main(["flag_test_task:FLAG_A:FLAG_B"]);
+
+    expect(exists(filePath), true);
+    expect(read(filePath).toParagraph(), "First flag is FLAG_A and second flag is FLAG_B");
+    delete(filePath);
   });
 }

@@ -25,184 +25,322 @@ Autobot is a command-line templating engine for automating standardised repetiti
 
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Run an autobot-task](#run-an-autobot-task)
-- [autobot-task](#autobot-task)
-  - [inputs](#inputs)
-  - [scripts](#scripts)
-  - [outputs](#outputs)
-- [Autobot and CI](#autobot-and-ci)
+- [Tasks](#tasks)
+  - [Available steps](#available-steps)
+    - [ask](#ask)
+    - [command](#command)
+    - [javascript](#javascript)
+    - [read](#read)
+    - [runTask](#runtask)
+    - [vars](#vars)
+    - [write](#write)
 - [Environment](#environment)
+- [Autobot and CI](#autobot-and-ci)
+- [Examples](#examples)
+  - [Javascript example](#javascript-example)
+  - [Read example](#read-example)
 
 # Installation
 
 1. Install Dart following [these](https://dart.dev/tutorials/server/get-started#2-install-dart) instructions.
 
 2. Activate autobot running the following command:
+
 ```bash
-$ dart pub global activate autobot  
+$ dart pub global activate autobot
 ```
 
 Check for the autobot version to see if autobot was successfully installed:
+
 ```bash
-$ autobot version 
+$ autobot version
 ```
 
 # Configuration
-Autobot requires a configuration file named `autobot_config.yaml`. It can be located in the working direktory or in the home directory. The configuration is a YAML file and can be easily created using the `init` command.
 
-Create a `autobot_config.yaml` in the working directory:
+Autobot needs a `.autobot_config.yaml` file. Create a local or global one via the following commands:
+
 ```bash
+# creates local config file in current working directory
 $ autobot init
 ```
-Create a `autobot_config.yaml` in a subfoler of working directory:
+
 ```bash
+# creates local config file in given path (-p)
 $ autobot init -p subfolder/subsubfolder/
 ```
-Create a `.autobot_config.yaml` in the home directory:
+
 ```bash
+# creates global config file in home directory
 $ autobot init -g
 ```
 
-All configurations fields must belong to the `config` field.
-The following fields are supported:
+This is a `.autobot_config.yaml` with all available configuration.
 
-- `templateDirectory` | **String**
-  Allows to define a directory path where autobot should search for autobot-tasks.
-- `environmentFilePaths`: | **List of String**
-  Allows to define paths of yaml files that autobot should read in to make its values available for the `scripts` and `outputs` sections.
-
-**Example: autobot_config.yaml**
 ```yaml
 config:
-  templateDirectory: some/relative_path/to_tasks_directory/
-  environmentFilePaths:
-    - some_file_in_working_directory.yaml
-    - /User/some_dir/urs/some_environment_file.yaml
+  # tell autobot where is should search for tasks
+  taskDir: some/relative_path/to_tasks_directory/
 ```
 
-# Run an autobot-task
-Assuming that there is a autobot-task named `create_app.yaml` on your machine,
-the command to run it be the following:
+# Tasks
+
+Run an autobot task via the following command:
+
 ```bash
-$ autobot run -t create_app
+# assuming there is a my_task.yaml inside taskDir
+$ autobot run --task my_task
+# use -t instead of --task if you like short cuts :)
 ```
-Please make sure that autobot can make use of `create_app.yaml` by setting its directory path to `templateDiectory` in `autobot_config.yaml`.
 
-# autobot-task
-A autobot-task is a YAML file that describes what needs to be done. It consists of three optional sections: inputs, scripts and outputs.
+You can also omit `run --task` if you want:
+```bash
+$ autobot my_task
+```
 
-**example-autobot-task.yaml**
+Autobot tasks are YAML files witch describe what needs to be done.
+
+Pass flags to a task using `:` as prefix like so:
+```bash
+$ autobot my_task:first_flag:second_flag
+```
+Autobot assigns the flags to keys with the following schema `flag<index>`:
+This means that the first flag will be assigned to `flag1`, the second will be assigned to `flag2` and so on.
+
+You can add some meta data like name and description to a task like this:
+
 ```yaml
-inputs:
-  - key: userName
-    prompt: What is your name?
-  - key: userAge
+meta:
+  name: My task
+  description: This is my autobot task
+```
+
+Use `steps` to define the actuall work like this:
+
+```yaml
+meta:
+  name: My task
+  description: This is my autobot task
+
+steps:
+  - read:
+    file: some/path/to/file.yaml
+
+  - ask:
+    key: name
+    prompt: Whats your name?
+
+  - ask:
+    key: age
     prompt: How old are you?
 
-scripts:
-  - js: |
-      // Read the userName value from autobot
-      var userName = autobot.variables.userName
+  - write:
+    file: some/path/output_file.txt
+    content: My name is {{name}} and I'm {{age}} years old.
+```
 
+## Available steps
+
+Check out all available steps. Keep in mind that all fields of all steps (except `vars`) can be [mustache](https://mustache.github.io) templates for dynamic customization. Check out the [Examples](#examples) for more details.
+
+### ask
+
+Asks the user for input and assigns that input to the key.
+
+```yaml
+- ask:
+  key: # String -> the key the value should be asssigned to
+  prompt: # String -> the prompt to print
+```
+
+### command
+
+Runs a shell command.
+
+```yaml
+- command:
+  run: # String -> shell command
+```
+
+### javascript
+
+Runs a javascript.
+**NOTE**: Requires that `node` is installen in your commond line tool.
+
+```yaml
+- javascript:
+  run: # String -> javascript
+```
+
+### read
+
+Reads a yaml file. The data can then be used in other spets like `write` or `javascript`.
+
+```yaml
+- read:
+  file: # String -> path of yaml file
+```
+
+### runTask
+
+Runs a sub task.
+
+```yaml
+- runTask:
+  file: # String -> name of that which is loacted in taskDir of .autobot_config.yaml
+```
+
+### vars
+
+Define some data that can be used in other steps like `write` or `javascript`.
+
+```yaml
+- vars:
+  key: value # some key value pair
+  dataArray: [a, b c] # some array
+  dataMap:
+    key: value
+    key2: value2
+  otherDataArray:
+    - a
+    - b
+    - c
+  someText: |
+    Lorem ipsum...
+```
+
+### write
+
+Writes a file.
+
+```yaml
+- write:
+
+  # The path of the file which should be written
+  file:
+
+  # Whether writting is enabled or not.
+  enabled: # n, no, false or y, yes, true
+
+  # How the file should be written
+  writeMethod: # keepExistingFile (default), replaceExistingFile, extendFile
+
+  # Works only if writeMethod is extendFile
+  extendAt: # Values: top, bottom, custom regex.
+
+  # The content of the file
+  content:
+```
+
+# Environment
+
+Autobot automatically reads all variables from the environment and provides them to all steps. This is very helpful if you want autobot to use variables from your CI or if you want integrate autobot into so existing processes or cli commands.
+
+# Autobot and CI
+
+Since a CI doesn't support interactive scripts, `autobot` offers the possibility to set input values via arguments using `-i` or `--input`:
+
+```bash
+$ autobot run --task some_autobot_task --input userName=somename,userAge=23
+```
+
+This will skip the interactive command line prompt for all set values.
+
+# Examples
+
+## Javascript example
+
+```yaml
+steps:
+  - aks:
+    key: userName
+    prompt: What is your name?
+
+  - ask:
+    key: userAge
+    prompt: How old are you?
+
+  - javascript:
+    run: |
+      // Access the value of userName
+      var userName = autobot.variables.userName
       // Check whether userName is blank. If yes, set a fallback value.
       if (!userName || userName.length === 0) {
         autobot.variables.userName = 'Some fallback name'
       }
-
       // Define a new variable
       autobot.variables.varFormJs = 'Hello!'
 
-outputs:
-  - path: some/relative/path.txt
+  - write:
+    file: some/relative/path.txt
     content: Hi {{userName}}
-  - path: /some/non_relative/path.txt
+
+  - write:
+    file: /some/non_relative/path.txt
     content: |
       Hi {{userName}},
       is it true that you are {{userAge}} years old?
       This is a value from javascript: {{varFormJs}}
 ```
 
-## inputs
-The `inputs` field accepts only a list of prompt objects. A prompt object requires a `key` and a `prompt`. Such an object describes with `prompt` what autobot should ask the user via the command line and with `key` that the value entered by the user should be assigned to this key. These keys can be used in the `scripts` and `outputs` sections to access the values.
+This example task ask the user for his name and age and will create two files.
+The first file will be `$pwd/some/relative/path.txt` with the following content:
 
-## scripts
-The `scripts` field accepts a list of script objects. A scrip object requires a script key which is either `js` (this stands for javascript) or `shell`. The value of those keys hast to be a string containing the related script.
-
-Autobot provides the `autobot` object to all javascripts for accessing and modifing variables. The variables are contained in the `autobot.variables` object. See the `scripts` in the example-autobot-task.yaml above.
-**NOTE**: Running javascripts requires that `node` is installed in your comman line tool! Otherwise autobot will fail executing the javascripts.
-## outputs
-The `outputs` field accepts a list of output objects. An output object must contain at least the following keywords: `path` and `content`. `path` defines where a new file will be created and `content` defines the content of this file. See the available fields of output object in the list below. All values of the output object fileds can be a [mustache](https://mustache.github.io) template. This means that the string values can have variables enclosed in double or triple curly braces, like for example `"Hello {{userName}}"`. `{{userName}}` will then be replaced by the value assigned to `userName`.
-
-| Field         | Description                                                                                         | Value                                                   | Example                                                                                    |
-| ------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `path`        | The path where the new file should be created                                                       | any valid path                                          | `path: some/path/relative_to/working_directory/filename.txt`                               |
-| `write`       | Whether to write the file or not                                                                    | `true`, `yes`, `y` or `false`, `no`, `n`                | `write: yes`                                                                               |
-| `writeMethod` | The method which should be used for creating the file                                               | `keepExistingFile`, `replaceExistingFile`, `extendFile` | `writeMethod: extendFile`                                                                  |
-| `extendAt`    | The position where the file should be extended. This field works only for `writeMethod: extendFile` | `top`, `bottom` or any reqular expression.              | `extendAt: top` or `extendAt: top` or `extendAt: some text that matches a part of content` |
-
-# Autobot and CI
-Since a CI doesn't support interactive scripts, `autobot` offers the possibility to set input values via arguments using the `-i` or `--input` option:
-```bash
-$ autobot run -t some_autobot_task -i userName=somename,userAge=23
 ```
-This will skip the interactive command line prompt for all given values.
-
-
-# Environment
-Autobot automatically reads all variables from the environment and provides them to `scripts` and `outputs`. So you can expose any variables to the environment in order to give autobot access to them. This is very helpful if you want autobot to use variables from your CI or if you want integrate autobot into so existing processes or cli commands. 
-Alternatively autobot can read yaml files (defined in `environmentFilePaths` of the `autobot_config.yaml`) and insert them into its environment, so that they can be used in `scripts` and `outputs`. See the following example:
-
-**my_environment.yaml**
-```yaml
-apiKey: faij0394jfh3q490herfae
-secret: fj390;rea009hjhj09dj
-baseUrl: https://www.some_random_url.io
-
-someMap:
-  var: 1
-  var: 2
-  var: 3
+Hi Peter
 ```
 
-**autobot_config.yaml**
-```yaml
-config:
-  templateDirectory: some/path/to/template_directory/
-  environmentFilePaths: 
-    - /some/path/to/my_environment.yaml
+The second file will be `/some/non_relative/path.txt` with the following content:
+
+```
+Hi Peter,
+is it true that you are 30 years old?
+This is a value from javascript: Hello!
 ```
 
-**Use values from environment file in outputs**
-```yaml
-inputs:
-  ...
+## Read example
 
-outputs:
-  - path: some/relative_path/build_config.dart
+Assuming there is a yaml file like this on your machine called `task_data.yaml`:
+
+```yaml
+key1: value1
+key2: value2
+
+varMap:
+  mapKey1: mapValue1
+  mapKey2: mapValue2
+
+varList:
+  - key: a
+  - key: b
+  - key: c
+```
+
+The task:
+
+```yaml
+steps:
+  - read:
+    file: task_data.yaml
+
+  - write:
+    file: output.txt
     content: |
-      class BuildConfig {
-        static const String someApiKey = "{{apiKey}}";
-        static const String someSecret = "{{secret}}";
-        static const String someBaseUrl = "{{baseUrl}}";
-      }
-  - path: some/relative_path/count.txt
-    content: |
-      {{#someMap}}
-        - {{var}}
-      {{/someMap}}
+      Pairs: {{key1}}, {{key2}}
+      Map pairs: {{varMap.mapKey1}} {{varMap.mapKey2}}
+      List:
+      {{#varList}}
+        -> {{key}} <-
+      {{/varList}}
 ```
 
-The content of the first file will be:
-```txt
-class BuildConfig {
-  static const String someApiKey = "faij0394jfh3q490herfae";
-  static const String someSecret = "fj390;rea009hjhj09dj";
-  static const String someBaseUrl = "https://www.some_random_url.io";
-}
+Tis task will read the `task_data.yaml` and create the following file:
+
 ```
-The content of the second second will be:
-```txt
-- 1
-- 2
-- 3
+Pairs: value1, value2
+Map pairs: mapValue1 mapValue2
+List:
+  -> a <-
+  -> b <-
+  -> c <-
 ```

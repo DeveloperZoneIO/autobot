@@ -6,23 +6,22 @@ import 'package:autobot/autobot.dart' as autobot;
 import 'package:yaml/yaml.dart';
 
 void main() {
-  final defaultConfigFilePath = '$pwd/autobot_config.yaml';
-
-  test('`autobot init` creates config in working directory', () {
+  final _kDefaultConfigFilePath = '$pwd/.autobot_config.yaml';
+  test('`autobot init` creates config in working directory', () async {
     TellManager.clearPrints();
-    TestManager.deleteIfExists(defaultConfigFilePath);
+    TestManager.deleteIfExists(_kDefaultConfigFilePath);
 
     // Run init command
     autobot.main(['init']);
 
-    expect(exists(defaultConfigFilePath), true);
-    final YamlMap config = loadYaml(read(defaultConfigFilePath).toParagraph());
+    expect(exists(_kDefaultConfigFilePath), true);
+    final YamlMap config = loadYaml(read(_kDefaultConfigFilePath).toParagraph());
     expect(config['config'] is YamlMap, true);
-    expect(config['config']['templateDirectory'] is String, true);
+    expect(config['config']['taskDir'] is String, true);
   });
 
   test('`autobot init -p` creates config in given path', () {
-    final configFilePath = '$pwd/customDir/subDir/autobot_config.yaml';
+    final configFilePath = '$pwd/customDir/subDir/.autobot_config.yaml';
     TellManager.clearPrints();
     TestManager.deleteIfExists(configFilePath);
 
@@ -32,12 +31,12 @@ void main() {
     expect(exists(configFilePath), true);
     final YamlMap config = loadYaml(read(configFilePath).toParagraph());
     expect(config['config'] is YamlMap, true);
-    expect(config['config']['templateDirectory'] is String, true);
+    expect(config['config']['taskDir'] is String, true);
     TestManager.deleteIfExists(configFilePath);
   });
 
   test('`autobot init -g` creates config in home directory', () {
-    final configFilePath = '$homeDir/.autobot_config.yaml';
+    final configFilePath = '$homeDirectory/.autobot_config.yaml';
     TellManager.clearPrints();
     TestManager.deleteIfExists(configFilePath);
 
@@ -47,6 +46,6 @@ void main() {
     expect(exists(configFilePath), true);
     final YamlMap config = loadYaml(read(configFilePath).toParagraph());
     expect(config['config'] is YamlMap, true);
-    expect(config['config']['templateDirectory'] is String, true);
+    expect(config['config']['taskDir'] is String, true);
   });
 }

@@ -1,0 +1,5 @@
+steps:
+  - write:
+    file: result.txt
+    writeMethod: replaceExistingFile
+    content: First flag is {{flag1}} and second flag is {{flag2}}
