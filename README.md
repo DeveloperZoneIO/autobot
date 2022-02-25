@@ -36,6 +36,9 @@ Autobot is a command-line templating engine for automating standardised repetiti
     - [write](#write)
 - [Environment](#environment)
 - [Autobot and CI](#autobot-and-ci)
+- [Examples](#examples)
+  - [Javascript example](#javascript-example)
+  - [Read example](#read-example)
 
 # Installation
 
@@ -90,7 +93,20 @@ $ autobot run --task my_task
 # use -t instead of --task if you like short cuts :)
 ```
 
+You can also omit `run --task` if you want:
+```bash
+$ autobot my_task
+```
+
 Autobot tasks are YAML files witch describe what needs to be done.
+
+Pass flags to a task using `:` as prefix like so:
+```bash
+$ autobot my_task:first_flag:second_flag
+```
+Autobot assigns the flags to keys with the following schema `flag<index>`:
+This means that the first flag will be assigned to `flag1`, the second will be assigned to `flag2` and so on.
+
 You can add some meta data like name and description to a task like this:
 
 ```yaml
@@ -125,7 +141,7 @@ steps:
 
 ## Available steps
 
-Checl out all available steps. Keep in mind that a fields of all steps (except `vars`) can be [mustache](https://mustache.github.io) templates for dynamic customization. Check out the [Examples](#examples) for more details.
+Check out all available steps. Keep in mind that all fields of all steps (except `vars`) can be [mustache](https://mustache.github.io) templates for dynamic customization. Check out the [Examples](#examples) for more details.
 
 ### ask
 
