@@ -21,6 +21,7 @@ import 'package:autobot/tell.dart';
 part 'js_runner.dart';
 part 'models/output_task.dart';
 part 'output_writer.dart';
+part 'run_command_arg_results.dart';
 part 'shell_runner.dart';
 part 'utils/render_mixin.dart';
 part 'utils/string_to_bool.dart';
@@ -29,14 +30,8 @@ part 'utils/string_to_bool.dart';
 /// `autobot run -t <task_name>` runs the task machting to <task_name>.
 /// `autobot run -t <task_name> -i var1=a,var2=b` runs the task machting to <task_name> and inserts the given variables to autobot variables.
 class RunCommand extends Command {
+  late final RunCommandArgs args;
   final AutobotConfig? config;
-
-  static final kOptionTask = 'task';
-  static final kOptionTaskAbbr = 't';
-  static final kOptionInput = 'input';
-  static final kOptionInputAbbr = 'i';
-  static final kOptionInputFile = 'input-file';
-  static final kOptionInputFileAbbr = 'f';
   static final kName = 'run';
 
   @override
@@ -45,14 +40,8 @@ class RunCommand extends Command {
   String get name => kName;
 
   RunCommand(this.config) {
-    _addOptions();
-  }
-
-  /// Adds all options to run command.
-  void _addOptions() {
-    argParser.addOption(kOptionTask, abbr: kOptionTaskAbbr, mandatory: true);
-    argParser.addMultiOption(kOptionInput, abbr: kOptionInputAbbr);
-    argParser.addMultiOption(kOptionInputFile, abbr: kOptionInputFileAbbr);
+    args = RunCommandArgs(argParser, () => argResults!);
+    args.initOptions();
   }
 
   @override
@@ -62,13 +51,16 @@ class RunCommand extends Command {
     // collect environment variables
     taskRunner.renderData.addAll(Platform.environment);
 
+    // collect task flags
+    taskRunner.renderData.addAll(args.taskFlags);
+
     // collect variables from cli arguments
-    final variablesFromArgs = argResults![kOptionInput] ?? const [];
+    final variablesFromArgs = args.inputVariables;
     final unpackedVariablesFromArgs = parsePairs(variablesFromArgs);
     taskRunner.renderData.addAll(unpackedVariablesFromArgs);
 
     // collect variables from files given by cli argument
-    final List<String> dataFilePathsArg = argResults![kOptionInputFile] ?? const [];
+    final dataFilePathsArg = args.dataFilePaths;
     final dataFromAllFiles = readDataFromFiles(dataFilePathsArg);
     taskRunner.renderData.addAll(dataFromAllFiles);
 
@@ -77,8 +69,7 @@ class RunCommand extends Command {
     await taskRunner.run(mainTask);
   }
 
-  String getTaskName() => argResults![kOptionTask] + '.yaml';
-  String getTaskPath() => requireConfig.taskDir + getTaskName();
+  String getTaskPath() => requireConfig.taskDir + args.taskName;
 
   AutobotConfig get requireConfig {
     if (config == null) {
