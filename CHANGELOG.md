@@ -1,6 +1,12 @@
+## 0.6.2
+
+- Fix shortcuts
+
 ## 0.6.1
+
 - Run task directly without writting `run --task` (optional)
--  Pass flags to a task: `autobot run --task some_task:flag1:flag2`
+- Pass flags to a task: `autobot run --task some_task:flag1:flag2`
+
 ## 0.6.0
 
 [BREAKING CHANGES]
