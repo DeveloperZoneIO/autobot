@@ -31,8 +31,8 @@ void _runAutobot(List<String> args) async {
     ..addCommand(VersionCommand());
 
   final commandNames = commandRunner.commands.keys.toList();
-  args = _resolveArgumentShortcuts(args, commandNames);
-  commandRunner.run(args);
+  final resolvedArgs = _resolveArgumentShortcuts(args, commandNames);
+  commandRunner.run(resolvedArgs);
 }
 
 AutobotConfig? _getAutobotConfig() {
@@ -42,16 +42,17 @@ AutobotConfig? _getAutobotConfig() {
 }
 
 List<String> _resolveArgumentShortcuts(List<String> args, List<String> commandNames) {
-  if (args.isNotEmpty) {
-    final commandFromArgs = args.first;
+  final resolvedArgs = List<String>.from(args);
+  if (resolvedArgs.isNotEmpty) {
+    final commandFromArgs = resolvedArgs.first;
     final doesCommandExist = commandNames.any((name) => name == commandFromArgs);
 
     if (!doesCommandExist) {
       final name = RunCommand.kName;
       final taskOption = '--${RunCommandArgs.kOptionTask}';
-      args.insertAll(0, [name, taskOption]);
+      resolvedArgs.insertAll(0, [name, taskOption]);
     }
   }
 
-  return args;
+  return resolvedArgs;
 }
