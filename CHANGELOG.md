@@ -1,4 +1,4 @@
-## 0.6.2-experimental
+## 0.6.2
 
 - Fix shortcuts
 
