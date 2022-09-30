@@ -1,7 +1,6 @@
 import 'package:args/command_runner.dart';
-import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/path_util.dart';
-import 'package:autobot/components/autobot_constants.dart';
+import 'package:autobot/components/files.dart';
 import 'package:dcli/dcli.dart';
 
 /// Defines the init command of autobot.
@@ -28,8 +27,8 @@ class InitCommand extends Command {
     }
 
     final customPath = argResults!['path'];
-    final shouldCreateCustomConfig = customPath != null;
-    if (shouldCreateCustomConfig) {
+    final shouldCreateConfigAtCustomPath = customPath != null;
+    if (shouldCreateConfigAtCustomPath) {
       _createCustomConfigFile(customPath);
       return;
     }
@@ -38,34 +37,25 @@ class InitCommand extends Command {
   }
 
   void _createLocalConfigFile() {
-    final configFilePath = '$currentWorkingDirectory/${AutobotConstants.configFileName}';
+    final configFilePath = Files.localPaths.configFile;
     configFilePath.createDirectory();
-    configFilePath.write(AutobotConstants.configFileDefaultContent);
+    configFilePath.write(Files.defaultConfig);
   }
 
   void _createGlobalConfigFile() {
-    final configFilePath = '$homeDirectory/${AutobotConstants.configFileName}';
+    final configFilePath = Files.globalPaths.configFile;
     configFilePath.createDirectory();
-    configFilePath.write(AutobotConstants.configFileDefaultContent);
+    configFilePath.write(Files.defaultConfig);
   }
 
   void _createCustomConfigFile(String filePath) {
-    // remove last "/" if exist
-    if (filePath.endsWith("/")) {
-      final chars = filePath.split('');
-      chars.removeLast();
-      filePath = chars.join('');
-    }
+    final configFilePath = PathBuilder.from(filePath) //
+        .resolve()
+        .removeTrailingSlash()
+        .append(FileNames.configFileName)
+        .get();
 
-    final isRelativePath = !filePath.startsWith('/');
-
-    if (isRelativePath) {
-      filePath = '$filePath/${AutobotConstants.configFileName}';
-    } else {
-      filePath = '$pwd/$filePath/${AutobotConstants.configFileName}';
-    }
-
-    filePath.createDirectory();
-    filePath.write(AutobotConstants.configFileDefaultContent);
+    configFilePath.createDirectory();
+    configFilePath.write(Files.defaultConfig);
   }
 }

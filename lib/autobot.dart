@@ -4,11 +4,9 @@ import 'package:args/command_runner.dart';
 import 'package:autobot/commands/init/init.dart';
 import 'package:autobot/commands/run/run.dart';
 import 'package:autobot/commands/version/version.dart';
-import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/components/autobot_config.dart';
-import 'package:autobot/components/autobot_constants.dart';
-import 'package:autobot/components/file_manager.dart';
+import 'package:autobot/components/files.dart';
 import 'package:autobot/pubspec.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
@@ -37,8 +35,8 @@ void _runAutobot(List<String> args) async {
 }
 
 AutobotConfig? _getAutobotConfig() =>
-    AutobotConfig.fromPathOrNull(Files.localConfigPath) ??
-    AutobotConfig.fromPathOrNull(Files.globalConfigPath);
+    AutobotConfig.fromPath(Files.localPaths.configFile) ??
+    AutobotConfig.fromPath(Files.globalPaths.configFile);
 
 List<String> _resolveArgumentShortcuts(List<String> args, List<String> commandNames) {
   final resolvedArgs = List<String>.from(args);

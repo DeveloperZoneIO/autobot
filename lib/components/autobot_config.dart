@@ -1,23 +1,23 @@
 import 'dart:convert';
 
-import 'package:autobot/common/yaml_utils.dart';
 import 'package:autobot/components/autobot_config.mapper.g.dart';
-import 'package:autobot/components/autobot_constants.dart';
+import 'package:autobot/components/config_file_valiator.dart';
 import 'package:autobot/components/read_yaml.dart';
 
 class AutobotConfig with Mappable {
   AutobotConfig({required this.taskDir});
   final String taskDir;
 
-  static AutobotConfig? fromPathOrNull(String filePath) {
+  static AutobotConfig? fromPath(String filePath) {
     try {
       final configYaml = readYaml(filePath);
-      final configContentYaml = configYaml.require(
-        'config',
-        fileName: AutobotConstants.configFileName,
-      );
+      final issues = ConfigFileValiator.checkConfigFileContent(configYaml);
 
-      final configJson = jsonEncode(configContentYaml);
+      if (issues.isNotEmpty) {
+        throw issues.last;
+      }
+
+      final configJson = jsonEncode(configYaml['config']);
       return Mapper.fromJson(configJson);
     } catch (_) {
       return null;
