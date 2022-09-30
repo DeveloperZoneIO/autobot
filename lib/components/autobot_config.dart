@@ -9,7 +9,7 @@ class AutobotConfig with Mappable {
   AutobotConfig({required this.taskDir});
   final String taskDir;
 
-  static AutobotConfig? fromFileOrNull(String filePath) {
+  static AutobotConfig? fromPathOrNull(String filePath) {
     try {
       final configYaml = readYaml(filePath);
       final configContentYaml = configYaml.require(

@@ -8,6 +8,7 @@ import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
 import 'package:autobot/components/autobot_config.dart';
 import 'package:autobot/components/autobot_constants.dart';
+import 'package:autobot/components/file_manager.dart';
 import 'package:autobot/pubspec.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
@@ -35,11 +36,9 @@ void _runAutobot(List<String> args) async {
   commandRunner.run(resolvedArgs);
 }
 
-AutobotConfig? _getAutobotConfig() {
-  final workingPath = '$pwd/${AutobotConstants.configFileName}';
-  final homePath = '$homeDirectory/${AutobotConstants.configFileName}';
-  return AutobotConfig.fromFileOrNull(workingPath) ?? AutobotConfig.fromFileOrNull(homePath);
-}
+AutobotConfig? _getAutobotConfig() =>
+    AutobotConfig.fromPathOrNull(Files.localConfigPath) ??
+    AutobotConfig.fromPathOrNull(Files.globalConfigPath);
 
 List<String> _resolveArgumentShortcuts(List<String> args, List<String> commandNames) {
   final resolvedArgs = List<String>.from(args);
