@@ -4,6 +4,10 @@ extension NullUtil<T> on T? {
     if (this == null) throw throwable;
     return this!;
   }
+
+  void unpack(void Function(T) callback) {
+    if (this != null) callback(this!);
+  }
 }
 
 extension CastUtil on Object {

@@ -18,9 +18,32 @@ class TellManager {
 }
 
 class TestManager {
-  static void deleteIfExists(String filePath) {
-    if (exists(filePath)) {
-      delete(filePath);
+  static void deleteSystemEntry(String path) {
+    if (!exists(path)) {
+      return;
+    }
+
+    isDirectory(path) //
+        ? deleteDir(path, recursive: true)
+        : delete(path);
+  }
+
+  static void deleteAllSystemEntries(List<String> paths) {
+    for (var path in paths) {
+      deleteSystemEntry(path);
     }
   }
+}
+
+class TestFilesManager {
+  TestFilesManager(this.systemEntryPaths);
+  final List<String> systemEntryPaths;
+
+  void deleteAll() {
+    TestManager.deleteAllSystemEntries(systemEntryPaths);
+  }
+}
+
+extension ArgsExtension on String {
+  List<String> toArgs() => this.split(' ');
 }

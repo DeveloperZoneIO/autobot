@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:autobot/components/autobot_config.mapper.g.dart';
 import 'package:autobot/components/config_file_valiator.dart';
@@ -23,4 +24,6 @@ class AutobotConfig with Mappable {
       return null;
     }
   }
+
+  static AutobotConfig? fromFile(File file) => fromPath(file.path);
 }

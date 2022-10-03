@@ -21,7 +21,7 @@ class MissingConfigFile implements PrintableException {
 
   @override
   void tellUser() {
-    tell(red('No autobot config file found!'));
+    tell(red('No autobot config file found!') + grey('slkjf'));
     tell(grey('Add a autobot_config.yaml to the current working directory using: autobot init'));
     tell(yellow('OR'));
     tell(grey('Add a .autobot_config.yaml to your home directory using: autobot init -g'));

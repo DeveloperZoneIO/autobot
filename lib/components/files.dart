@@ -1,14 +1,12 @@
+import 'dart:io';
+
 import 'package:dcli/dcli.dart';
 
 import 'package:autobot/common/dcli_utils.dart';
 
 class Files {
-  static _FilePaths get localPaths => _FilePaths(pwd);
-  static _FilePaths get globalPaths => _FilePaths(homeDirectory);
-  static const defaultConfig = '''
-config:
-  taskDir: tasks/
-  ''';
+  static AutobotFilePaths get local => AutobotFilePaths(pwd);
+  static AutobotFilePaths get global => AutobotFilePaths(homeDirectory);
 }
 
 class FileNames {
@@ -17,11 +15,14 @@ class FileNames {
   static const String configFileName = 'config.yaml';
 }
 
-class _FilePaths {
-  _FilePaths(this._basePath);
+class AutobotFilePaths {
+  AutobotFilePaths(this._basePath);
 
   final String _basePath;
-  String get resourceDirectory => '$_basePath/${FileNames.resourceDirName}/';
-  String get taskDirectory => '$resourceDirectory${FileNames.taskDirName}/';
-  String get configFile => '$resourceDirectory${FileNames.configFileName}/';
+  Directory get resourceDirectory => Directory('$_basePath/${FileNames.resourceDirName}/');
+  Directory get taskDirectory => Directory('${resourceDirectory.path}${FileNames.taskDirName}/');
+  File get config => File('${resourceDirectory.path}${FileNames.configFileName}');
+
+  List<Directory> get allDirs => [resourceDirectory, taskDirectory];
+  List<File> get allFiles => [config];
 }

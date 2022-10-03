@@ -2,50 +2,53 @@ import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
-import 'package:autobot/autobot.dart' as autobot;
-import 'package:yaml/yaml.dart';
+import 'package:autobot/main.dart' as autobot;
 
 void main() {
-  final _kDefaultConfigFilePath = '$pwd/.autobot_config.yaml';
-  test('`autobot init` creates config in working directory', () async {
-    TellManager.clearPrints();
-    TestManager.deleteIfExists(_kDefaultConfigFilePath);
+  final _kLocalAutobotDir = '$currentWorkingDirectory/.autobot';
+  final _kLocalConfigDir = '$currentWorkingDirectory/.autobot/config.yaml';
 
-    // Run init command
-    autobot.main(['init']);
+  group('init:', () {
+    test('Creates local autobot directory and files', () async {
+      final filesManager = TestFilesManager([_kLocalConfigDir, _kLocalAutobotDir]);
+      filesManager.deleteAll();
+      TellManager.clearPrints();
 
-    expect(exists(_kDefaultConfigFilePath), true);
-    final YamlMap config = loadYaml(read(_kDefaultConfigFilePath).toParagraph());
-    expect(config['config'] is YamlMap, true);
-    expect(config['config']['taskDir'] is String, true);
-  });
+      autobot.main('init'.toArgs());
+      expect(exists(_kLocalAutobotDir), true);
+      expect(exists(_kLocalConfigDir), true);
 
-  test('`autobot init -p` creates config in given path', () {
-    final configFilePath = '$pwd/customDir/subDir/.autobot_config.yaml';
-    TellManager.clearPrints();
-    TestManager.deleteIfExists(configFilePath);
+      filesManager.deleteAll();
+    });
 
-    // Run init command
-    autobot.main(['init', '-p', 'customDir/subDir/']);
+    test('Creates autobot directory and file at custom path', () {
+      final customDir = '$currentWorkingDirectory/customDir/';
+      final autobotDir = '$customDir.autobot';
+      final configFile = '$customDir.autobot/config.yaml';
 
-    expect(exists(configFilePath), true);
-    final YamlMap config = loadYaml(read(configFilePath).toParagraph());
-    expect(config['config'] is YamlMap, true);
-    expect(config['config']['taskDir'] is String, true);
-    TestManager.deleteIfExists(configFilePath);
-  });
+      final filesManager = TestFilesManager([configFile, autobotDir, customDir]);
+      filesManager.deleteAll();
+      TellManager.clearPrints();
 
-  test('`autobot init -g` creates config in home directory', () {
-    final configFilePath = '$homeDirectory/.autobot_config.yaml';
-    TellManager.clearPrints();
-    TestManager.deleteIfExists(configFilePath);
+      autobot.main('init -p customDir/'.toArgs());
 
-    // Run init command
-    autobot.main(['init', '-g']);
+      expect(exists(autobotDir), true);
+      expect(exists(configFile), true);
+      filesManager.deleteAll();
+    });
 
-    expect(exists(configFilePath), true);
-    final YamlMap config = loadYaml(read(configFilePath).toParagraph());
-    expect(config['config'] is YamlMap, true);
-    expect(config['config']['taskDir'] is String, true);
+    test('Creates global autobot directory and files', () {
+      final autobotDir = '$homeDirectory/.autobot';
+      final configFile = '$homeDirectory/.autobot/config.yaml';
+      final filesManager = TestFilesManager([configFile, autobotDir]);
+      filesManager.deleteAll();
+      TellManager.clearPrints();
+
+      autobot.main('init -g'.toArgs());
+      expect(exists(autobotDir), true);
+      expect(exists(configFile), true);
+
+      filesManager.deleteAll();
+    });
   });
 }
