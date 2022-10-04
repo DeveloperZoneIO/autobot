@@ -1,6 +1,5 @@
+import 'package:autobot/shared/paths/paths.dart';
 import 'package:dcli/dcli.dart';
-
-import 'package:autobot/common/dcli_utils.dart';
 
 extension StringPathExtension on String {
   String getDir() {
@@ -19,9 +18,11 @@ extension StringPathExtension on String {
 }
 
 class PathBuilder {
-  PathBuilder();
+  PathBuilder(this.paths);
 
-  factory PathBuilder.from(String path) => PathBuilder().._path = path;
+  final Paths paths;
+
+  PathBuilder from(String path) => this.._path = path;
 
   String _path = '';
 
@@ -29,7 +30,7 @@ class PathBuilder {
     final isRelativePath = !_path.startsWith('/');
 
     if (isRelativePath) {
-      _path = '$currentWorkingDirectory/$_path';
+      _path = '${paths.workingDir}/$_path';
     }
 
     return this;

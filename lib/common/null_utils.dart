@@ -8,6 +8,14 @@ extension NullUtil<T> on T? {
   void unpack(void Function(T) callback) {
     if (this != null) callback(this!);
   }
+
+  T? use(T Function(T) callback) {
+    if (this != null) {
+      return callback(this!);
+    }
+
+    return null;
+  }
 }
 
 extension CastUtil on Object {

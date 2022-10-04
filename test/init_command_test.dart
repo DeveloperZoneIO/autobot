@@ -1,54 +1,66 @@
-import 'package:autobot/common/dcli_utils.dart';
+import 'package:autobot/autobot_cla.dart';
+import 'package:autobot/components/depenencies.dart';
+import 'package:autobot/shared/paths/paths.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
-import 'package:autobot/main.dart' as autobot;
+
+import 'mocks/mock_paths.dart';
 
 void main() {
-  final _kLocalAutobotDir = '$currentWorkingDirectory/.autobot';
-  final _kLocalConfigDir = '$currentWorkingDirectory/.autobot/config.yaml';
+  late TestFilesManager fileManager;
+
+  setUp(() {
+    // Register mock dependencies
+    getIt.registerSingleton<Paths>(MockPaths());
+
+    fileManager = TestFilesManager();
+    fileManager.trackAll([
+      getIt<Paths>().workingDir,
+      getIt<Paths>().globalDir,
+    ]);
+
+    TellManager.clearPrints();
+  });
+
+  tearDown(() {
+    // Remove all registered dependencies
+    getIt.reset();
+    // Delete all files create by test
+    fileManager.deleteAll();
+  });
 
   group('init:', () {
-    test('Creates local autobot directory and files', () async {
-      final filesManager = TestFilesManager([_kLocalConfigDir, _kLocalAutobotDir]);
-      filesManager.deleteAll();
-      TellManager.clearPrints();
+    test('Creates local autobot directory and files', () {
+      final autobotDir = '${getIt<Paths>().workingDir}/.autobot';
+      final configFile = '${getIt<Paths>().workingDir}/.autobot/config.yaml';
+      fileManager.trackAll([configFile, autobotDir]);
 
-      autobot.main('init'.toArgs());
-      expect(exists(_kLocalAutobotDir), true);
-      expect(exists(_kLocalConfigDir), true);
-
-      filesManager.deleteAll();
+      AutobotCLA(arguments: 'init'.toArgs()).run();
+      expect(exists(autobotDir), true);
+      expect(exists(configFile), true);
     });
 
     test('Creates autobot directory and file at custom path', () {
-      final customDir = '$currentWorkingDirectory/customDir/';
+      final customDir = '${getIt<Paths>().workingDir}/customDir/';
       final autobotDir = '$customDir.autobot';
       final configFile = '$customDir.autobot/config.yaml';
 
-      final filesManager = TestFilesManager([configFile, autobotDir, customDir]);
-      filesManager.deleteAll();
-      TellManager.clearPrints();
+      fileManager.trackAll([configFile, autobotDir, customDir]);
 
-      autobot.main('init -p customDir/'.toArgs());
-
+      AutobotCLA(arguments: 'init -p customDir/'.toArgs()).run();
       expect(exists(autobotDir), true);
       expect(exists(configFile), true);
-      filesManager.deleteAll();
     });
 
     test('Creates global autobot directory and files', () {
-      final autobotDir = '$homeDirectory/.autobot';
-      final configFile = '$homeDirectory/.autobot/config.yaml';
-      final filesManager = TestFilesManager([configFile, autobotDir]);
-      filesManager.deleteAll();
-      TellManager.clearPrints();
+      final autobotDir = '${getIt<Paths>().globalDir}/.autobot';
+      final configFile = '${getIt<Paths>().globalDir}/.autobot/config.yaml';
+      fileManager.trackAll([configFile, autobotDir]);
 
-      autobot.main('init -g'.toArgs());
+      AutobotCLA(arguments: 'init -g'.toArgs()).run();
       expect(exists(autobotDir), true);
       expect(exists(configFile), true);
-
-      filesManager.deleteAll();
     });
   });
 }

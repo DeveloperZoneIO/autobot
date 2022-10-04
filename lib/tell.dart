@@ -36,11 +36,21 @@ class TestManager {
 }
 
 class TestFilesManager {
-  TestFilesManager(this.systemEntryPaths);
-  final List<String> systemEntryPaths;
+  TestFilesManager();
+  final _systemEntryPaths = <String>[];
+
+  void track(String path) {
+    _systemEntryPaths.add(path);
+    TestManager.deleteAllSystemEntries([path]);
+  }
+
+  void trackAll(List<String> paths) {
+    _systemEntryPaths.addAll(paths);
+    TestManager.deleteAllSystemEntries(paths);
+  }
 
   void deleteAll() {
-    TestManager.deleteAllSystemEntries(systemEntryPaths);
+    TestManager.deleteAllSystemEntries(_systemEntryPaths);
   }
 }
 

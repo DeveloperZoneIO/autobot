@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:dcli/dcli.dart';
-
 import 'package:autobot/common/dcli_utils.dart';
 
 class Files {
-  static AutobotFilePaths get local => AutobotFilePaths(pwd);
-  static AutobotFilePaths get global => AutobotFilePaths(homeDirectory);
+  static AutobotFilePathsDef get local => AutobotFilePaths(pwd);
+  static AutobotFilePathsDef get global => AutobotFilePaths(homeDirectory);
 }
 
 class FileNames {
@@ -15,14 +13,27 @@ class FileNames {
   static const String configFileName = 'config.yaml';
 }
 
-class AutobotFilePaths {
-  AutobotFilePaths(this._basePath);
+abstract class AutobotFilePathsDef {
+  AutobotFilePathsDef(this.basePath);
+  final String basePath;
 
-  final String _basePath;
-  Directory get resourceDirectory => Directory('$_basePath/${FileNames.resourceDirName}/');
-  Directory get taskDirectory => Directory('${resourceDirectory.path}${FileNames.taskDirName}/');
-  File get config => File('${resourceDirectory.path}${FileNames.configFileName}');
+  Directory get resourceDirectory;
+  Directory get taskDirectory;
+  File get config;
 
   List<Directory> get allDirs => [resourceDirectory, taskDirectory];
   List<File> get allFiles => [config];
+}
+
+class AutobotFilePaths extends AutobotFilePathsDef {
+  AutobotFilePaths(super.basePath);
+
+  @override
+  Directory get resourceDirectory => Directory('$basePath/${FileNames.resourceDirName}/');
+
+  @override
+  Directory get taskDirectory => Directory('${resourceDirectory.path}${FileNames.taskDirName}/');
+
+  @override
+  File get config => File('${resourceDirectory.path}${FileNames.configFileName}');
 }

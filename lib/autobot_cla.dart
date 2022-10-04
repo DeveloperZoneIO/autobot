@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:autobot/arguments_resolver.dart';
+import 'package:autobot/components/depenencies.dart';
 import 'package:meta/meta.dart';
 
 import 'package:autobot/essentials/command_line_app/command_line_app.dart';
@@ -22,7 +23,10 @@ class AutobotCLA extends CommanLineApp {
     final config = _getAutobotConfig();
     final runner = CommandRunner(Pubspec.name, Pubspec.description);
     // runner.addCommand(RunCommand(config));
-    runner.addCommand(InitCommand(appController));
+    runner.addCommand(InitCommand(
+      appController,
+      paths: inject(),
+    ));
     // runner.addCommand(VersionCommand());
 
     final commandNames = runner.commands.keys.toList();
