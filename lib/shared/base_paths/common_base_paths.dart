@@ -1,4 +1,4 @@
-part of 'paths.dart';
+part of 'base_paths.dart';
 
 String get _homeDir {
   try {
