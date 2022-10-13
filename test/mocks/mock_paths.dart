@@ -1,10 +1,10 @@
-import 'package:autobot/shared/paths/paths.dart';
+import 'package:autobot/shared/base_paths/base_paths.dart';
 import 'package:dcli/dcli.dart';
 
-class MockPaths extends Paths {
+class MockPaths extends BasePaths {
   @override
   String get globalDir => '$pwd/globalTestDirectory';
 
   @override
-  String get workingDir => '$pwd/localTestDirectory';
+  String get localDir => '$pwd/localTestDirectory';
 }

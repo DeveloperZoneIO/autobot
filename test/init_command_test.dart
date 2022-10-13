@@ -1,6 +1,6 @@
 import 'package:autobot/autobot_cla.dart';
 import 'package:autobot/components/depenencies.dart';
-import 'package:autobot/shared/paths/paths.dart';
+import 'package:autobot/shared/base_paths/base_paths.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
@@ -12,12 +12,12 @@ void main() {
 
   setUp(() {
     // Register mock dependencies
-    getIt.registerSingleton<Paths>(MockPaths());
+    getIt.registerSingleton<BasePaths>(MockPaths());
 
     fileManager = TestFilesManager();
     fileManager.trackAll([
-      getIt<Paths>().workingDir,
-      getIt<Paths>().globalDir,
+      getIt<BasePaths>().localDir,
+      getIt<BasePaths>().globalDir,
     ]);
 
     TellManager.clearPrints();
@@ -32,8 +32,8 @@ void main() {
 
   group('init:', () {
     test('Creates local autobot directory and files', () {
-      final autobotDir = '${getIt<Paths>().workingDir}/.autobot';
-      final configFile = '${getIt<Paths>().workingDir}/.autobot/config.yaml';
+      final autobotDir = '${getIt<BasePaths>().localDir}/.autobot';
+      final configFile = '${getIt<BasePaths>().localDir}/.autobot/config.yaml';
       fileManager.trackAll([configFile, autobotDir]);
 
       AutobotCLA(arguments: 'init'.toArgs()).run();
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('Creates autobot directory and file at custom path', () {
-      final customDir = '${getIt<Paths>().workingDir}/customDir/';
+      final customDir = '${getIt<BasePaths>().localDir}/customDir/';
       final autobotDir = '$customDir.autobot';
       final configFile = '$customDir.autobot/config.yaml';
 
@@ -54,8 +54,8 @@ void main() {
     });
 
     test('Creates global autobot directory and files', () {
-      final autobotDir = '${getIt<Paths>().globalDir}/.autobot';
-      final configFile = '${getIt<Paths>().globalDir}/.autobot/config.yaml';
+      final autobotDir = '${getIt<BasePaths>().globalDir}/.autobot';
+      final configFile = '${getIt<BasePaths>().globalDir}/.autobot/config.yaml';
       fileManager.trackAll([configFile, autobotDir]);
 
       AutobotCLA(arguments: 'init -g'.toArgs()).run();
