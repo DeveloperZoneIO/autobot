@@ -47,13 +47,15 @@ class _CLAControllerImpl extends CLAController {
   List<String> get calledAction => List.from(_calledActions);
 
   @override
-  void executel(CLAControllerAction action) {
+  void execute(CLAControllerAction action) {
     if (action is Print) {
       action.messages.forEach(print);
     }
+  }
 
-    if (action is ExitApp) {
-      exit(0);
-    }
+  @override
+  Never terminate(CLAControllerAction action) {
+    execute(action);
+    exit(0);
   }
 }
