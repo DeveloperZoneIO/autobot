@@ -9,10 +9,18 @@ part 'cla_test_controller.dart';
 part 'registered_args.dart';
 
 abstract class CommanLineApp {
-  final _controller = _CLAControllerImpl();
+  CommanLineApp(name, String description) : _commandRunner = CommandRunner(name, description) {
+    onCreate(_commandRegistrator);
+    _commandRegistrator._commands.forEach(_commandRunner.addCommand);
+  }
+
+  final CommandRunner _commandRunner;
+  final appController = _CLAControllerImpl();
+  final _commandRegistrator = CommandRegistrator._();
 
   void run() {
-    runner(_controller);
+    final args = getArguments(_commandRunner.commands.values.toList());
+    _commandRunner.run(args);
     // runZonedGuarded(
     //   () => runner(_controller),
     //   _onError,
@@ -39,7 +47,20 @@ abstract class CommanLineApp {
   }
 
   @protected
-  void runner(CLAController appController);
+  void onCreate(CommandRegistrator register);
+
+  @protected
+  List<String> getArguments(List<Command> commands);
+}
+
+class CommandRegistrator {
+  CommandRegistrator._();
+
+  final _commands = <Command>[];
+
+  void call(Command command) {
+    _commands.add(command);
+  }
 }
 
 class _CLAControllerImpl extends CLAController {

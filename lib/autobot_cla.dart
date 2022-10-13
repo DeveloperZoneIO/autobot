@@ -1,4 +1,5 @@
 import 'package:args/command_runner.dart' as args;
+import 'package:args/command_runner.dart';
 import 'package:autobot/arguments_resolver.dart';
 import 'package:autobot/components/depenencies.dart';
 import 'package:autobot/shared/base_paths/base_paths.dart';
@@ -9,30 +10,35 @@ import 'package:meta/meta.dart';
 import 'package:autobot/essentials/command_line_app/command_line_app.dart';
 
 import 'commands/init/init.dart';
+import 'commands/version/version.dart';
 import 'components/autobot_config.dart';
 import 'pubspec.dart';
 
 class AutobotCLA extends CommanLineApp {
-  AutobotCLA({required this.arguments});
+  AutobotCLA({required this.arguments}) : super(Pubspec.name, Pubspec.description);
 
   final List<String> arguments;
   final BasePaths basePaths = provide();
 
   @override
   @protected
-  void runner(CLAController appController) {
-    // final config = _getAutobotConfig(appController);
-    final runner = args.CommandRunner(Pubspec.name, Pubspec.description);
-    // runner.addCommand(RunCommand(config));
-    // runner.addCommand(VersionCommand());
-    runner.addCommand(InitCommand(
-      appController,
-      paths: inject(),
-    ));
+  void onCreate(CommandRegistrator register) {
+    register(InitCommand(appController, paths: inject()));
+    register(VersionCommand());
+  }
 
-    final commandNames = runner.commands.keys.toList();
+  @override
+  @protected
+  List<String> getArguments(List<Command> commands) {
+    // final config = _getAutobotConfig(appController);
+    // runner.addCommand(RunCommand(config));
+
+    final commandNames = commands //
+        .map((command) => command.name)
+        .toList();
+
     final resolvedArgs = ArgumentsResolver().resolveShortcuts(arguments, commandNames);
-    runner.run(resolvedArgs);
+    return resolvedArgs;
   }
 
   // Move to run command
