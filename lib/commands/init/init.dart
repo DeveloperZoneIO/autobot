@@ -1,11 +1,11 @@
 import 'package:args/command_runner.dart';
 import 'package:autobot/components/file_creator.dart';
-import 'package:autobot/shared/paths/paths.dart';
 import 'package:dcli/dcli.dart';
 
 import 'package:autobot/common/path_util.dart';
-import 'package:autobot/components/files.dart';
 import '../../essentials/command_line_app/command_line_app.dart';
+import '../../shared/base_paths/base_paths.dart';
+import '../../shared/file_and_dir_paths/file_and_dir_paths.dart';
 
 /// Defines the init command of autobot.
 /// `autobot init` creates a autobot config yaml in the working directory.
@@ -20,7 +20,7 @@ class InitCommand extends Command with RegisteredArgs {
   }
 
   final CLAController appController;
-  final Paths paths;
+  final BasePaths paths;
   final globalFlag = FlagArgument(name: 'global', shortName: 'g', defaultsTo: false);
   final pathOption = OptionsArgument(name: 'path', shortName: 'p', defaultsTo: null);
 
@@ -38,13 +38,13 @@ class InitCommand extends Command with RegisteredArgs {
       final customPath = _reformatCustomPath(valueOf(pathOption));
       _createAutobotFolderAndFilesAt(customPath);
     } else {
-      _createAutobotFolderAndFilesAt(paths.workingDir);
+      _createAutobotFolderAndFilesAt(paths.localDir);
     }
   }
 
   void _createAutobotFolderAndFilesAt(String baseDir) {
-    final filePaths = AutobotFilePaths(baseDir);
-    FileCreator().createResourceFilesSync(filePaths);
+    final configFolderStructure = ConfigFolderStructure.at(baseDir);
+    FileCreator().createResourceFilesSync(configFolderStructure);
   }
 
   String _reformatCustomPath(String filePath) => PathBuilder(paths) //
@@ -56,7 +56,7 @@ class InitCommand extends Command with RegisteredArgs {
 
   void assertCustomPathIsValid(String path) {
     if (!isDirectory(path)) {
-      appController.executel(ExitApp(
+      appController.terminate(Print(
         red('ERROR -> ${pathOption.name} must ba a directory: '),
         orange(path),
       ));
