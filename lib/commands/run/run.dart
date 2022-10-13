@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:autobot/shared/base_paths/base_paths.dart';
 import 'package:cli_script/cli_script.dart' hide read;
 import 'package:dcli/dcli.dart' hide run;
 import 'package:mustache_template/mustache.dart';
@@ -18,6 +19,11 @@ import 'package:autobot/components/read_data_file.dart';
 import 'package:autobot/components/task/task.dart';
 import 'package:autobot/tell.dart';
 
+import '../../components/depenencies.dart';
+import '../../essentials/command_line_app/command_line_app.dart';
+import '../../shared/file_and_dir_paths/config_folder_structure.dart';
+import '../../shared/when/when.dart';
+
 part 'js_runner.dart';
 part 'models/output_task.dart';
 part 'output_writer.dart';
@@ -31,7 +37,9 @@ part 'utils/string_to_bool.dart';
 /// `autobot run -t <task_name> -i var1=a,var2=b` runs the task machting to <task_name> and inserts the given variables to autobot variables.
 class RunCommand extends Command {
   late final RunCommandArgs args;
-  final AutobotConfig? config;
+  // final AutobotConfig? config;
+  final CLAController appController;
+  final BasePaths basePaths = provide();
   static final kName = 'run';
 
   @override
@@ -39,14 +47,14 @@ class RunCommand extends Command {
   @override
   String get name => kName;
 
-  RunCommand(this.config) {
+  RunCommand(this.appController) {
     args = RunCommandArgs(argParser, () => argResults!);
     args.initOptions();
   }
 
   @override
   void run() async {
-    final taskRunner = TaskRunner(taskDirectory: requireConfig.taskDir);
+    final taskRunner = TaskRunner(taskDirectory: _autobotConfig.taskDir);
 
     // collect environment variables
     taskRunner.renderData.addAll(Platform.environment);
@@ -69,13 +77,34 @@ class RunCommand extends Command {
     await taskRunner.run(mainTask);
   }
 
-  String getTaskPath() => requireConfig.taskDir + args.taskName;
+  String getTaskPath() => _autobotConfig.taskDir + args.taskName;
 
-  AutobotConfig get requireConfig {
-    if (config == null) {
-      throw MissingConfigFile();
-    } else {
-      return config!;
+  // Move to run command
+  AutobotConfig get _autobotConfig {
+    final l = _hasLocalAutobotDir;
+    final g = _hasGlobalAutobotDir;
+    final customPath = basePaths.customDir;
+
+    final basePath = when(_hasLocalAutobotDir)
+        .then(() => basePaths.localDir)
+        .orWhen(_hasGlobalAutobotDir)
+        .then(() => basePaths.globalDir)
+        .orWhen(customPath != null && ConfigFolderStructure.at(customPath).exists)
+        .then(() => basePaths.customDir!)
+        .orNone();
+
+    if (basePath.isNone()) {
+      appController.terminate(Print('No ${ConfigFolderConstants.folderNames.main} found'));
     }
+
+    final config = ConfigFolderStructure.at(basePath.get()).configContent;
+    if (config == null) {
+      appController.terminate(Print('Config file could not be parsed'));
+    }
+
+    return config;
   }
+
+  bool get _hasLocalAutobotDir => ConfigFolderStructure.at(basePaths.localDir).exists;
+  bool get _hasGlobalAutobotDir => ConfigFolderStructure.at(basePaths.globalDir).exists;
 }

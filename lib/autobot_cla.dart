@@ -1,4 +1,3 @@
-import 'package:args/command_runner.dart' as args;
 import 'package:args/command_runner.dart';
 import 'package:autobot/arguments_resolver.dart';
 import 'package:autobot/components/depenencies.dart';
@@ -25,48 +24,15 @@ class AutobotCLA extends CommanLineApp {
   void onCreate(CommandRegistrator register) {
     register(InitCommand(appController, paths: inject()));
     register(VersionCommand());
+    // final config = _getAutobotConfig(appController);
+    // runner.addCommand(RunCommand(config));
   }
 
   @override
   @protected
   List<String> getArguments(List<Command> commands) {
-    // final config = _getAutobotConfig(appController);
-    // runner.addCommand(RunCommand(config));
-
-    final commandNames = commands //
-        .map((command) => command.name)
-        .toList();
-
+    final commandNames = commands.map((it) => it.name).toList();
     final resolvedArgs = ArgumentsResolver().resolveShortcuts(arguments, commandNames);
     return resolvedArgs;
   }
-
-  // Move to run command
-  AutobotConfig _getAutobotConfig(CLAController appController) {
-    final l = _hasLocalAutobotDir;
-    final g = _hasGlobalAutobotDir;
-    final customPath = basePaths.customDir;
-
-    final basePath = when(_hasLocalAutobotDir)
-        .then(() => basePaths.localDir)
-        .orWhen(_hasGlobalAutobotDir)
-        .then(() => basePaths.globalDir)
-        .orWhen(customPath != null && ConfigFolderStructure.at(customPath).exists)
-        .then(() => basePaths.customDir!)
-        .orNone();
-
-    if (basePath.isNone()) {
-      appController.terminate(Print('No ${ConfigFolderConstants.folderNames.main} found'));
-    }
-
-    final config = ConfigFolderStructure.at(basePath.get()).configContent;
-    if (config == null) {
-      appController.terminate(Print('Config file could not be parsed'));
-    }
-
-    return config;
-  }
-
-  bool get _hasLocalAutobotDir => ConfigFolderStructure.at(basePaths.localDir).exists;
-  bool get _hasGlobalAutobotDir => ConfigFolderStructure.at(basePaths.globalDir).exists;
 }
