@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/components/file_content.dart';
 
-import '../shared/file_and_dir_paths/file_and_dir_paths.dart';
+import '../shared/file_and_dir_paths/config_folder_structure.dart';
 
 class FileCreator {
   void createResourceFilesSync(ConfigFolderStructure systemEntities) {

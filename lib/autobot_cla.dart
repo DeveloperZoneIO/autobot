@@ -3,7 +3,7 @@ import 'package:args/command_runner.dart';
 import 'package:autobot/arguments_resolver.dart';
 import 'package:autobot/components/depenencies.dart';
 import 'package:autobot/shared/base_paths/base_paths.dart';
-import 'package:autobot/shared/file_and_dir_paths/file_and_dir_paths.dart';
+import 'package:autobot/shared/file_and_dir_paths/config_folder_structure.dart';
 import 'package:autobot/shared/when/when.dart';
 import 'package:meta/meta.dart';
 
@@ -56,7 +56,7 @@ class AutobotCLA extends CommanLineApp {
         .orNone();
 
     if (basePath.isNone()) {
-      appController.terminate(Print('No ${AutobotDirectoryNames.main} found'));
+      appController.terminate(Print('No ${ConfigFolderConstants.folderNames.main} found'));
     }
 
     final config = ConfigFolderStructure.at(basePath.get()).configContent;
@@ -68,6 +68,5 @@ class AutobotCLA extends CommanLineApp {
   }
 
   bool get _hasLocalAutobotDir => ConfigFolderStructure.at(basePaths.localDir).exists;
-
   bool get _hasGlobalAutobotDir => ConfigFolderStructure.at(basePaths.globalDir).exists;
 }

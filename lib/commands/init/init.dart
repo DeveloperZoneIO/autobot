@@ -5,7 +5,7 @@ import 'package:dcli/dcli.dart';
 import 'package:autobot/common/path_util.dart';
 import '../../essentials/command_line_app/command_line_app.dart';
 import '../../shared/base_paths/base_paths.dart';
-import '../../shared/file_and_dir_paths/file_and_dir_paths.dart';
+import '../../shared/file_and_dir_paths/config_folder_structure.dart';
 
 /// Defines the init command of autobot.
 /// `autobot init` creates a autobot config yaml in the working directory.
