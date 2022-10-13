@@ -1,30 +1,38 @@
+import 'dart:io';
+
 import 'package:autobot/common/null_utils.dart';
 import 'package:autobot/components/file_content.dart';
-import 'package:autobot/components/files.dart';
-import 'package:dcli/dcli.dart';
+
+import '../shared/file_and_dir_paths/file_and_dir_paths.dart';
 
 class FileCreator {
-  void createResourceFilesSync(AutobotFilePaths filePaths) {
-    _createDirsIfNotExist(filePaths);
-    _createFilesIfNotExist(filePaths);
+  void createResourceFilesSync(ConfigFolderStructure systemEntities) {
+    _createSystemEntries([
+      systemEntities.rootDirectory,
+      systemEntities.taskDirectory,
+      systemEntities.configFile,
+    ]);
   }
 
-  void _createDirsIfNotExist(AutobotFilePaths filePaths) {
-    for (final dir in filePaths.allDirs) {
-      if (!dir.existsSync()) {
-        dir.createSync(recursive: true);
-      }
+  void _createSystemEntries(List<FileSystemEntity> entities) {
+    for (var entity in entities) {
+      if (entity is Directory) _createDirIfNotExist(entity);
+      if (entity is File) _createFileIfNotExist(entity);
     }
   }
 
-  void _createFilesIfNotExist(AutobotFilePaths filePaths) {
-    for (final file in filePaths.allFiles) {
-      if (file.existsSync()) continue;
-
-      file.createSync(recursive: true);
-      FileContents.getContentFor(file)?.unpack((content) {
-        file.writeAsStringSync(content);
-      });
+  void _createDirIfNotExist(Directory dir) {
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
     }
+  }
+
+  void _createFileIfNotExist(File file) {
+    if (file.existsSync()) return;
+
+    file.createSync(recursive: true);
+    FileContents.getContentFor(file)?.unpack((content) {
+      file.writeAsStringSync(content);
+    });
   }
 }

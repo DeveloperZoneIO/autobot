@@ -1,12 +1,16 @@
 import 'dart:io';
 
-import 'package:autobot/components/files.dart';
+import '../shared/file_and_dir_paths/file_and_dir_paths.dart';
 
 class FileContents {
   static const initialConfigContent = '';
 
   static String? getContentFor(File file) {
-    if (file.path.endsWith(FileNames.configFileName)) return initialConfigContent;
+    // config file
+    if (file.path.endsWith(AutobotFilesNames.config)) {
+      return initialConfigContent;
+    }
+
     return null;
   }
 }
