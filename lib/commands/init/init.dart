@@ -10,25 +10,20 @@ import '../../shared/file_and_dir_paths/config_folder_structure.dart';
 /// Defines the init command of autobot.
 /// `autobot init` creates a autobot config yaml in the working directory.
 /// `autobot init -g` creates a autobot config yaml in the home directory.
-class InitCommand extends Command with RegisteredArgs {
-  InitCommand(
-    this.appController, {
-    required this.paths,
-  }) {
+class InitCommand extends CLACommand {
+  InitCommand({required this.paths, required this.appController})
+      : super(
+          name: 'init',
+          description: 'Adds a config file to the current working directory.',
+        ) {
     register(globalFlag);
     register(pathOption);
   }
 
-  final CLAController appController;
   final BasePaths paths;
+  final CLAController appController;
   final globalFlag = FlagArgument(name: 'global', shortName: 'g', defaultsTo: false);
   final pathOption = OptionsArgument(name: 'path', shortName: 'p', defaultsTo: null);
-
-  @override
-  String get description => 'Adds a config file to the current working directory.';
-
-  @override
-  String get name => 'init';
 
   @override
   void run() {

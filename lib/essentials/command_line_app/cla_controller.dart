@@ -5,7 +5,7 @@ abstract class CLAController {
   Never terminate(CLAControllerAction action);
 }
 
-abstract class CLAControllerAction {}
+abstract class CLAControllerAction extends Equatable {}
 
 class Print extends CLAControllerAction {
   late final List<String> messages;
@@ -23,4 +23,7 @@ class Print extends CLAControllerAction {
   ]) {
     messages = [msg1, msg2, msg3, msg4, msg5, msg6, msg7, msg8, msg9].whereType<String>().toList();
   }
+
+  @override
+  List<Object?> get props => messages;
 }

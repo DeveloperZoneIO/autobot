@@ -1,8 +1,8 @@
 part of 'command_line_app.dart';
 
-class _CLATestController extends CLAController {
+class CLATestController extends CLAController {
   final _calledActions = <CLAControllerAction>[];
-  List<String> get calledAction => List.from(_calledActions);
+  List<CLAControllerAction> get calledActions => List.from(_calledActions);
 
   @override
   void execute(CLAControllerAction action) {

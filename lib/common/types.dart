@@ -11,3 +11,7 @@ class Pair<K, V> extends Equatable {
   @override
   List<Object?> get props => [key, value];
 }
+
+extension Caster<T> on T {
+  R as<R>() => this as R;
+}

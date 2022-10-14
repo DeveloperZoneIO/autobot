@@ -14,7 +14,12 @@ import 'components/autobot_config.dart';
 import 'pubspec.dart';
 
 class AutobotCLA extends CommanLineApp {
-  AutobotCLA({required this.arguments}) : super(Pubspec.name, Pubspec.description);
+  AutobotCLA({required this.arguments})
+      : super(
+          name: Pubspec.name,
+          description: Pubspec.description,
+          controller: provide(),
+        );
 
   final List<String> arguments;
   final BasePaths basePaths = provide();
@@ -22,8 +27,8 @@ class AutobotCLA extends CommanLineApp {
   @override
   @protected
   void onCreate(CommandRegistrator register) {
-    register(InitCommand(appController, paths: inject()));
-    register(VersionCommand());
+    register(provide<InitCommand>());
+    register(provide<VersionCommand>());
     // final config = _getAutobotConfig(appController);
     // runner.addCommand(RunCommand(config));
   }

@@ -1,5 +1,7 @@
 import 'package:autobot/autobot_cla.dart';
+import 'package:autobot/commands/init/init.dart';
 import 'package:autobot/components/depenencies.dart';
+import 'package:autobot/essentials/command_line_app/command_line_app.dart';
 import 'package:autobot/shared/base_paths/base_paths.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
@@ -11,22 +13,22 @@ void main() {
   late TestFilesManager fileManager;
 
   setUp(() {
-    // Register mock dependencies
-    getIt.registerSingleton<BasePaths>(MockPaths());
+    Dependencies.initWithMocks(mockRegistrant: (getIt) {
+      getIt.registerSingleton<BasePaths>(MockPaths());
+      getIt.registerSingleton<CLAController>(CLATestController());
+    });
 
     fileManager = TestFilesManager();
     fileManager.trackAll([
-      getIt<BasePaths>().localDir,
-      getIt<BasePaths>().globalDir,
+      provide<BasePaths>().localDir,
+      provide<BasePaths>().globalDir,
     ]);
 
     TellManager.clearPrints();
   });
 
   tearDown(() {
-    // Remove all registered dependencies
-    getIt.reset();
-    // Delete all files create by test
+    Dependencies.reset();
     fileManager.deleteAll();
   });
 
