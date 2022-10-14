@@ -44,3 +44,7 @@ Map<K, V> mergeAll<K, V>(List<Map<K, V>> maps) {
 Map<K, V> merge<K, V>(Map<K, V> first, Map<K, V> second) {
   return mergeAll([first, second]);
 }
+
+extension MapEntryBuilder<T> on T {
+  MapEntry<T, R> to<R>(R value) => MapEntry(this, value);
+}

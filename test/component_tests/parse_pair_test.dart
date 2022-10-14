@@ -13,7 +13,7 @@ void main() {
     expect(parsePair('a=b'), Pair(key: 'a', value: 'b'));
     expect(() => parsePair('a=b=c'), throwsA(isA<TellUser>()));
 
-    expect(parsePairs(['a=b', 'cd=ef']), {'a': 'b', 'cd': 'ef'});
-    expect(() => parsePairs(['a=b', 'cd=e=f']), throwsA(isA<TellUser>()));
+    expect(parseKeyValuePairs(['a=b', 'cd=ef']), {'a': 'b', 'cd': 'ef'});
+    expect(() => parseKeyValuePairs(['a=b', 'cd=e=f']), throwsA(isA<TellUser>()));
   });
 }

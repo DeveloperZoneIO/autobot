@@ -22,8 +22,8 @@ class InitCommand extends CLACommand {
 
   final BasePaths paths;
   final CLAController appController;
-  final globalFlag = FlagArgument(name: 'global', shortName: 'g', defaultsTo: false);
-  final pathOption = OptionsArgument(name: 'path', shortName: 'p', defaultsTo: null);
+  final globalFlag = FlagArg(name: 'global', shortName: 'g', defaultsTo: false);
+  final pathOption = OptionsArg(name: 'path', shortName: 'p', defaultsTo: null);
 
   @override
   void run() {

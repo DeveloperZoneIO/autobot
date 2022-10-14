@@ -24,9 +24,13 @@ Pair<String, String> parsePair(String pair) {
 /// ```dart
 /// "someKey=someValue"
 /// ```
-Map<String, String> parsePairs(List<String> pairs) {
+Map<String, String> parseKeyValuePairs(List<String> pairs) {
   return pairs //
       .map(parsePair)
       .toList()
       .toMap((pairObject) => pairObject);
+}
+
+extension ListToPairs on List<String> {
+  Map<String, String> toKeyValuePairs() => parseKeyValuePairs(this);
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:autobot/shared/when/when.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import '../read_yaml.dart';
 
@@ -59,11 +60,9 @@ Task _getTaskFromFile(String filePath) {
   }).toList();
 
   final metaMap = taskMap['meta'];
-  MetaNode? meta;
-
-  if (metaMap != null) {
-    meta = Mapper.fromMap(metaMap);
-  }
+  final meta = whenTyped<MetaNode?>(metaMap != null) //
+      .then(() => Mapper.fromMap(metaMap!))
+      .orNull();
 
   return Task(
     meta: meta,

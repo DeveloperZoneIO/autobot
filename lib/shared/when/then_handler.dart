@@ -16,6 +16,17 @@ class Then<T> extends WhenChainHolder<T> {
     return _resolveChain();
   }
 
+  T? orNull() {
+    _chain.add(WhenChainEntry<T>(_statementHolder._statement, _mapper));
+
+    try {
+      final result = _resolveChain();
+      return result;
+    } on StateError catch (_) {
+      return null;
+    }
+  }
+
   Option<T> orNone() {
     _chain.add(WhenChainEntry<T>(_statementHolder._statement, _mapper));
 

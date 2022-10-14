@@ -4,6 +4,11 @@ mixin TextRenderable {
   final _kMustacheVariableRegex = RegExp(r'{{.*}}|{{{.*}}}');
 
   final renderData = <String, dynamic>{};
+
+  void addRenderData(Map<String, dynamic> data) {
+    renderData.addAll(data);
+  }
+
   String render(String text) {
     String renderedText = text;
 

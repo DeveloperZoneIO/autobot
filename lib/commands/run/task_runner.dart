@@ -9,7 +9,7 @@ class TaskRunner with TextRenderable {
 
   TaskRunner({required this.taskDirectory});
 
-  Future<void> run(Task task) async {
+  void run(Task task) {
     for (final step in task.steps) {
       if (step is VariablesStep) handleVariablesStep(step);
       if (step is AskStep) handleAskStep(step.key, step.prompt);
@@ -17,7 +17,7 @@ class TaskRunner with TextRenderable {
       if (step is CommandStep) handleCommandStep(step.run);
       if (step is WriteStep) handleWriteStep(step);
       if (step is ReadStep) handleReadStep(step);
-      if (step is RunTaskStep) await handleRunTaskStep(step);
+      if (step is RunTaskStep) handleRunTaskStep(step);
     }
   }
 
@@ -60,7 +60,7 @@ class TaskRunner with TextRenderable {
   void handleReadStep(ReadStep step) {
     if (step.required) {
       final file = render(step.file);
-      final data = readDataFromFiles([file]);
+      final data = readDataFromFiles(filePaths: [file]);
       renderData.addAll(data);
       return;
     }
@@ -74,6 +74,6 @@ class TaskRunner with TextRenderable {
 
   Future<void> handleRunTaskStep(RunTaskStep step) async {
     final subtask = Task.fromFile(render(taskDirectory) + render(step.file));
-    await run(subtask);
+    run(subtask);
   }
 }

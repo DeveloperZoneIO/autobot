@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:autobot/commands/run/utils/config_folder.dart';
 import 'package:autobot/shared/base_paths/base_paths.dart';
 import 'package:cli_script/cli_script.dart' hide read;
 import 'package:dcli/dcli.dart' hide run;
@@ -27,7 +28,6 @@ import '../../shared/when/when.dart';
 part 'js_runner.dart';
 part 'models/output_task.dart';
 part 'output_writer.dart';
-part 'run_command_arg_results.dart';
 part 'shell_runner.dart';
 part 'utils/render_mixin.dart';
 part 'utils/string_to_bool.dart';
@@ -35,76 +35,43 @@ part 'utils/string_to_bool.dart';
 /// Defines the run command of autobot.
 /// `autobot run -t <task_name>` runs the task machting to <task_name>.
 /// `autobot run -t <task_name> -i var1=a,var2=b` runs the task machting to <task_name> and inserts the given variables to autobot variables.
-class RunCommand extends Command {
-  late final RunCommandArgs args;
-  // final AutobotConfig? config;
-  final CLAController appController;
-  final BasePaths basePaths = provide();
+class RunCommand extends CLACommand {
   static final kName = 'run';
 
-  @override
-  String get description => 'Runs a yaml template file.';
-  @override
-  String get name => kName;
+  final CLAController appController;
+  final BasePaths basePaths;
+  final taskArgument = OptionsArg(name: 'task', shortName: 't', mandatory: true);
+  final inputArgument = MultiOptionsArg(name: 'input', shortName: 'i');
+  final filePathsArgument = MultiOptionsArg(name: 'input-file', shortName: 'f');
 
-  RunCommand(this.appController) {
-    args = RunCommandArgs(argParser, () => argResults!);
-    args.initOptions();
+  RunCommand({required this.appController, required this.basePaths})
+      : super(name: kName, description: 'Runs a yaml template file.') {
+    register(taskArgument);
+    register(inputArgument);
+    register(filePathsArgument);
   }
 
   @override
   void run() async {
-    final taskRunner = TaskRunner(taskDirectory: _autobotConfig.taskDir);
+    final tasksFolderPath = ConfigFolder.findFirstAt(basePaths).taskDirectory.path;
+    final targetTaskPath = tasksFolderPath + valueOf(taskArgument) + '.yaml';
+    final task = Task.fromFile(targetTaskPath);
 
-    // collect environment variables
-    taskRunner.renderData.addAll(Platform.environment);
-
-    // collect task flags
-    taskRunner.renderData.addAll(args.taskFlags);
-
-    // collect variables from cli arguments
-    final variablesFromArgs = args.inputVariables;
-    final unpackedVariablesFromArgs = parsePairs(variablesFromArgs);
-    taskRunner.renderData.addAll(unpackedVariablesFromArgs);
-
-    // collect variables from files given by cli argument
-    final dataFilePathsArg = args.dataFilePaths;
-    final dataFromAllFiles = readDataFromFiles(dataFilePathsArg);
-    taskRunner.renderData.addAll(dataFromAllFiles);
-
-    // run the task
-    final mainTask = Task.fromFile(getTaskPath());
-    await taskRunner.run(mainTask);
+    TaskRunner(taskDirectory: _autobotConfig.taskDir)
+      ..addRenderData(Platform.environment)
+      ..addRenderData(flagsOf(taskArgument))
+      ..addRenderData(valuesOf(inputArgument).toKeyValuePairs())
+      ..addRenderData(readDataFromFiles(filePaths: valuesOf(filePathsArgument)))
+      ..run(task);
   }
 
-  String getTaskPath() => _autobotConfig.taskDir + args.taskName;
-
-  // Move to run command
   AutobotConfig get _autobotConfig {
-    final l = _hasLocalAutobotDir;
-    final g = _hasGlobalAutobotDir;
-    final customPath = basePaths.customDir;
+    final config = ConfigFolder.findFirstAt(basePaths).configContent;
 
-    final basePath = when(_hasLocalAutobotDir)
-        .then(() => basePaths.localDir)
-        .orWhen(_hasGlobalAutobotDir)
-        .then(() => basePaths.globalDir)
-        .orWhen(customPath != null && ConfigFolderStructure.at(customPath).exists)
-        .then(() => basePaths.customDir!)
-        .orNone();
-
-    if (basePath.isNone()) {
-      appController.terminate(Print('No ${ConfigFolderConstants.folderNames.main} found'));
-    }
-
-    final config = ConfigFolderStructure.at(basePath.get()).configContent;
     if (config == null) {
       appController.terminate(Print('Config file could not be parsed'));
     }
 
     return config;
   }
-
-  bool get _hasLocalAutobotDir => ConfigFolderStructure.at(basePaths.localDir).exists;
-  bool get _hasGlobalAutobotDir => ConfigFolderStructure.at(basePaths.globalDir).exists;
 }
