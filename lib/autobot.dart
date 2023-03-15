@@ -38,14 +38,19 @@ void _runAutobot(List<String> args) async {
 AutobotConfig? _getAutobotConfig() {
   final workingPath = '$pwd/${AutobotConstants.configFileName}';
   final homePath = '$homeDirectory/${AutobotConstants.configFileName}';
-  return AutobotConfig.fromFileOrNull(workingPath) ?? AutobotConfig.fromFileOrNull(homePath);
+  return AutobotConfig.fromFileOrNull(workingPath) ??
+      AutobotConfig.fromFileOrNull(homePath);
 }
 
-List<String> _resolveArgumentShortcuts(List<String> args, List<String> commandNames) {
+List<String> _resolveArgumentShortcuts(
+  List<String> args,
+  List<String> commandNames,
+) {
   final resolvedArgs = List<String>.from(args);
   if (resolvedArgs.isNotEmpty) {
     final commandFromArgs = resolvedArgs.first;
-    final doesCommandExist = commandNames.any((name) => name == commandFromArgs);
+    final doesCommandExist =
+        commandNames.any((name) => name == commandFromArgs);
 
     if (!doesCommandExist) {
       final name = RunCommand.kName;
