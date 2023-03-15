@@ -1,4 +1,5 @@
 import 'package:autobot/common/dcli_utils.dart';
+import 'package:autobot/di/get_it_provider.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
@@ -7,6 +8,11 @@ import 'package:yaml/yaml.dart';
 
 void main() {
   final _kDefaultConfigFilePath = '$pwd/.autobot_config.yaml';
+
+  setUp(() async {
+    await provider.clear();
+  });
+
   test('`autobot init` creates config in working directory', () async {
     TellManager.clearPrints();
     TestManager.deleteIfExists(_kDefaultConfigFilePath);
@@ -15,7 +21,8 @@ void main() {
     autobot.main(['init']);
 
     expect(exists(_kDefaultConfigFilePath), true);
-    final YamlMap config = loadYaml(read(_kDefaultConfigFilePath).toParagraph());
+    final YamlMap config =
+        loadYaml(read(_kDefaultConfigFilePath).toParagraph());
     expect(config['config'] is YamlMap, true);
     expect(config['config']['taskDir'] is String, true);
   });
