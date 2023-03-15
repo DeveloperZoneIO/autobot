@@ -1,63 +1,31 @@
 import 'dart:async';
 
 import 'package:args/command_runner.dart';
-import 'package:autobot/commands/init/init.dart';
-import 'package:autobot/commands/run/run.dart';
-import 'package:autobot/commands/version/version.dart';
-import 'package:autobot/common/dcli_utils.dart';
 import 'package:autobot/common/exceptions.dart';
-import 'package:autobot/components/autobot_config.dart';
-import 'package:autobot/components/autobot_constants.dart';
-import 'package:autobot/pubspec.dart';
+import 'package:autobot/di/get_it_provider.dart';
+import 'package:autobot/di/init_dependencies.dart';
+import 'package:autobot/schema/arguments.dart';
+import 'package:autobot/services/argument_shortcut_resolver.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 
 void main(List<String> args) async {
-  runZonedGuarded(() => _runAutobot(args), (e, trace) {
-    if (e is PrintableException) {
-      e.tellUser();
-    } else {
-      tell(red(e.toString()));
-    }
-  });
+  final arguments = Arguments.from(args);
+  registerDependencies(arguments: arguments);
+  registerCommandsAndRunner();
+  runZonedGuarded(_runAutobot, _onError);
 }
 
-/// Initializes all commands and runs the requested command.
-void _runAutobot(List<String> args) async {
-  final config = _getAutobotConfig();
-  final commandRunner = CommandRunner(Pubspec.name, Pubspec.description)
-    ..addCommand(RunCommand(config))
-    ..addCommand(InitCommand())
-    ..addCommand(VersionCommand());
-
-  final commandNames = commandRunner.commands.keys.toList();
-  final resolvedArgs = _resolveArgumentShortcuts(args, commandNames);
-  commandRunner.run(resolvedArgs);
+void _runAutobot() {
+  final shortcutResolver = provide<ArgumentShortcutResolver>();
+  final resolvedArguments = shortcutResolver.resolveShortcuts();
+  provide<CommandRunner>().run(resolvedArguments);
 }
 
-AutobotConfig? _getAutobotConfig() {
-  final workingPath = '$pwd/${AutobotConstants.configFileName}';
-  final homePath = '$homeDirectory/${AutobotConstants.configFileName}';
-  return AutobotConfig.fromFileOrNull(workingPath) ??
-      AutobotConfig.fromFileOrNull(homePath);
-}
-
-List<String> _resolveArgumentShortcuts(
-  List<String> args,
-  List<String> commandNames,
-) {
-  final resolvedArgs = List<String>.from(args);
-  if (resolvedArgs.isNotEmpty) {
-    final commandFromArgs = resolvedArgs.first;
-    final doesCommandExist =
-        commandNames.any((name) => name == commandFromArgs);
-
-    if (!doesCommandExist) {
-      final name = RunCommand.kName;
-      final taskOption = '--${RunCommandArgs.kOptionTask}';
-      resolvedArgs.insertAll(0, [name, taskOption]);
-    }
+void _onError(Object error, StackTrace trace) {
+  if (error is PrintableException) {
+    error.tellUser();
+  } else {
+    tell(red(error.toString()));
   }
-
-  return resolvedArgs;
 }
