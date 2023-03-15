@@ -6,7 +6,7 @@ class RunCommandArgs {
 
   RunCommandArgs(this._parser, this._resultsProvier);
 
-  static final kOptionTask = 'task';
+  final kOptionTask = 'task';
   static final kOptionTaskAbbr = 't';
   static final kOptionInput = 'input';
   static final kOptionInputAbbr = 'i';

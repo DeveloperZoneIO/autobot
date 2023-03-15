@@ -1,3 +1,4 @@
+import 'package:autobot/di/get_it_provider.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
@@ -9,11 +10,12 @@ config:
   taskDir: test/tasks/''';
 
 void main() {
-  setUp(() {
+  setUp(() async {
     TellManager.clearPrints();
 
     if (exists(_configFilePath)) delete(_configFilePath);
     _configFilePath.write(_configFileContent);
+    await provider.clear();
   });
 
   test('autobot run -> full feature set is working.', () {
@@ -56,7 +58,8 @@ class BuildConfig {
     expect(exists('$pwd/hidden3.txt'), false);
   });
 
-  test('autobot run -> keepExistingFile writeMethods work like expected.', () async {
+  test('autobot run -> keepExistingFile writeMethods work like expected.',
+      () async {
     final filePath = '$pwd/letters.txt';
     if (exists(filePath)) delete(filePath);
 
@@ -69,7 +72,8 @@ class BuildConfig {
     delete(filePath);
   });
 
-  test('autobot run -> replaceExistingFile writeMethods work like expected.', () {
+  test('autobot run -> replaceExistingFile writeMethods work like expected.',
+      () {
     final filePath = '$pwd/letters.txt';
     if (exists(filePath)) delete(filePath);
 
@@ -146,7 +150,8 @@ class BuildConfig {
     autobot.main(["flag_test_task:FLAG_A:FLAG_B"]);
 
     expect(exists(filePath), true);
-    expect(read(filePath).toParagraph(), "First flag is FLAG_A and second flag is FLAG_B");
+    expect(read(filePath).toParagraph(),
+        "First flag is FLAG_A and second flag is FLAG_B");
     delete(filePath);
   });
 }
