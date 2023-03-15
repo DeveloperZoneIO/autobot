@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:autobot/services/autobot_config_finder.dart';
 import 'package:cli_script/cli_script.dart' hide read;
 import 'package:dcli/dcli.dart' hide run;
 import 'package:mustache_template/mustache.dart';
@@ -31,7 +32,7 @@ part 'utils/string_to_bool.dart';
 /// `autobot run -t <task_name> -i var1=a,var2=b` runs the task machting to <task_name> and inserts the given variables to autobot variables.
 class RunCommand extends Command {
   late final RunCommandArgs args;
-  final AutobotConfig? config;
+  final AutobotConfigReader configReader;
   static final kName = 'run';
 
   @override
@@ -39,14 +40,14 @@ class RunCommand extends Command {
   @override
   String get name => kName;
 
-  RunCommand(this.config) {
+  RunCommand({required this.configReader}) {
     args = RunCommandArgs(argParser, () => argResults!);
     args.initOptions();
   }
 
   @override
   void run() async {
-    final taskRunner = TaskRunner(taskDirectory: requireConfig.taskDir);
+    final taskRunner = TaskRunner(taskDirectory: configReader.getConfig().taskDir);
 
     // collect environment variables
     taskRunner.renderData.addAll(Platform.environment);
@@ -69,13 +70,5 @@ class RunCommand extends Command {
     await taskRunner.run(mainTask);
   }
 
-  String getTaskPath() => requireConfig.taskDir + args.taskName;
-
-  AutobotConfig get requireConfig {
-    if (config == null) {
-      throw MissingConfigFile();
-    } else {
-      return config!;
-    }
-  }
+  String getTaskPath() => configReader.getConfig().taskDir + args.taskName;
 }
