@@ -13,7 +13,7 @@ config:
   taskDir: test/tasks/''';
 
 void main() {
-  final messenger = TestMessenger();
+  TestMessenger messenger;
 
   setUp(() async {
     TellManager.clearPrints();
@@ -21,6 +21,7 @@ void main() {
     if (exists(_configFilePath)) delete(_configFilePath);
     _configFilePath.write(_configFileContent);
     await provider.clear();
+    messenger = TestMessenger();
     provider.registerSingleton<Messenger>(messenger);
   });
 
