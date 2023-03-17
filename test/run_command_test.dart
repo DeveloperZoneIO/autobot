@@ -1,8 +1,11 @@
+import 'package:autobot/messenger.dart';
 import 'package:autobot/di/get_it_provider.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
 import 'package:autobot/main.dart' as autobot;
+
+import 'mocks/test_messenger.dart';
 
 final _configFilePath = '$pwd/.autobot_config.yaml';
 final _configFileContent = '''
@@ -10,12 +13,15 @@ config:
   taskDir: test/tasks/''';
 
 void main() {
+  final messenger = TestMessenger();
+
   setUp(() async {
     TellManager.clearPrints();
 
     if (exists(_configFilePath)) delete(_configFilePath);
     _configFilePath.write(_configFileContent);
     await provider.clear();
+    provider.registerSingleton<Messenger>(messenger);
   });
 
   test('autobot run -> full feature set is working.', () {

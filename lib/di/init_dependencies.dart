@@ -1,16 +1,19 @@
 import 'package:args/command_runner.dart';
+import 'package:autobot/autobot_messenger.dart';
 import 'package:autobot/commands/init/init.dart';
 import 'package:autobot/commands/run/run.dart';
 import 'package:autobot/commands/version/version.dart';
 import 'package:autobot/di/get_it_provider.dart';
+import 'package:autobot/messenger.dart';
 import 'package:autobot/pubspec.dart';
 import 'package:autobot/schema/arguments.dart';
 import 'package:autobot/services/argument_shortcut_resolver.dart';
 import 'package:autobot/services/autobot_config_finder.dart';
 
 void registerDependencies({required Arguments arguments}) {
-  provider.registerSingleton<Arguments>(arguments);
-  provider.registerSingleton<AutobotConfigReader>(AutobotConfigReader());
+  provider.tryRegisterSingleton<Messenger>(AutobotMessenger());
+  provider.registerSingleton(arguments);
+  provider.registerSingleton(AutobotConfigReader());
 
   provider.registerFactory<ArgumentShortcutResolver>(
     () => ArgumentShortcutResolver(

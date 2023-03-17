@@ -36,6 +36,22 @@ class GetItProvider extends Provider {
   }
 
   @override
+  void tryRegisterSingleton<T extends Object>(
+    T instance, {
+    String? instanceName,
+    Disposer<T>? dispose,
+  }) {
+    final isAlreadyRegistered = _getIt.isRegistered(
+      instance: instance,
+      instanceName: instanceName,
+    );
+
+    if (!isAlreadyRegistered) {
+      registerSingleton(instance, instanceName: instanceName, dispose: dispose);
+    }
+  }
+
+  @override
   void registerLazySingleton<T extends Object>(
     ProviderFactory<T> factory, {
     String? instanceName,
