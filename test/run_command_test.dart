@@ -20,6 +20,7 @@ void main() {
 
     if (exists(_configFilePath)) delete(_configFilePath);
     _configFilePath.write(_configFileContent);
+
     await provider.clear();
     messenger = TestMessenger();
     provider.registerSingleton<Messenger>(messenger);
