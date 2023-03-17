@@ -3,7 +3,7 @@ import 'package:autobot/pubspec.dart';
 import 'package:autobot/tell.dart';
 import 'package:dcli/dcli.dart';
 import 'package:test/test.dart';
-import 'package:autobot/autobot.dart' as autobot;
+import 'package:autobot/main.dart' as autobot;
 
 void main() {
   setUp(() async {
