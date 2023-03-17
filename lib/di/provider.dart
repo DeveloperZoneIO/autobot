@@ -18,6 +18,12 @@ abstract class Provider {
     Disposer<T>? dispose,
   });
 
+  void tryRegisterSingleton<T extends Object>(
+    T instance, {
+    String? instanceName,
+    Disposer<T>? dispose,
+  });
+
   void registerLazySingleton<T extends Object>(
     ProviderFactory<T> factory, {
     String? instanceName,
